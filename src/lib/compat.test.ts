@@ -4,11 +4,16 @@ import {
   buildGameIndex,
   computeStats,
   displayStatus,
+  displayStatusForOs,
+  filterGameIndex,
   gamePageKey,
   groupReportsByGame,
+  indexStatsForOs,
   parseCompatReport,
+  reportsForOs,
   STATUSES,
   STATUS_META,
+  type Os,
 } from "@/lib/compat";
 
 const VALID = `---
@@ -254,5 +259,74 @@ describe("buildGameIndex", () => {
     ]);
     expect(index[0].reports).toHaveLength(2);
     expect(displayStatus(index[0].reports)).toBe("playable"); // tie -> better
+  });
+});
+
+describe("per-OS status and filtering (reportsForOs / displayStatusForOs / filterGameIndex / indexStatsForOs)", () => {
+  // Build a report with a chosen status and OS (or none).
+  const mk = (titleId: string, status: (typeof STATUSES)[number], os?: Os, title = "Game") => {
+    let raw = VALID.replace("PPSA01234", titleId)
+      .replace('title: "Test Game"', `title: "${title}"`)
+      .replace('status: "ingame"', `status: "${status}"`);
+    if (os) raw = raw.replace('os: "windows"', `os: "${os}"`);
+    else raw = raw.replace('os: "windows"\n', "");
+    return { ...parseCompatReport(raw, "x"), slug: "x" };
+  };
+
+  const games = [
+    { titleId: "PPSA00001", allTitleIds: ["PPSA00001"], name: "Alpha" },
+    { titleId: "PPSA00002", allTitleIds: ["PPSA00002"], name: "Beta" },
+  ];
+
+  it("displayStatusForOs is untested when no report exists for that OS", () => {
+    const reports = [mk("PPSA00001", "ingame", "linux", "Alpha")];
+    expect(displayStatusForOs(reports, "linux")).toBe("ingame");
+    expect(displayStatusForOs(reports, "windows")).toBe("untested");
+    expect(displayStatusForOs(reports, "all")).toBe("ingame");
+  });
+
+  it("reportsForOs scopes reports by OS", () => {
+    const reports = [
+      mk("PPSA00001", "ingame", "linux", "Alpha"),
+      mk("PPSA00001", "boots", "windows", "Alpha"),
+    ];
+    expect(reportsForOs(reports, "linux")).toHaveLength(1);
+    expect(reportsForOs(reports, "all")).toHaveLength(2);
+  });
+
+  it("filterGameIndex: OS+status only matches that OS's reports (the regression)", () => {
+    const index = buildGameIndex(games, [
+      mk("PPSA00001", "ingame", "linux", "Alpha"), // Linux ingame
+      mk("PPSA00002", "ingame", undefined, "Beta"), // OS-less ingame
+    ]);
+    const linux = filterGameIndex(index, { status: "ingame", os: "linux" });
+    expect(linux.map((e) => e.key)).toEqual(["PPSA00001"]);
+
+    const windows = filterGameIndex(index, { status: "ingame", os: "windows" });
+    expect(windows).toHaveLength(0); // no Windows ingame report — empty is correct now
+
+    const anyOs = filterGameIndex(index, { status: "ingame", os: "all" });
+    expect(anyOs.map((e) => e.key).sort()).toEqual(["PPSA00001", "PPSA00002"]);
+  });
+
+  it("filterGameIndex: OS + not-tested shows games with no report on that OS", () => {
+    const index = buildGameIndex(games, [mk("PPSA00001", "ingame", "linux", "Alpha")]);
+    // Alpha has no Windows report, Beta has none at all — both are not tested on Windows.
+    expect(filterGameIndex(index, { status: "untested", os: "windows" }).map((e) => e.key)).toEqual(["PPSA00001", "PPSA00002"]);
+    // On Linux, Alpha's report votes ingame, so only Beta is not tested.
+    expect(filterGameIndex(index, { status: "untested", os: "linux" }).map((e) => e.key)).toEqual(["PPSA00002"]);
+  });
+
+  it("indexStatsForOs counts only that OS's reports", () => {
+    const index = buildGameIndex(games, [
+      mk("PPSA00001", "ingame", "linux", "Alpha"),
+      mk("PPSA00002", "ingame", "windows", "Beta"),
+    ]);
+    const linux = indexStatsForOs(index, "linux");
+    expect(linux.total).toBe(2);
+    expect(linux.tested).toBe(1);
+    expect(linux.untested).toBe(1);
+    expect(linux.counts.ingame).toBe(1);
+    expect(indexStatsForOs(index, "all").tested).toBe(2);
   });
 });

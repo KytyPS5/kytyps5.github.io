@@ -8,10 +8,13 @@ import {
   COMPAT_REPORTS,
   STATUSES,
   STATUS_META,
-  aggregateStatus,
   buildGameIndex,
-  displayStatus,
+  displayStatusForOs,
+  filterGameIndex,
+  indexStatsForOs,
+  reportsForOs,
   type DisplayStatus,
+  type Os,
 } from "@/lib/compat";
 import { loadGames, type Game } from "@/lib/games";
 import { PageHeader } from "@/components/layout/page-header";
@@ -23,11 +26,11 @@ import { cn } from "@/lib/utils";
 
 const PAGE_SIZE = 300;
 
-const OSES = ["windows", "linux", "macos"] as const;
+const OSES: Os[] = ["windows", "linux", "macos"];
 
 export function CompatibilityPage() {
   const [statusFilter, setStatusFilter] = React.useState<"all" | DisplayStatus>("all");
-  const [osFilter, setOsFilter] = React.useState<string>("all");
+  const [osFilter, setOsFilter] = React.useState<Os | "all">("all");
   const [query, setQuery] = React.useState("");
   const [visible, setVisible] = React.useState(PAGE_SIZE);
 
@@ -50,33 +53,15 @@ export function CompatibilityPage() {
     [games],
   );
 
-  const stats = React.useMemo(() => {
-    const tested = index.filter((e) => e.reports.length > 0);
-    const counts = Object.fromEntries(STATUSES.map((s) => [s, 0])) as Record<(typeof STATUSES)[number], number>;
-    for (const e of tested) counts[aggregateStatus(e.reports)] += 1;
-    return {
-      total: index.length,
-      tested: tested.length,
-      untested: index.length - tested.length,
-      counts,
-    };
-  }, [index]);
+  // Stats and filtering are evaluated inside the active OS scope: with an OS
+  // selected, a game's status is the majority vote of THAT OS's reports only,
+  // so status + OS combinations filter predictably.
+  const stats = React.useMemo(() => indexStatsForOs(index, osFilter), [index, osFilter]);
 
-  const filtered = React.useMemo(() => {
-    const q = query.trim().toLowerCase();
-    return index.filter((e) => {
-      const status = displayStatus(e.reports);
-      if (statusFilter === "untested" && status !== "untested") return false;
-      if (statusFilter !== "all" && statusFilter !== "untested" && status !== statusFilter) return false;
-      if (osFilter !== "all" && !e.reports.some((r) => r.os === osFilter)) return false;
-      if (q) {
-        if (!e.title.toLowerCase().includes(q) && !(e.titleId ?? e.key).toLowerCase().includes(q)) {
-          return false;
-        }
-      }
-      return true;
-    });
-  }, [index, statusFilter, osFilter, query]);
+  const filtered = React.useMemo(
+    () => filterGameIndex(index, { status: statusFilter, os: osFilter, query }),
+    [index, statusFilter, osFilter, query],
+  );
 
   // Reset pagination whenever the filters change.
   React.useEffect(() => {
@@ -215,7 +200,7 @@ export function CompatibilityPage() {
           <div className="flex flex-col gap-3 sm:flex-row sm:items-center sm:justify-between">
             <div className="flex flex-wrap items-center gap-2">
               <span className="font-mono text-xs uppercase tracking-wider text-text-muted">OS</span>
-              {["all", ...OSES].map((os) => (
+              {(["all", ...OSES] as (Os | "all")[]).map((os) => (
                 <button
                   key={os}
                   type="button"
@@ -231,6 +216,11 @@ export function CompatibilityPage() {
                   {os === "all" ? "Any" : os}
                 </button>
               ))}
+              {osFilter !== "all" && (
+                <span className="ml-1 text-xs text-text-muted">
+                  statuses below are for <span className="font-medium text-text-secondary">{osFilter}</span> reports only
+                </span>
+              )}
             </div>
             <label className="relative block sm:w-72">
               <span className="sr-only">Search games</span>
@@ -251,8 +241,11 @@ export function CompatibilityPage() {
           <>
             <ul className="divide-y divide-border overflow-hidden rounded-panel border border-border bg-surface shadow-card">
               {shown.map((e) => {
-                const status = displayStatus(e.reports);
-                const tested = e.reports.length > 0;
+                // With an OS filter active the row status is that OS's majority
+                // vote (untested = no report for that OS yet).
+                const scoped = reportsForOs(e.reports, osFilter);
+                const status = displayStatusForOs(e.reports, osFilter);
+                const tested = scoped.length > 0;
                 const oses = [...new Set(e.reports.flatMap((r) => (r.os ? [r.os] : [])))];
                 return (
                   <li key={e.key}>
@@ -285,7 +278,7 @@ export function CompatibilityPage() {
                           {e.titleId ?? e.key}
                         </span>
                       </span>
-                      {tested && oses.length > 0 && (
+                      {oses.length > 0 && (
                         <span className="hidden shrink-0 gap-1.5 sm:flex">
                           {oses.map((os) => (
                             <span
@@ -300,7 +293,7 @@ export function CompatibilityPage() {
                       <span className="flex shrink-0 items-center gap-3">
                         {tested && (
                           <span className="hidden font-mono text-xs text-text-muted md:inline">
-                            {e.reports.length} report{e.reports.length === 1 ? "" : "s"}
+                            {scoped.length} report{scoped.length === 1 ? "" : "s"}
                           </span>
                         )}
                         <StatusBadge status={status} />

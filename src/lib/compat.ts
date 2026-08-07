@@ -113,6 +113,23 @@ export function displayStatus(reports: readonly Pick<CompatReport, "status">[]):
   return reports.length > 0 ? aggregateStatus(reports) : "untested";
 }
 
+export type Os = "windows" | "linux" | "macos";
+
+/** Reports that apply within an OS scope (`"all"` = every report). */
+export function reportsForOs(reports: readonly CompatReport[], os: Os | "all"): CompatReport[] {
+  return os === "all" ? (reports as CompatReport[]) : reports.filter((r) => r.os === os);
+}
+
+/**
+ * A game's status within an OS scope: the majority vote of that OS's reports,
+ * or `untested` when no report exists for that OS. This is what makes
+ * OS + status filter combinations behave predictably.
+ */
+export function displayStatusForOs(reports: readonly CompatReport[], os: Os | "all"): DisplayStatus {
+  const scoped = reportsForOs(reports, os);
+  return scoped.length > 0 ? aggregateStatus(scoped) : "untested";
+}
+
 /** One row of the full compatibility index (a database game + its reports). */
 export interface GameIndexEntry {
   /** Canonical route key (the game's title ID, else the report's). */
@@ -184,6 +201,57 @@ export function computeStats(statuses: readonly Status[]) {
   const counts = Object.fromEntries(STATUSES.map((s) => [s, 0])) as Record<Status, number>;
   for (const s of statuses) counts[s] += 1;
   return { tested: statuses.length, counts };
+}
+
+export interface IndexFilters {
+  status?: "all" | DisplayStatus;
+  os?: Os | "all";
+  query?: string;
+}
+
+/**
+ * Filter the compatibility index. Status is always evaluated inside the active
+ * OS scope, so e.g. `ingame` + `linux` only matches games with a Linux report
+ * voting ingame — a game whose only ingame report is OS-less (or Windows) does
+ * not match. Pure + testable; the page only renders the result.
+ */
+export function filterGameIndex(
+  index: readonly GameIndexEntry[],
+  { status = "all", os = "all", query = "" }: IndexFilters = {},
+): GameIndexEntry[] {
+  const q = query.trim().toLowerCase();
+  return index.filter((entry) => {
+    // The OS selection scopes STATUS evaluation — it never drops games itself.
+    // That keeps `untested` + an OS meaningful (games with no report on that
+    // OS) and makes every pill count match what clicking it would show.
+    const scoped = displayStatusForOs(entry.reports, os);
+    if (status === "untested" && scoped !== "untested") return false;
+    if (status !== "all" && status !== "untested" && scoped !== status) return false;
+    if (q && !entry.title.toLowerCase().includes(q) && !(entry.titleId ?? entry.key).toLowerCase().includes(q)) {
+      return false;
+    }
+    return true;
+  });
+}
+
+/**
+ * Aggregate index stats within an OS scope (powers the stats strip and the
+ * filter-pill counts). A game is "tested" only when it has a report for that
+ * OS; everything else counts as not tested there.
+ */
+export function indexStatsForOs(
+  index: readonly GameIndexEntry[],
+  os: Os | "all" = "all",
+): { total: number; tested: number; untested: number; counts: Record<Status, number> } {
+  const counts = Object.fromEntries(STATUSES.map((s) => [s, 0])) as Record<Status, number>;
+  let tested = 0;
+  for (const entry of index) {
+    const scoped = reportsForOs(entry.reports, os);
+    if (scoped.length === 0) continue;
+    tested += 1;
+    counts[aggregateStatus(scoped)] += 1;
+  }
+  return { total: index.length, tested, untested: index.length - tested, counts };
 }
 
 /**

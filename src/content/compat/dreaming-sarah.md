@@ -4,14 +4,16 @@ title: "Dreaming Sarah"
 status: "ingame"
 testedVersion: "KytyPS5-2026-08-07-7907a50"
 testedDate: "2026-08-07"
+os: "linux"
 screenshot: "https://raw.githubusercontent.com/KytyPS5/KytyPS5/main/docs/screenshots/ps5-03.png"
 ---
 
-Boots and reaches gameplay, captured in the official repository screenshot gallery.
+Reaches gameplay on Linux. Confirmed in PR #146 ("Fixes for Linux and UE4 games"),
+which lists Dreaming Sarah among the titles tested without regressions; the
+official repository screenshot gallery captures it running in-game.
 
 ![Dreaming Sarah running in KytyPS5](https://raw.githubusercontent.com/KytyPS5/KytyPS5/main/docs/screenshots/ps5-03.png)
 
-> Status is inferred from the project's own screenshots — treat it as unverified
-> until a detailed community report is filed with build, OS and hardware details.
+> Only tested on Linux — Windows and macOS results are unknown.
 
-> Source: KytyPS5 repository screenshots
+> Source: [KytyPS5 PR #146 — Fixes for Linux and UE4 games](https://github.com/KytyPS5/KytyPS5/pull/146)

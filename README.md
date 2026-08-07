@@ -97,9 +97,17 @@ imported game automatically updates the page, the stats and the per-game pages.
 - `npm test` runs Vitest coverage of the parser/stats, aggregation, markdown renderer, report
   builder and the import transforms.
 
-The seed reports are inferred from the project's own screenshots and marked as unverified until
-community reports land. `disgaea-6-community.md` is a clearly-labeled example of a second report
-demonstrating majority-vote aggregation — replace or remove it before launch [maintainer input].
+**Per-OS statuses.** Reports carry an optional `os` (`windows | linux | macos`). Selecting an OS
+on the Compatibility page scopes the status evaluation: a game's status then becomes the majority
+vote of **that OS's reports only** (grey "Not tested" when none exist), and the stats strip and
+filter-pill counts follow the same scope — so e.g. `ingame` + `linux` matches only games with a
+Linux report voting ingame, and an OS-less ingame report never counts toward a Windows filter.
+
+The seed reports are grounded in what the emulator repo actually shows: the screenshot-gallery
+games (Disgaea 6, Hellboy, Neptunia ReVerse, Paleo Pines, SILENT HILL: The Short Message) are
+screenshot-inferred `ingame`, and Dreaming Sarah is backed by a real Linux test
+([PR #146](https://github.com/KytyPS5/KytyPS5/pull/146)) with `os: linux`. No seed report claims a
+status no source supports — anything stronger needs a community report first.
 
 ### GUI-compatible status JSON (KytyPS5 launcher)
 
@@ -108,12 +116,12 @@ KytyPS5 GUI launcher parses (`src/launcher/src/compatibilityDatabase.cpp`):
 
 ```json
 {
-  "PPSA06228": {
+  "PPSA02929": {
     "status": "InGame",
-    "reports": 2,
-    "comment": "2 reports · status: playable-low-fps · tested on …",
+    "reports": 1,
+    "comment": "1 report · status: ingame · tested on KytyPS5-2026-08-07-7907a50",
     "platforms": {
-      "linux": { "status": "InGame", "reports": 1, "comment": "1 report · status: playable-low-fps", "version": "…" }
+      "linux": { "status": "InGame", "reports": 1, "comment": "1 report · status: ingame", "version": "KytyPS5-2026-08-07-7907a50" }
     }
   }
 }
