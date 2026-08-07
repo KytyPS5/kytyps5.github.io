@@ -84,7 +84,18 @@ jobs:
         run: |
           TITLE="$(cat /tmp/issue-title.txt)"
           BODY="$(cat /tmp/issue-body.txt)"
-          field() { printf '%s' "$BODY" | grep -A1 "^### $1" | tail -1 | sed 's/^[[:space:]]*//;s/[[:space:]]*$//'; }
+          # GitHub issue forms render answers under a blank line ("### Title ID"
+          # followed by an empty line), so grep -A1 grabs the blank. Extract
+          # everything between the heading and the next "### " instead — this
+          # also keeps multi-line textarea answers intact.
+          field() {
+            printf '%s' "$BODY" | awk -v h="### $1" '
+              $0 == h { f = 1; next }
+              f && /^### / { exit }
+              f && NF { print; seen = 1; next }
+              f && seen { print "" }
+            '
+          }
           STATUS="$(field 'Compatibility status')"
           VERSION="$(field 'KytyPS5 build (commit or release, not the game version)')"
           DATE="$(field 'Test date')"
@@ -93,10 +104,16 @@ jobs:
           TITLE_ID="$(field 'Title ID')"
           GAME_VERSION="$(field 'Game version')"
           NOTES="$(field 'What works / what breaks' | head -c 4000)"
-          ARGS=(--title "$TITLE" --status "$STATUS" --version "$VERSION" --date "$DATE" --os "$OS" --body "$NOTES" --source "#$ISSUE_NUMBER" --source-url "https://github.com/${{ github.repository }}/issues/$ISSUE_NUMBER")
+          if [ -z "$TITLE_ID" ] || [ -z "$STATUS" ] || [ -z "$VERSION" ] || [ -z "$DATE" ] || [ -z "$OS" ]; then
+            echo "::error::Issue #$ISSUE_NUMBER doesn't match the compatibility report template — fill in Title ID, Compatibility status, build, Test date and Operating system, then reply /compat again (or file a new report via the template)."
+            exit 1
+          fi
+          ARGS=(--title "$TITLE" --title-id "$TITLE_ID" --status "$STATUS" --version "$VERSION" --date "$DATE" --os "$OS" --body "$NOTES" --source "#$ISSUE_NUMBER" --source-url "https://github.com/${{ github.repository }}/issues/$ISSUE_NUMBER")
           [ -n "$HW" ] && ARGS+=(--hardware "$HW")
-          [ -n "$TITLE_ID" ] && ARGS+=(--title-id "$TITLE_ID")
-          [ -n "$GAME_VERSION" ] && [ "$GAME_VERSION" != "_Unknown_" ] && ARGS+=(--game-version "$GAME_VERSION")
+          case "$GAME_VERSION" in
+            ""|"_Unknown_"|"_No response_") ;; # template defaults — skip
+            *) ARGS+=(--game-version "$GAME_VERSION") ;;
+          esac
           node scripts/issue-to-compat.mjs "${ARGS[@]}"
 
       - name: Open PR
