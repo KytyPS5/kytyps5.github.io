@@ -1,33 +1,91 @@
 name: Refresh GitHub data
 
-# Regenerate the build-time GitHub snapshot (stats / releases / contributors /
-# commits) weekly and open a PR when it changed, so the deployed site stays
-# fresh without burning runtime API requests.
+# Keep the deployed GitHub snapshot (stats / releases / contributors / commits)
+# fresh without pushing code. Every 30 minutes the snapshot is regenerated from
+# the GitHub API and compared against what is currently deployed; only when the
+# numbers actually moved (stars, release, commits) is the Pages deploy
+# dispatched, which rebuilds the site and ships the fresh data. No change means
+# no rebuild — the site isn't rebuilt 48 times a day for nothing.
+#
+# Notes:
+# - The snapshot file (public/data/github.json) is gitignored and regenerated
+#   on every build by the `prebuild` script, so nothing needs committing — the
+#   deploy build produces the fresh data by itself.
+# - The site also live-fetches GitHub data in the browser, so this workflow
+#   mostly improves the first paint and the no-JS / rate-limited fallback.
+# - `gh workflow run deploy.yml` is used because pushes made with the default
+#   GITHUB_TOKEN do not trigger other workflows.
 on:
   schedule:
-    - cron: "0 3 * * 1" # every Monday 03:00 UTC
+    - cron: "*/30 * * * *" # every 30 minutes (may be delayed under load)
   workflow_dispatch:
+    inputs:
+      force:
+        description: "Rebuild even if the data did not change"
+        type: boolean
+        default: false
+
+permissions:
+  contents: read
+  actions: write # needed for `gh workflow run deploy.yml`
 
 jobs:
   refresh:
     runs-on: ubuntu-latest
     steps:
-      - uses: actions/checkout@v4
-      - uses: actions/setup-node@v4
+      - uses: actions/checkout@v7
+      - uses: actions/setup-node@v7
         with:
           node-version: 22
           cache: npm
       - run: npm ci
-      - run: npm run fetch:data
+
+      - name: Regenerate the GitHub snapshot
+        run: npm run fetch:data
         env:
           GITHUB_TOKEN: ${{ secrets.GITHUB_TOKEN }}
-      - name: Open PR if data changed
-        uses: peter-evans/create-pull-request@v6
-        with:
-          token: ${{ secrets.GITHUB_TOKEN }}
-          commit-message: "chore: refresh GitHub data snapshot"
-          branch: chore/refresh-data
-          title: "chore: refresh GitHub data snapshot"
-          body: |
-            Automated refresh of `public/data/github.json` from the GitHub API.
-          delete-branch: true
+
+      - name: Deploy only when the deployed data is stale
+        id: changed
+        env:
+          PAGES_URL: "https://${{ github.repository_owner }}.github.io/${{ github.event.repository.name }}"
+          FORCE: ${{ inputs.force }}
+        run: |
+          node - <<'NODE'
+          (async () => {
+            const fs = require("fs");
+            const cur = JSON.parse(fs.readFileSync("public/data/github.json", "utf8"));
+            delete cur.generatedAt; // timestamp always differs; compare real data only
+
+            const base = process.env.PAGES_URL + "/data/github.json";
+            const changed = async () => {
+              if (process.env.FORCE === "true") return true;
+              let res;
+              try {
+                res = await fetch(base, { cache: "no-store" });
+                if (!res.ok) return true; // not deployed yet → establish the baseline
+              } catch {
+                return true; // unreachable / first deploy → rebuild
+              }
+              let live;
+              try {
+                live = await res.json();
+                delete live.generatedAt;
+              } catch {
+                return true;
+              }
+              return JSON.stringify(cur) !== JSON.stringify(live);
+            };
+            const didChange = await changed();
+            fs.appendFileSync(process.env.GITHUB_OUTPUT, `changed=${didChange}\n`);
+          })();
+          NODE
+
+      - name: Dispatch the deploy
+        if: steps.changed.outputs.changed == 'true'
+        run: |
+          gh workflow run deploy.yml --ref main
+          echo "Deployed data was stale — dispatched a rebuild."
+      - name: Nothing to do
+        if: steps.changed.outputs.changed != 'true'
+        run: echo "Deployed data is current — no rebuild needed."
