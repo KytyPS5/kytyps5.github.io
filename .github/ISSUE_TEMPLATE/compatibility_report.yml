@@ -44,6 +44,7 @@ body:
     id: os
     attributes:
       label: Operating system
+      description: One report per operating system — if you tested on more than one OS, file a separate report for each.
       options: [windows, linux, macos]
     validations:
       required: true

@@ -279,11 +279,25 @@ describe("per-OS status policy (Nmzik's cross-platform caveat)", () => {
     { titleId: "PPSA06228", status: "nothing", testedVersion: "b1", testedDate: "2026-08-01" },
   ];
 
-  it("keeps the top-level status as the cross-platform majority", () => {
+  it("keeps the top-level status as the best across per-OS majorities", () => {
     const db = buildCompatibilityDb(reports);
-    // All five statuses occur once → tie broken to the best (playable).
+    // windows → playable, linux → menus, unknown-OS group → nothing.
+    // Best of those = playable.
     expect(db.PPSA06228.status).toBe("InGame");
     expect(db.PPSA06228.reports).toBe(5);
+  });
+
+  it("top-level best-of-OS can beat a cross-platform majority", () => {
+    const db = buildCompatibilityDb([
+      { titleId: "PPSA06228", status: "ingame", os: "windows", testedVersion: "b1", testedDate: "2026-08-01" },
+      { titleId: "PPSA06228", status: "ingame", os: "windows", testedVersion: "b2", testedDate: "2026-08-02" },
+      // Windows majority says ingame, but Linux says playable → Any = playable.
+      { titleId: "PPSA06228", status: "playable", os: "linux", testedVersion: "b1", testedDate: "2026-08-03" },
+    ]);
+    expect(db.PPSA06228.platforms.windows.status).toBe("InGame"); // majority of the OS
+    expect(db.PPSA06228.platforms.linux.status).toBe("InGame");
+    expect(db.PPSA06228.status).toBe("InGame"); // best = playable → InGame
+    expect(db.PPSA06228.comment).toContain("playable");
   });
 
   it("aggregates per OS with its own majority", () => {
@@ -302,6 +316,15 @@ describe("per-OS status policy (Nmzik's cross-platform caveat)", () => {
     expect(totalPlatform).toBe(4); // 2 windows + 2 linux
     expect(db.PPSA06228.reports).toBe(5); // overall includes the OS-less one
     expect(db.PPSA06228.platforms.macos).toBeUndefined(); // absent ≠ Unknown
+  });
+
+  it("a single-OS game's top-level status equals that OS's status", () => {
+    const db = buildCompatibilityDb([
+      { titleId: "PPSA06228", status: "ingame", os: "windows", testedVersion: "b1", testedDate: "2026-08-01" },
+    ]);
+    expect(db.PPSA06228.status).toBe("InGame");
+    expect(Object.keys(db.PPSA06228.platforms)).toEqual(["windows"]);
+    expect(db.PPSA06228.platforms.windows.status).toBe("InGame");
   });
 
   it("orders platform keys windows → linux → macos and carries the latest build", () => {

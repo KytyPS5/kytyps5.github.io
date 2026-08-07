@@ -4,9 +4,12 @@ import { ArrowLeft, CheckCircle2, ExternalLink, FileQuestion } from "lucide-reac
 import { Seo } from "@/lib/seo";
 import {
   COMPAT_REPORTS,
+  OSES,
   STATUS_META,
-  aggregateStatus,
+  displayStatus,
   gamePageKey,
+  perOsStatuses,
+  reportsForOs,
   type CompatReport,
 } from "@/lib/compat";
 import { loadGames, type Game } from "@/lib/games";
@@ -156,8 +159,10 @@ export function GamePage() {
 
   const title = game?.name ?? report?.title ?? key;
   const canonicalKey = report ? gamePageKey(report, game) : key;
-  // The game's status is the majority vote across all its reports.
-  const aggregate = reports.length > 0 ? aggregateStatus(reports) : "untested";
+  // The overall badge is the BEST result across the game's per-OS tests; each
+  // OS below carries its own majority vote.
+  const aggregate = displayStatus(reports);
+  const perOs = perOsStatuses(reports);
   const latest = reports[0];
 
   const jsonLd = {
@@ -169,7 +174,7 @@ export function GamePage() {
     ...(game?.genres?.length ? { genre: game.genres } : {}),
     applicationCategory: "Game",
     operatingSystem: "Windows 10+, Linux, macOS",
-    description: `KytyPS5 compatibility report: ${STATUS_META[aggregate].label.toLowerCase()} (majority of ${reports.length} report${reports.length === 1 ? "" : "s"}).`,
+    description: `KytyPS5 compatibility report: ${STATUS_META[aggregate].label.toLowerCase()} (best across ${reports.length} report${reports.length === 1 ? "" : "s"}).`,
     url: `${SITE_URL}/game/${encodeURIComponent(canonicalKey)}`,
   };
 
@@ -179,7 +184,7 @@ export function GamePage() {
         title={`${title} — compatibility`}
         description={
           reports.length > 0
-            ? `${title} is ${STATUS_META[aggregate].label.toLowerCase()} on KytyPS5 per ${reports.length} community report${reports.length === 1 ? "" : "s"} (latest tested on ${latest.testedVersion}). Read the full report.`
+            ? `${title} is ${STATUS_META[aggregate].label.toLowerCase()} on KytyPS5 — the best result across ${reports.length} report${reports.length === 1 ? "" : "s"} (latest tested on ${latest.testedVersion}). Read the full report.`
             : `${title} has no compatibility report on KytyPS5 yet. Track progress and test it yourself.`
         }
         path={`/game/${encodeURIComponent(canonicalKey)}`}
@@ -234,7 +239,7 @@ export function GamePage() {
                 <StatusBadge status={aggregate} size="lg" />
                 {reports.length > 1 && (
                   <span className="ml-3 align-middle font-mono text-xs text-text-muted">
-                    {reports.length} reports · majority vote
+                    {reports.length} reports · best across tested OSes
                   </span>
                 )}
               </div>
@@ -250,6 +255,48 @@ export function GamePage() {
           </div>
         </Reveal>
 
+        {/* Per-OS status slots */}
+        <Reveal from="up" className="mt-12">
+          <section aria-labelledby="os-status-heading">
+            <h2
+              id="os-status-heading"
+              className="font-display text-xl font-bold tracking-tight text-text-primary"
+            >
+              Status by operating system
+            </h2>
+            <p className="mt-2 max-w-xl text-sm leading-relaxed text-text-secondary">
+              Each OS shows the majority vote of the reports tested on it. The badge above is the
+              best result across tested OSes — an untested OS stays grey until a report for it
+              lands.
+            </p>
+            <div className="mt-5 grid gap-4 sm:grid-cols-3">
+              {OSES.map((os) => {
+                const osReports = reportsForOs(reports, os);
+                return (
+                  <div
+                    key={os}
+                    className="rounded-card border border-border bg-surface p-5 shadow-card"
+                  >
+                    <div className="flex items-center justify-between gap-2">
+                      <p className="font-mono text-xs uppercase tracking-wider text-text-muted">
+                        {os}
+                      </p>
+                      {osReports.length > 0 && (
+                        <span className="font-mono text-[11px] text-text-muted">
+                          {osReports.length} report{osReports.length === 1 ? "" : "s"}
+                        </span>
+                      )}
+                    </div>
+                    <div className="mt-3">
+                      <StatusBadge status={perOs[os]} />
+                    </div>
+                  </div>
+                );
+              })}
+            </div>
+          </section>
+        </Reveal>
+
         {/* Reports */}
         <Reveal from="right" className="mt-16 pb-24">
           <section aria-labelledby="report-heading">
@@ -263,9 +310,8 @@ export function GamePage() {
                   <ReportBlock key={r.slug} report={r} index={i} />
                 ))}
                 <p className="text-sm text-text-muted">
-                  Status shown is the majority vote across {reports.length} report
-                  {reports.length === 1 ? "" : "s"} — community data, reflecting the builds they were
-                  tested on.
+                  Statuses are per operating system; the overall badge shows the best result across
+                  tested OSes. Community data, reflecting the builds they were tested on.
                 </p>
               </div>
             ) : (

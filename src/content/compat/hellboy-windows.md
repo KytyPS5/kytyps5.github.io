@@ -4,10 +4,13 @@ title: "Hellboy"
 status: "ingame"
 testedVersion: "KytyPS5-2026-08-07-7907a50"
 testedDate: "2026-08-07"
+os: "windows"
 screenshot: "https://raw.githubusercontent.com/KytyPS5/KytyPS5/main/docs/screenshots/ps5-02.png"
 ---
 
-Boots and reaches gameplay, captured in the official repository screenshot gallery.
+Boots and reaches gameplay, captured in the official repository screenshot gallery. Tagged
+Windows because the project README describes Windows as the primary platform receiving the most
+testing — the screenshots themselves don't state an OS.
 
 ![Hellboy running in KytyPS5](https://raw.githubusercontent.com/KytyPS5/KytyPS5/main/docs/screenshots/ps5-02.png)
 

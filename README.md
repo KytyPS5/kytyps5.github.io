@@ -53,9 +53,10 @@ changed.
 
 ## Compatibility database (mirrors )
 
-One Markdown report per community submission in `src/content/compat/<slug>.md`, with frontmatter
-matching the schema in `src/lib/compat.ts` (title, **required titleId**, status, testedVersion,
-testedDate, os, hardware, optional score/gameVersion/screenshot). Status ladder:
+One Markdown report per test in `src/content/compat/<slug>.md`, with frontmatter matching the
+schema in `src/lib/compat.ts` (title, **required titleId**, status, testedVersion, testedDate,
+**required os** (`windows | linux | macos`), hardware, optional score/gameVersion/screenshot).
+One report per (game, OS) — a game tested on several OSes has one report per OS. Status ladder:
 `nothing → boots → menus → ingame → playable-low-fps → playable`.
 
 **Status colors** follow the emulator-community convention (single source: `STATUS_META` in
@@ -63,9 +64,12 @@ testedDate, os, hardware, optional score/gameVersion/screenshot). Status ladder:
 intro output only, yellow = reaches interactive menus, blue = reaches gameplay with major issues,
 cyan = playable at a low/unstable framerate, green = completable with minor or no issues.
 
-**Status is the majority vote.** A game may have multiple reports (one per submission); the
-aggregate status shown on cards, stats and game pages is decided by `aggregateStatus()` — the
-status most people submitted, with ties broken toward the better status.
+**Status is per operating system, and "Any" is the best result.** Each report is tagged with the
+OS it was tested on. Within an OS, the status is the majority vote of that OS's reports
+(`aggregateStatus()` — most people's result, ties broken toward the better status). The overall
+"Any" badge — on cards, stats, game pages and the GUI export — is the **best of the tested OSes**
+(`displayStatus()`), so a game that is playable on Windows but only ingame on macOS shows
+Playable on "Any" and Windows and Ingame on macOS. An OS with no report yet is grey "Not tested".
 
 **The full compatibility index is data-driven, not hardcoded.** The Compatibility page shows
 **every game in the database** (8,835 titles from `src/data/games.json`, imported from
@@ -97,17 +101,19 @@ imported game automatically updates the page, the stats and the per-game pages.
 - `npm test` runs Vitest coverage of the parser/stats, aggregation, markdown renderer, report
   builder and the import transforms.
 
-**Per-OS statuses.** Reports carry an optional `os` (`windows | linux | macos`). Selecting an OS
-on the Compatibility page scopes the status evaluation: a game's status then becomes the majority
-vote of **that OS's reports only** (grey "Not tested" when none exist), and the stats strip and
-filter-pill counts follow the same scope — so e.g. `ingame` + `linux` matches only games with a
-Linux report voting ingame, and an OS-less ingame report never counts toward a Windows filter.
+**Per-OS filtering.** Selecting an OS on the Compatibility page scopes the status evaluation to
+that OS's reports (grey "Not tested" when none exist); the stats strip and filter-pill counts
+follow the same scope. Game pages show a **Status by operating system** breakdown — Windows,
+Linux and macOS slots, each with its own badge — alongside the overall best badge.
 
-The seed reports are grounded in what the emulator repo actually shows: the screenshot-gallery
-games (Disgaea 6, Hellboy, Neptunia ReVerse, Paleo Pines, SILENT HILL: The Short Message) are
-screenshot-inferred `ingame`, and Dreaming Sarah is backed by a real Linux test
-([PR #146](https://github.com/KytyPS5/KytyPS5/pull/146)) with `os: linux`. No seed report claims a
-status no source supports — anything stronger needs a community report first.
+**Seed reports are grounded in the emulator repo.** The screenshot-gallery games (Disgaea 6,
+Hellboy, Neptunia ReVerse, Paleo Pines, SILENT HILL: The Short Message) are screenshot-inferred
+`ingame` tagged **Windows**, because the project README states Windows is the primary platform
+receiving the most testing; Dreaming Sarah is backed by a real Linux test
+([PR #146](https://github.com/KytyPS5/KytyPS5/pull/146)) and tagged **Linux**. macOS stays grey
+for every seed game — the README describes macOS support as experimental, and no macOS test
+result exists yet. Each report notes its inference and stays unverified until a community report
+confirms it. Filing a report for an untested OS fills that slot automatically.
 
 ### GUI-compatible status JSON (KytyPS5 launcher)
 
@@ -131,8 +137,8 @@ KytyPS5 GUI launcher parses (`src/launcher/src/compatibilityDatabase.cpp`):
   are the GUI's enum strings `InGame | MainMenu | Logo | DoesntBoot | Unknown` — our ladder maps
   `nothing → DoesntBoot`, `boots → Logo`, `menus → MainMenu`, and every playable tier →
   `InGame` (the GUI has no playable tier).
-- **One entry per game**, status = majority vote across its reports (same aggregation the site
-  shows), with a short human comment.
+- **One entry per game**, status = **best across its per-OS majorities** (same as the site's
+  "Any" filter), with a short human comment.
 - **Per-OS policy (Nmzik's cross-platform caveat on #177):** each entry also carries an optional
   `platforms` block — `windows | linux | macos` — with the **majority per OS**, its report count,
   and the latest tested build for that OS. Reports without an `os` field count toward the

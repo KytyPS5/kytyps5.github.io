@@ -39,7 +39,12 @@ const source = arg("source");
 const sourceUrl = arg("source-url");
 const gameVersion = arg("game-version");
 const titleId = arg("title-id");
-const slug = arg("slug") || title.toLowerCase().replace(/[^a-z0-9]+/g, "-").replace(/^-|-$/g, "");
+// One report per (game, OS): the default slug appends the OS so a Windows and
+// a Linux report for the same game live in separate files, and re-running a
+// conversion for the same game + OS overwrites that OS's status in place.
+const slug =
+  arg("slug") ||
+  title.toLowerCase().replace(/[^a-z0-9]+/g, "-").replace(/^-|-$/g, "") + (os ? `-${os}` : "");
 
 const errors = [];
 if (!title) errors.push("--title is required");
@@ -48,7 +53,8 @@ else if (!TITLE_ID_REGEX.test(titleId)) errors.push(`--title-id must look like P
 if (!STATUSES.includes(status)) errors.push(`--status must be one of ${STATUSES.join(" | ")}`);
 if (!version) errors.push("--version is required");
 if (!date || !/^\d{4}-\d{2}-\d{2}$/.test(date)) errors.push("--date must be YYYY-MM-DD");
-if (os && !OSES.includes(os)) errors.push(`--os must be ${OSES.join(" | ")}`);
+if (!os) errors.push("--os is required (one report per operating system)");
+else if (!OSES.includes(os)) errors.push(`--os must be ${OSES.join(" | ")}`);
 if (errors.length) {
   console.error("[issue-to-compat] " + errors.join("; "));
   process.exit(1);
@@ -61,7 +67,7 @@ const frontmatter = [
   `status: "${status}"`,
   `testedVersion: "${version}"`,
   `testedDate: "${date}"`,
-  os ? `os: "${os}"` : null,
+  `os: "${os}"`,
   hardware ? `hardware: "${hardware}"` : null,
   gameVersion ? `gameVersion: "${gameVersion}"` : null,
   "---",

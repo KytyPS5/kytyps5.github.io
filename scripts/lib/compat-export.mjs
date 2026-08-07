@@ -49,6 +49,29 @@ export function aggregateStatuses(statuses) {
 }
 
 /**
+ * Best-across-OS aggregation matching the site's displayStatus(): each OS's
+ * reports majority-vote first, then the best (highest on the ladder) of those
+ * OS results wins — "the best of any test done". Reports without an OS form
+ * their own group. Mirrors the site so the GUI's top-level status means the
+ * same thing as the site's "Any" filter.
+ */
+export function bestStatuses(reports) {
+  const groups = new Map();
+  for (const r of reports) {
+    const key = r.os ?? "unknown";
+    const list = groups.get(key) ?? [];
+    list.push(r.status);
+    groups.set(key, list);
+  }
+  let best = null;
+  for (const statuses of groups.values()) {
+    const s = aggregateStatuses(statuses);
+    if (best === null || STATUSES.indexOf(s) > STATUSES.indexOf(best)) best = s;
+  }
+  return best ?? "nothing";
+}
+
+/**
  * Normalize a title ID to the bare uppercase key the GUI stores entries under
  * (trim, strip dashes, uppercase). The launcher's TitleKey() does trim +
  * uppercase; the dash-strip is a no-op on valid data (the schema requires
@@ -61,13 +84,19 @@ export function titleKey(titleId) {
 /** OSes a report may be tagged with (matches the site schema + validator). */
 const PLATFORMS = ["windows", "linux", "macos"];
 
+/** Majority-vote status of a report list (aggregates their status strings). */
+function majorityOf(list) {
+  return aggregateStatuses(list.map((r) => r.status));
+}
+
 /**
- * Summarize a report list for one (game, OS) group: majority-vote status,
- * report count and the latest tested build (by test date) it applies to.
- * Undated reports sort last so `version` reflects the newest dated test.
+ * Summarize a report list for one group: status (via the given aggregation
+ * function over report objects), report count and the latest tested build (by
+ * test date) it applies to. Undated reports sort last so `version` reflects
+ * the newest dated test.
  */
-function summarize(list) {
-  const status = aggregateStatuses(list.map((r) => r.status));
+function summarize(list, statusFn = majorityOf) {
+  const status = statusFn(list);
   const latest = list
     .slice()
     .sort((a, b) => ((a.testedDate ?? "0") < (b.testedDate ?? "0") ? 1 : -1))[0];
@@ -78,14 +107,13 @@ function summarize(list) {
  * Build the GUI-shaped database from parsed reports. One entry per game
  * (reports grouped by title ID). Per the per-OS status policy:
  *
- * - `status`/`comment` are the **cross-platform majority** across all reports
- *   (unchanged behaviour, so the current GUI keeps working).
+ * - `status`/`comment` are the **best result across the per-OS majorities**
+ *   (mirrors the site's "Any" filter — the best of any test done).
  * - `platforms.<os>` carries the **majority per OS** (windows | linux | macos),
  *   with the report count and latest tested build for that OS, so the GUI can
  *   show OS-specific results instead of assuming they're equivalent.
- * - Reports **without an `os` field** count toward the cross-platform status
- *   only — never toward a platform (their OS is unknown; the seed reports are
- *   inferred from screenshots).
+ * - Reports **without an `os` field** form their own group in the top-level
+ *   aggregation only — never a platform (their OS is unknown).
  * - A platform key is omitted when that OS has no reports (absence = untested),
  *   so `Unknown` can't be confused with "no data".
  *
@@ -105,7 +133,7 @@ export function buildCompatibilityDb(reports) {
   const db = {};
   for (const key of [...groups.keys()].sort()) {
     const list = groups.get(key);
-    const overall = summarize(list);
+    const overall = summarize(list, bestStatuses);
 
     const platforms = {};
     for (const platform of PLATFORMS) {

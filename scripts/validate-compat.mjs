@@ -51,7 +51,8 @@ for (const file of await readdir(DIR)) {
   if (!data.testedVersion) errors.push("missing `testedVersion`");
   if (!data.testedDate || !/^\d{4}-\d{2}-\d{2}$/.test(data.testedDate))
     errors.push("`testedDate` required as YYYY-MM-DD");
-  if (data.os && !OSES.includes(data.os)) errors.push(`os must be ${OSES.join(" | ")}`);
+  if (!data.os) errors.push("missing required `os` (windows | linux | macos)");
+  else if (!OSES.includes(data.os)) errors.push(`os must be ${OSES.join(" | ")}`);
 
   if (errors.length) {
     failed = true;

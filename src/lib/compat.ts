@@ -5,9 +5,10 @@
  * time (no runtime API calls); the build fails on invalid reports
  * (see `scripts/validate-compat.mjs`).
  *
- * A game may have MULTIPLE reports (one per community submission). The
- * displayed status is the majority vote across its reports
- * (see `aggregateStatus`), with ties broken toward the better status.
+ * A game may have MULTIPLE reports (one per community submission), each
+ * tagged with the OS it was tested on. A game's status on "Any" is the BEST
+ * result across its per-OS tests; within an OS it is the majority vote of
+ * that OS's reports (see `displayStatus` / `aggregateStatus`).
  */
 
 export const STATUSES = [
@@ -20,6 +21,9 @@ export const STATUSES = [
 ] as const;
 export type Status = (typeof STATUSES)[number];
 export type DisplayStatus = Status | "untested";
+
+export const OSES = ["windows", "linux", "macos"] as const;
+export type Os = (typeof OSES)[number];
 
 /** Title IDs look like PPSA12345 (dash optional). Mirrors 's regex. */
 export const TITLE_ID_REGEX = /^PPSA-?\d{5}$/i;
@@ -34,7 +38,8 @@ export interface CompatFrontmatter {
   /** KytyPS5 build the game was tested on (commit or release). */
   testedVersion: string;
   testedDate: string;
-  os?: "windows" | "linux" | "macos";
+  /** OS this test ran on — required: every stored game has one report per OS. */
+  os: Os;
   hardware?: string;
   /** Optional 1–5 score. */
   score?: number;
@@ -108,26 +113,58 @@ export const STATUS_META: Record<DisplayStatus, { label: string; color: string; 
   },
 };
 
-/** A game's displayed status: its reports' majority vote, or `untested`. */
-export function displayStatus(reports: readonly Pick<CompatReport, "status">[]): DisplayStatus {
-  return reports.length > 0 ? aggregateStatus(reports) : "untested";
-}
-
-export type Os = "windows" | "linux" | "macos";
+type OsReport = Pick<CompatReport, "status" | "os">;
 
 /** Reports that apply within an OS scope (`"all"` = every report). */
-export function reportsForOs(reports: readonly CompatReport[], os: Os | "all"): readonly CompatReport[] {
+export function reportsForOs(reports: readonly OsReport[], os: Os | "all"): readonly OsReport[] {
   return os === "all" ? reports : reports.filter((r) => r.os === os);
 }
 
+/** Group reports by OS for per-OS aggregation (unknown OS gets its own bucket). */
+function groupByOs(reports: readonly OsReport[]): Map<string, OsReport[]> {
+  const groups = new Map<string, OsReport[]>();
+  for (const r of reports) {
+    const key = r.os ?? "unknown";
+    const list = groups.get(key) ?? [];
+    list.push(r);
+    groups.set(key, list);
+  }
+  return groups;
+}
+
 /**
- * A game's status within an OS scope: the majority vote of that OS's reports,
- * or `untested` when no report exists for that OS. This is what makes
- * OS + status filter combinations behave predictably.
+ * A game's status on "Any": the BEST result across its per-OS tests (each
+ * OS's reports majority-vote first). A game that is playable on Windows but
+ * only ingame on macOS shows Playable overall — the best of any test done.
  */
-export function displayStatusForOs(reports: readonly CompatReport[], os: Os | "all"): DisplayStatus {
+export function displayStatus(reports: readonly OsReport[]): DisplayStatus {
+  let best: Status | null = null;
+  for (const group of groupByOs(reports).values()) {
+    const status = aggregateStatus(group);
+    if (best === null || STATUSES.indexOf(status) > STATUSES.indexOf(best)) best = status;
+  }
+  return best ?? "untested";
+}
+
+/**
+ * A game's status within an OS scope: "all" = best across tested OSes (same
+ * as `displayStatus`); a specific OS = the majority vote of that OS's reports,
+ * or `untested` when none exist. This is what makes OS + status filter
+ * combinations behave predictably.
+ */
+export function displayStatusForOs(reports: readonly OsReport[], os: Os | "all"): DisplayStatus {
+  if (os === "all") return displayStatus(reports);
   const scoped = reportsForOs(reports, os);
   return scoped.length > 0 ? aggregateStatus(scoped) : "untested";
+}
+
+/** Per-OS status breakdown for a game (drives the game page's OS slots). */
+export function perOsStatuses(reports: readonly OsReport[]): Record<Os, DisplayStatus> {
+  return {
+    windows: displayStatusForOs(reports, "windows"),
+    linux: displayStatusForOs(reports, "linux"),
+    macos: displayStatusForOs(reports, "macos"),
+  };
 }
 
 /** One row of the full compatibility index (a database game + its reports). */
@@ -236,8 +273,9 @@ export function filterGameIndex(
 
 /**
  * Aggregate index stats within an OS scope (powers the stats strip and the
- * filter-pill counts). A game is "tested" only when it has a report for that
- * OS; everything else counts as not tested there.
+ * filter-pill counts). "Any" counts a game's best-across-OS status; a specific
+ * OS counts that OS's majority. A game is "tested" only when it has a report
+ * for that OS; everything else counts as not tested there.
  */
 export function indexStatsForOs(
   index: readonly GameIndexEntry[],
@@ -246,10 +284,10 @@ export function indexStatsForOs(
   const counts = Object.fromEntries(STATUSES.map((s) => [s, 0])) as Record<Status, number>;
   let tested = 0;
   for (const entry of index) {
-    const scoped = reportsForOs(entry.reports, os);
-    if (scoped.length === 0) continue;
+    const status = displayStatusForOs(entry.reports, os);
+    if (status === "untested") continue;
     tested += 1;
-    counts[aggregateStatus(scoped)] += 1;
+    counts[status] += 1;
   }
   return { total: index.length, tested, untested: index.length - tested, counts };
 }
@@ -358,8 +396,9 @@ export function parseCompatReport(raw: string, slug: string): CompatReport {
   if (testedDate && !/^\d{4}-\d{2}-\d{2}$/.test(testedDate)) {
     errors.push(`testedDate must be YYYY-MM-DD, got "${testedDate}"`);
   }
-  if (os && !["windows", "linux", "macos"].includes(os)) {
-    errors.push(`os must be windows | linux | macos, got "${os}"`);
+  if (!os) errors.push("missing required frontmatter field: os (windows | linux | macos)");
+  else if (!OSES.includes(os as Os)) {
+    errors.push(`os must be windows | linux | macos, got "${String(os)}"`);
   }
   if (score !== undefined && (score < 1 || score > 5)) errors.push("score must be 1–5");
 
@@ -372,7 +411,7 @@ export function parseCompatReport(raw: string, slug: string): CompatReport {
     status,
     testedVersion,
     testedDate,
-    os,
+    os: os as Os,
     hardware,
     score,
     gameVersion,

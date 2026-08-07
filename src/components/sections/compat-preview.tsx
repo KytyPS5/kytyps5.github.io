@@ -1,12 +1,12 @@
 import { Link } from "react-router-dom";
 import { ArrowRight } from "lucide-react";
-import { COMPAT_REPORTS, STATUSES, STATUS_META, aggregateStatus, computeStats, groupReportsByGame } from "@/lib/compat";
+import { COMPAT_REPORTS, STATUSES, STATUS_META, computeStats, displayStatus, groupReportsByGame } from "@/lib/compat";
 import { Reveal } from "@/components/layout/reveal";
 
 export function CompatPreview() {
-  // One game per entry — status is the majority vote across its reports.
+  // One game per entry — status is the best result across its per-OS tests.
   const stats = computeStats(
-    [...groupReportsByGame(COMPAT_REPORTS).values()].map((group) => aggregateStatus(group)),
+    [...groupReportsByGame(COMPAT_REPORTS).values()].map((group) => displayStatus(group) as (typeof STATUSES)[number]),
   );
   const segments = STATUSES.map((status) => ({
     status,
