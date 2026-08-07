@@ -8,11 +8,13 @@
       // stores the requested path here and bounces to the base. Restore it now
       // so BrowserRouter renders the right route on refresh / direct links.
       (function () {
-        var redirect = sessionStorage.getItem("kytyps5-redirect");
-        if (redirect && redirect !== location.pathname + location.search) {
-          sessionStorage.removeItem("kytyps5-redirect");
-          history.replaceState(null, "", redirect);
-        }
+        try {
+          var redirect = sessionStorage.getItem("kytyps5-redirect");
+          if (redirect && redirect !== location.pathname + location.search) {
+            sessionStorage.removeItem("kytyps5-redirect");
+            history.replaceState(null, "", redirect);
+          }
+        } catch (e) {}
       })();
     </script>
     <title>KytyPS5 — Open-Source PlayStation 5 Emulator</title>

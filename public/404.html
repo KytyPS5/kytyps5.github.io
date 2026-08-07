@@ -8,7 +8,11 @@
       // GitHub Pages serves this file for any unknown path. Stash the requested
       // route, bounce to the app base, and let index.html restore it via
       // history.replaceState so direct links / refreshes deep-link correctly.
-      sessionStorage.setItem("kytyps5-redirect", location.pathname + location.search);
+      // Wrap storage in try/catch: if sessionStorage is blocked (private mode,
+      // sandboxed iframe) we still redirect — worst case lands on the home page.
+      try {
+        sessionStorage.setItem("kytyps5-redirect", location.pathname + location.search);
+      } catch (e) {}
       location.replace("/KytyPS5-site/");
     </script>
   </head>
