@@ -136,7 +136,7 @@ domain, change `base` in `vite.config.ts` **together with** `SITE_URL` in `src/c
 | --- | --- | --- |
 | `ci.yml` | every push | typecheck, tests, production build |
 | `deploy.yml` | every push to `main` | build + publish to GitHub Pages |
-| `refresh-data.yml` | every 30 min | regenerate the GitHub snapshot; commit + redeploy when changed |
+| `refresh-data.yml` | every 30 min | regenerate the GitHub snapshot; redeploy when changed |
 | `import-games.yml` | weekly | refresh the games database + enrich a batch |
 | `compat-report.yml` | on issues / `workflow_dispatch` | convert reports into PRs |
 
