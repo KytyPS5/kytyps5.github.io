@@ -80,7 +80,7 @@ export function CompatibilityPage() {
       <PageHeader
         eyebrow="Compatibility"
         title="Game compatibility"
-        description="Every game in the database, from the same title list the emulator community uses. Tested games show the majority vote of their reports; everything else is not tested."
+        description="Every game in the database, from the same title list the emulator community uses. Tested games show the best result across their per-OS reports; everything else is not tested."
       />
 
       {games === null ? (
@@ -326,8 +326,8 @@ export function CompatibilityPage() {
         )}
 
           <p className="mt-6 text-center text-sm text-text-muted">
-            {stats.tested} tested game{stats.tested === 1 ? "" : "s"} · statuses are the majority vote of
-            community reports and reflect the build they were tested on. Untested titles are grey until a
+            {stats.tested} tested game{stats.tested === 1 ? "" : "s"} · statuses are per operating system, and the
+            overall badge is the best result across tested OSes. Untested titles are grey until a
             report lands.
           </p>
           </Section>
@@ -350,8 +350,8 @@ export function CompatibilityPage() {
           </h2>
           <p className="max-w-lg text-sm leading-relaxed text-text-secondary sm:text-base">
             Title ID, status, KytyPS5 build, OS, hardware and what works or breaks. Issues filed
-            through the template convert into database reports automatically — a game's status
-            stays the majority vote of the reports behind it.
+            through the template convert into per-OS database reports automatically — each OS's
+            status is its reports' majority, and the overall badge is the best across them.
           </p>
           <div className="mt-2 flex flex-wrap items-center justify-center gap-4">
             <Button asChild size="lg">
