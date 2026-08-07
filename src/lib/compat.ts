@@ -63,7 +63,13 @@ export function gamePageKey(report: Pick<CompatReport, "titleId" | "slug">, game
   return game?.titleId ?? report.titleId ?? report.slug;
 }
 
-/** Mirrors 's STATUS_META (labels, colors, descriptions). */
+/**
+ * Status ladder colors (matches the emulator-community convention):
+ *   grey    — not tested          blue    — reaches gameplay with major issues
+ *   red     — crashes/no output   cyan    — playable at low/unstable FPS
+ *   orange  — splash/intro only   green   — completable, minor or no issues
+ *   yellow  — reaches menus
+ */
 export const STATUS_META: Record<DisplayStatus, { label: string; color: string; description: string }> = {
   nothing: {
     label: "Nothing",
@@ -72,27 +78,27 @@ export const STATUS_META: Record<DisplayStatus, { label: string; color: string; 
   },
   boots: {
     label: "Boots",
-    color: "#fbbf24",
+    color: "#fb923c",
     description: "Shows splash or intro output, no further.",
   },
   menus: {
     label: "Menus",
-    color: "#5b8cff",
+    color: "#facc15",
     description: "Reaches interactive menus.",
   },
   ingame: {
     label: "Ingame",
-    color: "#4fa3ff",
+    color: "#60a5fa",
     description: "Reaches gameplay with major issues.",
   },
   "playable-low-fps": {
     label: "Playable (low FPS)",
-    color: "#34d399",
+    color: "#22d3ee",
     description: "Playable, but at a low or unstable framerate.",
   },
   playable: {
     label: "Playable",
-    color: "#2dd4bf",
+    color: "#4ade80",
     description: "Completable with minor or no issues.",
   },
   untested: {
@@ -101,6 +107,76 @@ export const STATUS_META: Record<DisplayStatus, { label: string; color: string; 
     description: "No compatibility report yet.",
   },
 };
+
+/** A game's displayed status: its reports' majority vote, or `untested`. */
+export function displayStatus(reports: readonly Pick<CompatReport, "status">[]): DisplayStatus {
+  return reports.length > 0 ? aggregateStatus(reports) : "untested";
+}
+
+/** One row of the full compatibility index (a database game + its reports). */
+export interface GameIndexEntry {
+  /** Canonical route key (the game's title ID, else the report's). */
+  key: string;
+  /** Display name (database name, else the report's title). */
+  title: string;
+  titleId?: string;
+  cover?: string;
+  reports: CompatReport[];
+}
+
+/**
+ * Build the full compatibility index: EVERY game in the database merged with
+ * its reports (matched by title ID, any region variant). Games with reports
+ * come first; everything else is "not tested". Pure + testable — the page only
+ * renders the result, and nothing here is hardcoded.
+ */
+export function buildGameIndex(
+  games: ReadonlyArray<{ titleId: string; allTitleIds: string[]; name: string; cover?: string }>,
+  reports: readonly CompatReport[],
+): GameIndexEntry[] {
+  const norm = (s: string) => s.replace(/-/g, "").toUpperCase();
+  const byId = new Map<string, CompatReport[]>();
+  for (const r of reports) {
+    const key = norm(r.titleId);
+    const list = byId.get(key);
+    if (list) list.push(r);
+    else byId.set(key, [r]);
+  }
+
+  const consumed = new Set<string>();
+  const entries: GameIndexEntry[] = games.map((g) => {
+    const ids = new Set(g.allTitleIds.map(norm));
+    const gameReports: CompatReport[] = [];
+    for (const id of ids) {
+      const found = byId.get(id);
+      if (found) {
+        gameReports.push(...found);
+        consumed.add(id);
+      }
+    }
+    return {
+      key: norm(g.titleId),
+      title: g.name,
+      titleId: g.titleId,
+      cover: g.cover,
+      reports: gameReports,
+    };
+  });
+
+  // Reports whose title ID isn't in the database yet — keep them visible.
+  for (const [id, list] of byId) {
+    if (consumed.has(id)) continue;
+    entries.push({ key: id, title: list[0].title, titleId: list[0].titleId, reports: list });
+  }
+
+  return entries
+    .map((e) => ({ ...e, reports: e.reports.slice().sort((a, b) => (a.testedDate < b.testedDate ? 1 : -1)) }))
+    .sort(
+      (a, b) =>
+        (a.reports.length === 0 ? 1 : 0) - (b.reports.length === 0 ? 1 : 0) ||
+        a.title.localeCompare(b.title),
+    );
+}
 
 /** Aggregate a list of statuses into per-status counts. */
 export function computeStats(statuses: readonly Status[]) {

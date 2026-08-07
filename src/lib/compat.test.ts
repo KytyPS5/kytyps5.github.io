@@ -1,11 +1,14 @@
 import { describe, expect, it } from "vitest";
 import {
   aggregateStatus,
+  buildGameIndex,
   computeStats,
+  displayStatus,
   gamePageKey,
   groupReportsByGame,
   parseCompatReport,
   STATUSES,
+  STATUS_META,
 } from "@/lib/compat";
 
 const VALID = `---
@@ -173,5 +176,83 @@ describe("groupReportsByGame", () => {
     expect(groups.size).toBe(2);
     expect(groups.get("PPSA01234")?.length).toBe(2);
     expect(groups.get("PPSA99999")?.length).toBe(1);
+  });
+});
+
+describe("STATUS_META colors (status ladder palette)", () => {
+  const meta = (s: string) => STATUS_META[s as keyof typeof STATUS_META].color;
+
+  it("uses the requested red/orange/yellow/blue/cyan/green/grey palette", () => {
+    expect(meta("nothing")).toBe("#f87171"); // red
+    expect(meta("boots")).toBe("#fb923c"); // orange
+    expect(meta("menus")).toBe("#facc15"); // yellow
+    expect(meta("ingame")).toBe("#60a5fa"); // blue
+    expect(meta("playable-low-fps")).toBe("#22d3ee"); // cyan
+    expect(meta("playable")).toBe("#4ade80"); // green
+    expect(meta("untested")).toBe("#7b8496"); // grey
+  });
+});
+
+describe("displayStatus", () => {
+  it("returns untested for no reports and the majority vote otherwise", () => {
+    expect(displayStatus([])).toBe("untested");
+    expect(displayStatus([{ status: "ingame" }, { status: "playable" }])).toBe("playable");
+  });
+});
+
+describe("buildGameIndex", () => {
+  const report = (titleId: string, status: (typeof STATUSES)[number], title = "Game") =>
+    ({ ...parseCompatReport(VALID.replace("PPSA01234", titleId).replace('title: "Test Game"', `title: "${title}"`).replace('status: "ingame"', `status: "${status}"`), "x"), slug: "x" });
+
+  const games = [
+    { titleId: "PPSA00001", allTitleIds: ["PPSA00001", "PPSA00001_00"], name: "Alpha Game", cover: "https://c/a.png" },
+    { titleId: "PPSA00002", allTitleIds: ["PPSA00002"], name: "Beta Game" },
+  ];
+
+  it("includes every database game (untested ones included)", () => {
+    const index = buildGameIndex(games, []);
+    expect(index).toHaveLength(2);
+    expect(index.every((e) => e.reports.length === 0)).toBe(true);
+    expect(displayStatus(index[0].reports)).toBe("untested");
+  });
+
+  it("merges reports into their game and surfaces tested games first", () => {
+    const index = buildGameIndex(games, [
+      report("PPSA00002", "ingame", "Beta Game"),
+      report("PPSA00001", "playable", "Alpha Game"),
+    ]);
+    expect(index).toHaveLength(2);
+    expect(index[0].key).toBe("PPSA00001");
+    expect(index[0].reports).toHaveLength(1);
+    expect(displayStatus(index[0].reports)).toBe("playable");
+    expect(index[1].key).toBe("PPSA00002");
+    expect(index[1].cover).toBeUndefined();
+  });
+
+  it("matches a report whose title ID is a region variant of the game", () => {
+    // The game's primary ID is PPSA00001 but another region shares the concept.
+    const variants = [
+      { titleId: "PPSA00001", allTitleIds: ["PPSA00001", "PPSA00003"], name: "Alpha Game" },
+    ];
+    const index = buildGameIndex(variants, [report("PPSA00003", "menus", "Alpha Game")]);
+    expect(index[0].reports).toHaveLength(1);
+    expect(displayStatus(index[0].reports)).toBe("menus");
+  });
+
+  it("keeps report-only games (title ID not in the database)", () => {
+    const index = buildGameIndex(games, [report("PPSA09999", "boots", "Mystery Game")]);
+    expect(index).toHaveLength(3);
+    const extra = index.find((e) => e.key === "PPSA09999");
+    expect(extra?.title).toBe("Mystery Game");
+    expect(extra?.reports).toHaveLength(1);
+  });
+
+  it("aggregates multiple reports per game", () => {
+    const index = buildGameIndex(games, [
+      report("PPSA00001", "ingame", "Alpha Game"),
+      report("PPSA00001", "playable", "Alpha Game"),
+    ]);
+    expect(index[0].reports).toHaveLength(2);
+    expect(displayStatus(index[0].reports)).toBe("playable"); // tie -> better
   });
 });

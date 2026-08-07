@@ -1,6 +1,7 @@
 import * as React from "react";
 import { motion } from "framer-motion";
-import { ArrowUpRight, FileText, Search } from "lucide-react";
+import { ArrowUpRight, FileText, Gamepad2, Search } from "lucide-react";
+import { Link } from "react-router-dom";
 import { SITE } from "@/config";
 import { Seo } from "@/lib/seo";
 import {
@@ -8,39 +9,27 @@ import {
   STATUSES,
   STATUS_META,
   aggregateStatus,
-  computeStats,
-  groupReportsByGame,
-  type Status,
+  buildGameIndex,
+  displayStatus,
+  type DisplayStatus,
 } from "@/lib/compat";
 import { loadGames, type Game } from "@/lib/games";
 import { PageHeader } from "@/components/layout/page-header";
 import { Section } from "@/components/layout/section";
-import { ReportCard } from "@/components/compat/report-card";
 import { StatusBadge } from "@/components/compat/status-badge";
 import { Button } from "@/components/ui/button";
 import { Input } from "@/components/ui/input";
 import { cn } from "@/lib/utils";
 
-function normalize(s: string) {
-  return s.toLowerCase().replace(/[^a-z0-9]+/g, "");
-}
-
-/** Look up store metadata for a report — by title ID, then normalized name. */
-function matchGame(games: Game[], report: (typeof COMPAT_REPORTS)[number]): Game | undefined {
-  if (report.titleId) {
-    const byId = games.find((g) => g.allTitleIds.includes(report.titleId!));
-    if (byId) return byId;
-  }
-  const key = normalize(report.title);
-  return games.find((g) => normalize(g.name) === key);
-}
+const PAGE_SIZE = 300;
 
 const OSES = ["windows", "linux", "macos"] as const;
 
 export function CompatibilityPage() {
-  const [statusFilter, setStatusFilter] = React.useState<Status | "all">("all");
+  const [statusFilter, setStatusFilter] = React.useState<"all" | DisplayStatus>("all");
   const [osFilter, setOsFilter] = React.useState<string>("all");
   const [query, setQuery] = React.useState("");
+  const [visible, setVisible] = React.useState(PAGE_SIZE);
 
   const [games, setGames] = React.useState<Game[] | null>(null);
   React.useEffect(() => {
@@ -53,41 +42,60 @@ export function CompatibilityPage() {
     };
   }, []);
 
-  // One entry per game: the group's status is the majority vote of its reports.
-  // Within each group the newest report comes first, so card metadata (build,
-  // date, OS) reflects the freshest submission.
-  const groups = [...groupReportsByGame(COMPAT_REPORTS).values()]
-    .map((group) => group.sort((a, b) => (a.testedDate < b.testedDate ? 1 : -1)))
-    .sort((a, b) => a[0].title.localeCompare(b[0].title));
-  const stats = computeStats(groups.map((group) => aggregateStatus(group)));
+  // Full index: every game in the database + its reports (majority vote).
+  // Nothing here is hardcoded — reports come from src/content/compat/*.md and
+  // the game list from src/data/games.json (andshrew/PlayStation-Titles).
+  const index = React.useMemo(
+    () => (games ? buildGameIndex(games, COMPAT_REPORTS) : []),
+    [games],
+  );
 
-  const filtered = groups.filter((group) => {
-    const status = aggregateStatus(group);
-    if (statusFilter !== "all" && status !== statusFilter) return false;
-    if (osFilter !== "all" && !group.some((r) => r.os === osFilter)) return false;
-    if (query) {
-      const q = query.toLowerCase();
-      if (
-        !group[0].title.toLowerCase().includes(q) &&
-        !(group[0].titleId ?? "").toLowerCase().includes(q)
-      ) {
-        return false;
+  const stats = React.useMemo(() => {
+    const tested = index.filter((e) => e.reports.length > 0);
+    const counts = Object.fromEntries(STATUSES.map((s) => [s, 0])) as Record<(typeof STATUSES)[number], number>;
+    for (const e of tested) counts[aggregateStatus(e.reports)] += 1;
+    return {
+      total: index.length,
+      tested: tested.length,
+      untested: index.length - tested.length,
+      counts,
+    };
+  }, [index]);
+
+  const filtered = React.useMemo(() => {
+    const q = query.trim().toLowerCase();
+    return index.filter((e) => {
+      const status = displayStatus(e.reports);
+      if (statusFilter === "untested" && status !== "untested") return false;
+      if (statusFilter !== "all" && statusFilter !== "untested" && status !== statusFilter) return false;
+      if (osFilter !== "all" && !e.reports.some((r) => r.os === osFilter)) return false;
+      if (q) {
+        if (!e.title.toLowerCase().includes(q) && !(e.titleId ?? e.key).toLowerCase().includes(q)) {
+          return false;
+        }
       }
-    }
-    return true;
-  });
+      return true;
+    });
+  }, [index, statusFilter, osFilter, query]);
+
+  // Reset pagination whenever the filters change.
+  React.useEffect(() => {
+    setVisible(PAGE_SIZE);
+  }, [statusFilter, osFilter, query]);
+
+  const shown = filtered.slice(0, visible);
 
   return (
     <>
       <Seo
         title="Compatibility"
-        description="Community-tracked game compatibility for KytyPS5 — statuses from nothing to playable, with per-game test reports."
+        description="Community-tracked game compatibility for KytyPS5 — every PS5 title, with statuses from not tested to playable."
         path="/compatibility"
       />
       <PageHeader
         eyebrow="Compatibility"
         title="Game compatibility"
-        description="Community-tracked reports for tested games, following the same status ladder the emulator community uses: nothing → boots → menus → ingame → playable (low FPS) → playable. A game's status is the majority vote of its reports."
+        description="Every game in the database, from the same title list the emulator community uses. Tested games show the majority vote of their reports; everything else is not tested."
       />
 
       {/* Stats strip */}
@@ -97,13 +105,25 @@ export function CompatibilityPage() {
           whileInView={{ opacity: 1, x: 0 }}
           viewport={{ once: false, amount: 0.3 }}
           transition={{ duration: 0.5, ease: [0.16, 1, 0.3, 1] }}
-          className="grid grid-cols-3 gap-px overflow-hidden rounded-panel border border-border bg-border shadow-card sm:grid-cols-4 lg:grid-cols-7"
+          className="grid grid-cols-3 gap-px overflow-hidden rounded-panel border border-border bg-border shadow-card sm:grid-cols-5 lg:grid-cols-9"
         >
+          <div className="flex flex-col items-center gap-1 bg-surface px-4 py-5">
+            <span className="font-display text-2xl font-semibold tabular-nums text-text-primary">
+              {stats.total.toLocaleString()}
+            </span>
+            <span className="text-xs uppercase tracking-wider text-text-muted">Total games</span>
+          </div>
           <div className="flex flex-col items-center gap-1 bg-surface px-4 py-5">
             <span className="font-display text-2xl font-semibold tabular-nums text-text-primary">
               {stats.tested}
             </span>
             <span className="text-xs uppercase tracking-wider text-text-muted">Tested</span>
+          </div>
+          <div className="flex flex-col items-center gap-1 bg-surface px-4 py-5">
+            <span className="font-display text-2xl font-semibold tabular-nums" style={{ color: STATUS_META.untested.color }}>
+              {stats.untested.toLocaleString()}
+            </span>
+            <span className="text-xs uppercase tracking-wider text-text-muted">Not tested</span>
           </div>
           {STATUSES.map((status) => (
             <div key={status} className="flex flex-col items-center gap-1 bg-surface px-4 py-5">
@@ -122,7 +142,7 @@ export function CompatibilityPage() {
 
         {/* Legend */}
         <div className="mt-8 grid gap-3 sm:grid-cols-2 lg:grid-cols-3">
-          {STATUSES.map((status) => (
+          {([...STATUSES, "untested"] as const).map((status) => (
             <div key={status} className="flex items-start gap-3 rounded-card border border-border bg-surface p-4">
               <StatusBadge status={status} className="mt-0.5 shrink-0" />
               <p className="text-sm text-text-secondary">{STATUS_META[status].description}</p>
@@ -131,7 +151,7 @@ export function CompatibilityPage() {
         </div>
       </Section>
 
-      {/* Reports */}
+      {/* Full list */}
       <Section className="bg-surface/40">
         {/* Filters */}
         <div className="mb-8 flex flex-col gap-4">
@@ -147,7 +167,20 @@ export function CompatibilityPage() {
                   : "border-border bg-surface text-text-secondary hover:border-border-strong hover:text-text-primary",
               )}
             >
-              All ({stats.tested})
+              All ({stats.total.toLocaleString()})
+            </button>
+            <button
+              type="button"
+              onClick={() => setStatusFilter("untested")}
+              aria-pressed={statusFilter === "untested"}
+              className={cn(
+                "cursor-pointer rounded-full border px-3.5 py-1.5 text-xs font-medium transition-colors duration-150 focus-visible:outline-2 focus-visible:outline-accent",
+                statusFilter === "untested"
+                  ? "border-accent/50 bg-accent/15 text-accent"
+                  : "border-border bg-surface text-text-secondary hover:border-border-strong hover:text-text-primary",
+              )}
+            >
+              Not tested ({stats.untested.toLocaleString()})
             </button>
             {STATUSES.map((status) => (
               <button
@@ -202,34 +235,94 @@ export function CompatibilityPage() {
         </div>
 
         {/* List */}
-        {filtered.length > 0 ? (
-          <div className="grid gap-4 md:grid-cols-2">
-            {filtered.map((group, i) => (
-              <motion.div
-                key={group[0].titleId}
-                initial={{ opacity: 0, x: i % 2 === 0 ? -48 : 48 }}
-                whileInView={{ opacity: 1, x: 0 }}
-                viewport={{ once: false, amount: 0.2 }}
-                transition={{ duration: 0.5, ease: [0.16, 1, 0.3, 1] }}
-              >
-                <ReportCard
-                  report={group[0]}
-                  game={games ? matchGame(games, group[0]) : undefined}
-                  status={aggregateStatus(group)}
-                  reportCount={group.length}
-                />
-              </motion.div>
-            ))}
-          </div>
+        {shown.length > 0 ? (
+          <>
+            <ul className="divide-y divide-border overflow-hidden rounded-panel border border-border bg-surface shadow-card">
+              {shown.map((e) => {
+                const status = displayStatus(e.reports);
+                const tested = e.reports.length > 0;
+                const oses = [...new Set(e.reports.flatMap((r) => (r.os ? [r.os] : [])))];
+                return (
+                  <li key={e.key}>
+                    <Link
+                      to={`/game/${e.key}`}
+                      className="group flex items-center gap-4 px-5 py-4 transition-colors duration-150 hover:bg-white/[0.03] focus-visible:outline-2 focus-visible:outline-accent sm:px-6"
+                    >
+                      {e.cover ? (
+                        <img
+                          src={e.cover}
+                          alt=""
+                          loading="lazy"
+                          decoding="async"
+                          referrerPolicy="no-referrer"
+                          className="size-11 shrink-0 rounded-lg border border-border object-cover"
+                        />
+                      ) : (
+                        <span
+                          aria-hidden="true"
+                          className="grid size-11 shrink-0 place-items-center rounded-lg border border-border bg-elevated font-display text-base font-semibold text-text-muted"
+                        >
+                          {e.title.charAt(0).toUpperCase()}
+                        </span>
+                      )}
+                      <span className="min-w-0 flex-1">
+                        <span className="block truncate text-sm font-medium text-text-primary">
+                          {e.title}
+                        </span>
+                        <span className="block font-mono text-xs text-text-muted">
+                          {e.titleId ?? e.key}
+                        </span>
+                      </span>
+                      {tested && oses.length > 0 && (
+                        <span className="hidden shrink-0 gap-1.5 sm:flex">
+                          {oses.map((os) => (
+                            <span
+                              key={os}
+                              className="rounded-full border border-border bg-elevated px-2 py-0.5 font-mono text-[11px] text-text-secondary"
+                            >
+                              {os}
+                            </span>
+                          ))}
+                        </span>
+                      )}
+                      <span className="flex shrink-0 items-center gap-3">
+                        {tested && (
+                          <span className="hidden font-mono text-xs text-text-muted md:inline">
+                            {e.reports.length} report{e.reports.length === 1 ? "" : "s"}
+                          </span>
+                        )}
+                        <StatusBadge status={status} />
+                      </span>
+                    </Link>
+                  </li>
+                );
+              })}
+            </ul>
+
+            <div className="mt-6 flex flex-col items-center gap-4">
+              <p className="text-sm text-text-muted">
+                Showing {shown.length.toLocaleString()} of {filtered.length.toLocaleString()} game
+                {filtered.length === 1 ? "" : "s"}
+                {statusFilter === "all" && ` · ${stats.total.toLocaleString()} in the database`}
+              </p>
+              {filtered.length > visible && (
+                <Button variant="secondary" onClick={() => setVisible((v) => v + PAGE_SIZE)}>
+                  <Gamepad2 className="size-4" aria-hidden="true" />
+                  Load more ({Math.min(PAGE_SIZE, filtered.length - visible).toLocaleString()} more)
+                </Button>
+              )}
+            </div>
+          </>
         ) : (
           <div className="rounded-panel border border-dashed border-border-strong bg-surface p-12 text-center">
-            <p className="text-text-secondary">No reports match your filters.</p>
+            <p className="text-text-secondary">No games match your filters.</p>
           </div>
         )}
 
         <p className="mt-6 text-center text-sm text-text-muted">
           {stats.tested} tested game{stats.tested === 1 ? "" : "s"} · statuses are the majority vote of
-          community reports and reflect the build they were tested on.
+          community reports and reflect the build they were tested on. Untested titles are grey until a
+          report lands.
         </p>
       </Section>
 

@@ -273,13 +273,13 @@ export function GamePage() {
               <div className="mt-5 rounded-2xl border border-dashed border-border-strong bg-surface p-10 text-center">
                 <CheckCircle2 className="mx-auto size-8 text-text-muted" aria-hidden="true" />
                 <p className="mt-4 text-text-secondary">
-                  No report yet. Tested this game?
+                  Not tested yet — no compatibility reports for this game.
                 </p>
                 <Link
                   to="/compatibility"
                   className="mt-3 inline-flex items-center gap-2 rounded-md text-sm font-medium text-accent transition-colors duration-150 hover:text-accent-2 focus-visible:outline-2 focus-visible:outline-accent"
                 >
-                  Submit a report
+                  File a report
                 </Link>
               </div>
             )}

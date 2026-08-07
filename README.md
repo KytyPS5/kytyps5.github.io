@@ -58,10 +58,22 @@ matching the schema in `src/lib/compat.ts` (title, **required titleId**, status,
 testedDate, os, hardware, optional score/gameVersion/screenshot). Status ladder:
 `nothing → boots → menus → ingame → playable-low-fps → playable`.
 
+**Status colors** follow the emulator-community convention (single source: `STATUS_META` in
+`src/lib/compat.ts`): grey = **not tested**, red = crashes or shows no output, orange = splash or
+intro output only, yellow = reaches interactive menus, blue = reaches gameplay with major issues,
+cyan = playable at a low/unstable framerate, green = completable with minor or no issues.
+
 **Status is the majority vote.** A game may have multiple reports (one per submission); the
 aggregate status shown on cards, stats and game pages is decided by `aggregateStatus()` — the
-status most people submitted, with ties broken toward the better status. `groupReportsByGame()`
-keeps one card per game.
+status most people submitted, with ties broken toward the better status.
+
+**The full compatibility index is data-driven, not hardcoded.** The Compatibility page shows
+**every game in the database** (8,835 titles from `src/data/games.json`, imported from
+[andshrew/PlayStation-Titles](https://github.com/andshrew/PlayStation-Titles) — the same source
+ uses) via `buildGameIndex()`: games with reports surface first with their majority
+status, and every other game shows a grey **Not tested** badge. Reports themselves are parsed at
+build time from the Markdown glob (`import.meta.glob`), never hardcoded — adding a report or an
+imported game automatically updates the page, the stats and the per-game pages.
 
 - `scripts/validate-compat.mjs` validates every report during `prebuild` and **fails the build on
   invalid reports** — same contract as .
