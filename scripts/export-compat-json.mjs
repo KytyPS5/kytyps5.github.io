@@ -6,7 +6,7 @@
  * file and parses it as { "<TITLE_ID>": { "status": "...", "comment": "..." } }.
  * Statuses are the GUI's enum strings: InGame | MainMenu | Logo | DoesntBoot |
  * Unknown. Statuses come from the compatibility reports in src/content/compat/,
- * aggregated per game by majority vote. The per-OS policy adds a `platforms`
+ * aggregated per game. The per-OS policy adds a `platforms`
  * block (windows | linux | macos) with OS-specific statuses, report counts and
  * tested builds; the launcher ignores fields it doesn't know, so this is
  * backward compatible.

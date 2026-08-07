@@ -5,10 +5,11 @@
  * time (no runtime API calls); the build fails on invalid reports
  * (see `scripts/validate-compat.mjs`).
  *
- * A game may have MULTIPLE reports (one per community submission), each
- * tagged with the OS it was tested on. A game's status on "Any" is the BEST
- * result across its per-OS tests; within an OS it is the majority vote of
- * that OS's reports (see `displayStatus` / `aggregateStatus`).
+ * A game has one report per (game, OS), set from a verified compatibility
+ * issue via the conversion workflow (issue template → maintainer verification
+ * → merged PR). A game's status on "Any" is the BEST result across its per-OS
+ * tests; within an OS it is that OS's report status
+ * (see `displayStatus` / `aggregateStatus`).
  */
 
 export const STATUSES = [
@@ -134,8 +135,9 @@ function groupByOs(reports: readonly OsReport[]): Map<string, OsReport[]> {
 
 /**
  * A game's status on "Any": the BEST result across its per-OS tests (each
- * OS's reports majority-vote first). A game that is playable on Windows but
- * only ingame on macOS shows Playable overall — the best of any test done.
+ * OS's reports aggregate first — one verified report per OS). A game that is
+ * playable on Windows but only ingame on macOS shows Playable overall — the
+ * best of any test done.
  */
 export function displayStatus(reports: readonly OsReport[]): DisplayStatus {
   let best: Status | null = null;
@@ -148,9 +150,9 @@ export function displayStatus(reports: readonly OsReport[]): DisplayStatus {
 
 /**
  * A game's status within an OS scope: "all" = best across tested OSes (same
- * as `displayStatus`); a specific OS = the majority vote of that OS's reports,
- * or `untested` when none exist. This is what makes OS + status filter
- * combinations behave predictably.
+ * as `displayStatus`); a specific OS = that OS's report status, or `untested`
+ * when none exist. This is what makes OS + status filter combinations behave
+ * predictably.
  */
 export function displayStatusForOs(reports: readonly OsReport[], os: Os | "all"): DisplayStatus {
   if (os === "all") return displayStatus(reports);
@@ -274,8 +276,8 @@ export function filterGameIndex(
 /**
  * Aggregate index stats within an OS scope (powers the stats strip and the
  * filter-pill counts). "Any" counts a game's best-across-OS status; a specific
- * OS counts that OS's majority. A game is "tested" only when it has a report
- * for that OS; everything else counts as not tested there.
+ * OS counts that OS's report status. A game is "tested" only when it has a
+ * report for that OS; everything else counts as not tested there.
  */
 export function indexStatsForOs(
   index: readonly GameIndexEntry[],
@@ -293,9 +295,11 @@ export function indexStatsForOs(
 }
 
 /**
- * Decide a game's displayed status from its reports — the MAJORITY vote,
- * with ties broken toward the better status (higher on the ladder). This is
- * the rule the user asked for: status should reflect what most people submit.
+ * Aggregate a game's reports within one OS scope — the majority vote, with
+ * ties broken toward the better status (higher on the ladder). The intake
+ * pipeline keeps one verified report per (game, OS), so in practice this is
+ * simply the verified report's status; the majority rule is a safe fallback
+ * if multiple reports ever coexist.
  */
 export function aggregateStatus(reports: readonly Pick<CompatReport, "status">[]): Status {
   if (reports.length === 0) return STATUSES[0];

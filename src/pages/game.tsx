@@ -160,7 +160,7 @@ export function GamePage() {
   const title = game?.name ?? report?.title ?? key;
   const canonicalKey = report ? gamePageKey(report, game) : key;
   // The overall badge is the BEST result across the game's per-OS tests; each
-  // OS below carries its own majority vote.
+  // OS below carries its own report status.
   const aggregate = displayStatus(reports);
   const perOs = perOsStatuses(reports);
   const latest = reports[0];
@@ -265,9 +265,10 @@ export function GamePage() {
               Status by operating system
             </h2>
             <p className="mt-2 max-w-xl text-sm leading-relaxed text-text-secondary">
-              Each OS shows the majority vote of the reports tested on it. The badge above is the
-              best result across tested OSes — an untested OS stays grey until a report for it
-              lands.
+              Each OS's status comes from a verified compatibility report: anyone files one
+              through the issue template, a maintainer verifies it, and the report is merged
+              automatically. The badge above is the best result across tested OSes — an untested
+              OS stays grey until a report for it lands.
             </p>
             <div className="mt-5 grid gap-4 sm:grid-cols-3">
               {OSES.map((os) => {

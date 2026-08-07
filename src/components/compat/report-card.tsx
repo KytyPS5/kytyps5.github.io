@@ -92,7 +92,7 @@ export function ReportCard({
 
       {(reportCount ?? 0) > 1 && (
         <p className="text-xs text-text-muted">
-          {reportCount} community report{reportCount === 1 ? "" : "s"} — status by majority vote
+          {reportCount} community report{reportCount === 1 ? "" : "s"} — status from the verified report
         </p>
       )}
 

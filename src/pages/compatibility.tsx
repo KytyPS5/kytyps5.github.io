@@ -45,7 +45,7 @@ export function CompatibilityPage() {
     };
   }, []);
 
-  // Full index: every game in the database + its reports (majority vote).
+  // Full index: every game in the database + its verified reports.
   // Nothing here is hardcoded — reports come from src/content/compat/*.md and
   // the game list from src/data/games.json (andshrew/PlayStation-Titles).
   const index = React.useMemo(
@@ -54,8 +54,8 @@ export function CompatibilityPage() {
   );
 
   // Stats and filtering are evaluated inside the active OS scope: with an OS
-  // selected, a game's status is the majority vote of THAT OS's reports only,
-  // so status + OS combinations filter predictably.
+  // selected, a game's status is scoped to THAT OS's reports only, so status +
+  // OS combinations filter predictably.
   const stats = React.useMemo(() => indexStatsForOs(index, osFilter), [index, osFilter]);
 
   const filtered = React.useMemo(
@@ -242,7 +242,7 @@ export function CompatibilityPage() {
             <ul className="divide-y divide-border overflow-hidden rounded-panel border border-border bg-surface shadow-card">
               {shown.map((e) => {
                 // "Any" shows the best across tested OSes; with an OS filter
-                // active the row status is that OS's majority vote (untested =
+                // active the row status is that OS's report status (untested =
                 // no report for that OS yet).
                 const scoped = reportsForOs(e.reports, osFilter);
                 const status = displayStatusForOs(e.reports, osFilter);
@@ -350,8 +350,9 @@ export function CompatibilityPage() {
           </h2>
           <p className="max-w-lg text-sm leading-relaxed text-text-secondary sm:text-base">
             Title ID, status, KytyPS5 build, OS, hardware and what works or breaks. Issues filed
-            through the template convert into per-OS database reports automatically — each OS's
-            status is its reports' majority, and the overall badge is the best across them.
+            through the template become per-OS database reports automatically: a maintainer
+            verifies the issue and the report — with its status for that OS — is merged as a PR.
+            The overall badge is the best result across tested OSes.
           </p>
           <div className="mt-2 flex flex-wrap items-center justify-center gap-4">
             <Button asChild size="lg">

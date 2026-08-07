@@ -57,10 +57,11 @@ Community-tracked game statuses live as one Markdown report per test in
 
 Status ladder: `nothing → boots → menus → ingame → playable-low-fps → playable`.
 
-**Statuses are per operating system.** Within an OS, the status is the majority vote of that
-OS's reports. The overall "Any" badge is the **best result across tested OSes** — a game that is
-playable on Windows but only ingame on macOS shows *Playable* on "Any" and Windows and *Ingame*
-on macOS. An OS with no report yet is grey "Not tested".
+**Statuses are per operating system.** A status is set when a compatibility report is **filed
+through the issue template, verified by a maintainer, and merged** (see the `/compat` update flow
+below) — one verified report per game and OS. The overall "Any" badge is the **best result across
+tested OSes** — a game that is playable on Windows but only ingame on macOS shows *Playable* on
+"Any" and Windows and *Ingame* on macOS. An OS with no report yet is grey "Not tested".
 
 **Status colors:** grey = not tested · red = crashes or no output · orange = splash or intro only ·
 yellow = reaches menus · blue = gameplay with major issues · cyan = playable at low/unstable FPS ·
