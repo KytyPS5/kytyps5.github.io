@@ -266,9 +266,9 @@ export function GamePage() {
             </h2>
             <p className="mt-2 max-w-xl text-sm leading-relaxed text-text-secondary">
               Each OS's status comes from a verified compatibility report: anyone files one
-              through the issue template, a maintainer verifies it, and the report is merged
-              automatically. The badge above is the best result across tested OSes — an untested
-              OS stays grey until a report for it lands.
+              through the issue template, a maintainer verifies it, and a command turns it into a
+              PR that gets merged. The badge above is the best result across tested OSes — an
+              untested OS stays grey until a report for it lands.
             </p>
             <div className="mt-5 grid gap-4 sm:grid-cols-3">
               {OSES.map((os) => {
