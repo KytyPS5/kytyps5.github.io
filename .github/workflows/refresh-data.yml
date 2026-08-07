@@ -91,6 +91,8 @@ jobs:
 
       - name: Dispatch the deploy
         if: steps.changed.outputs.changed == 'true'
+        env:
+          GH_TOKEN: ${{ secrets.GITHUB_TOKEN }}
         run: |
           gh workflow run deploy.yml --ref main
           echo "Deployed data was stale — dispatched a rebuild."
