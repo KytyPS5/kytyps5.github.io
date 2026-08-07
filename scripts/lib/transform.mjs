@@ -1,5 +1,5 @@
-// Adapted from 's scripts/lib/transform.mjs (MIT, © 2026  contributors).
-// https://github.com//
+// Title-list transforms: regional-ID stripping, junk filtering, concept
+// deduplication, and refresh-merging that preserves enrichment + overrides.
 
 const REGION_RANK = { UP: 0, EP: 1, JP: 2 };
 export function regionRank(region) {

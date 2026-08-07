@@ -1,10 +1,8 @@
 #!/usr/bin/env node
 /**
  * Validate every compatibility report in src/content/compat/. Runs during
- * `prebuild` and fails the build on invalid reports — the same contract as
- *  ("the build fails on reports whose … schema is invalid").
- *
- * Mirrors the schema in src/lib/compat.ts.
+ * `prebuild` and fails the build on invalid reports — the same schema as the
+ * site's runtime parser in src/lib/compat.ts.
  */
 import { readdir, readFile } from "node:fs/promises";
 import { fileURLToPath } from "node:url";

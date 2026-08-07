@@ -1,8 +1,7 @@
 #!/usr/bin/env node
 /**
  * Convert a structured "Compatibility report" issue into a Markdown report
- * under src/content/compat/. Mirrors 's issue-to-compat.mjs and
- * is invoked by .github/workflows/compat-report.yml.
+ * under src/content/compat/. Invoked by .github/workflows/compat-report.yml.
  *
  * Usage:
  *   node scripts/issue-to-compat.mjs --title "Disgaea 6" --status ingame \

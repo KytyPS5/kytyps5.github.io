@@ -1,13 +1,13 @@
 #!/usr/bin/env node
 /**
- * Build-time GitHub data snapshot — mirrors 's build-time fetch
- * (src/lib/releases.ts). Runs before `vite build` via the `prebuild` script.
+ * Build-time GitHub data snapshot — zero runtime API calls for visitors.
+ * Runs before `vite build` via the `prebuild` script.
  *
  *   GITHUB_TOKEN=$(gh auth token) npm run build   # avoid anonymous rate limits
  *
  * Writes public/data/github.json. The site renders this instantly (no API
  * calls, no rate limit), then re-fetches live in the browser for freshness —
- * the same "build renders + browser re-fetches" model  uses.
+ * the "build renders + browser re-fetches" model.
  *
  * Failures are non-fatal (warn + keep/emit an empty snapshot) so an offline
  * or rate-limited build still succeeds; the live client fetch covers gaps.

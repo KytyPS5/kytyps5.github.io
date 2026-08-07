@@ -2,8 +2,7 @@
 /**
  * Build-time sitemap generation — runs during `prebuild`. Reads the static
  * routes plus every compatibility report in src/content/compat/ and writes
- * public/sitemap.xml with one URL per game page (mirrors the "build renders"
- * approach;  delegates this to Astro's sitemap integration).
+ * public/sitemap.xml with one URL per game page.
  *
  * Game URLs use the canonical key: titleId when known, else the report slug.
  */

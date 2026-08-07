@@ -1,8 +1,8 @@
 name: Refresh games database
 
-# Mirrors 's import-games.yml: refresh the title list from
-# andshrew/PlayStation-Titles weekly and enrich a batch of concepts with
-# PlayStation Store metadata. Manual runs can tune the enrich count.
+# Refresh the PS5 title list from the PlayStation-Titles dataset weekly and
+# enrich a batch of concepts with PlayStation Store metadata. Manual runs can
+# tune the enrich count.
 on:
   schedule:
     - cron: "0 4 * * 1" # Mondays 04:00 UTC

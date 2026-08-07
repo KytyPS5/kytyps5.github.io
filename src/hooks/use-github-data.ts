@@ -8,10 +8,10 @@ interface GithubDataState<T> {
 }
 
 /**
- * Data hook mirroring 's "build renders + browser re-fetches"
- * model: the build-time snapshot (public/data/github.json) is applied the
- * moment it loads — zero API calls, immune to rate limits — then the live
- * GitHub API refreshes it for freshness. If the live fetch fails but a
+ * Data hook for the "build renders + browser re-fetches" freshness model:
+ * the build-time snapshot (public/data/github.json) is applied the moment it
+ * loads — zero API calls, immune to rate limits — then the live GitHub API
+ * refreshes it for freshness. If the live fetch fails but a
  * snapshot exists, the snapshot stays (visitors never see a blank state).
  *
  * A request-id ref guarantees an older in-flight request can never overwrite

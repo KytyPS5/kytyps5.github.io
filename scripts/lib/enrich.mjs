@@ -1,5 +1,5 @@
-// Adapted from 's scripts/lib/enrich.mjs (MIT, © 2026  contributors).
-// https://github.com//
+// PlayStation Store enrichment helpers: a persisted-query GraphQL fetch for a
+// concept's metadata (covers, publisher, release date, genres).
 
 // Persisted-query hash for the store's metGetConceptById operation.
 // If the import fails with "persisted-query hash rejected (HTTP 400)": open a

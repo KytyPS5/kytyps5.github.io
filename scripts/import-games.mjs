@@ -2,7 +2,7 @@
 /**
  * Import the PS5 game title database from andshrew/PlayStation-Titles and
  * enrich entries with PlayStation Store metadata (covers, publisher, release
- * date, genres). Adapted from 's scripts/import-games.mjs (MIT).
+ * date, genres).
  *
  *   npm run import                        # refresh title list (no enrichment)
  *   npm run import -- --enrich 300        # + enrich 300 concepts with metadata

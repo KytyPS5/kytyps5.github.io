@@ -6,7 +6,7 @@
 // current GUI builds stay compatible while future ones can render OS-specific
 // results (Nmzik's cross-platform caveat on #177).
 // Title keys are trimmed + uppercased (mirrors the GUI's TitleKey()).
-// Mirrors 's scripts/lib approach: pure functions + a CLI wrapper.
+// Pure functions + a thin CLI wrapper (kept dependency-free for the build).
 
 /** Map our status ladder to the GUI's GameStatus enum strings. */
 const GUI_STATUS = {

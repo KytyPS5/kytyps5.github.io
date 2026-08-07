@@ -1,5 +1,5 @@
 /**
- * Central site configuration — mirrors 's `src/config.ts`.
+ * Central site configuration — URLs, repo links and site metadata.
  */
 export const SITE = {
   name: "KytyPS5",

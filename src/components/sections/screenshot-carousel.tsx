@@ -14,7 +14,7 @@ import { Tooltip, TooltipContent, TooltipTrigger } from "@/components/ui/tooltip
 
 const AUTOPLAY_MS = 5000;
 
-/** Optional link shown on each slide caption, mirroring 's cards. */
+/** Optional link shown on each slide caption. */
 function SlideCaption({ slide }: { slide: CarouselSlide }) {
   return (
     <Link

@@ -1,8 +1,7 @@
 /**
- * Homepage carousel slides — data-driven, like 's homepage "latest
- * reports" cards. Slides are derived from the compatibility reports that carry
- * a `screenshot`, newest first. Adding a report with a screenshot automatically
- * adds a slide; no hardcoded image list to maintain.
+ * Homepage carousel slides — data-driven from the compatibility reports that
+ * carry a `screenshot`, newest first. Adding a report with a screenshot
+ * automatically adds a slide; no hardcoded image list to maintain.
  */
 import { COMPAT_REPORTS, gamePageKey, type CompatReport } from "@/lib/compat";
 

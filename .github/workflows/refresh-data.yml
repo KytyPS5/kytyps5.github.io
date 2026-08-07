@@ -1,9 +1,8 @@
 name: Refresh GitHub data
 
-# Mirrors 's weekly data-refresh workflow: regenerate the
-# build-time GitHub snapshot (stats / releases / contributors / commits) and
-# open a PR when it changed, so the deployed site stays fresh without
-# burning runtime API requests.
+# Regenerate the build-time GitHub snapshot (stats / releases / contributors /
+# commits) weekly and open a PR when it changed, so the deployed site stays
+# fresh without burning runtime API requests.
 on:
   schedule:
     - cron: "0 3 * * 1" # every Monday 03:00 UTC

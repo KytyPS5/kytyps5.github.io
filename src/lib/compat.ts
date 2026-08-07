@@ -1,5 +1,5 @@
 /**
- * Compatibility database — mirrors 's `src/lib/compat.ts`.
+ * Compatibility database — the source of truth for report parsing, status
  * One Markdown report per tested game lives in `src/content/compat/` with
  * frontmatter matching `CompatFrontmatter` below. Reports are parsed at build
  * time (no runtime API calls); the build fails on invalid reports
@@ -25,7 +25,7 @@ export type DisplayStatus = Status | "untested";
 export const OSES = ["windows", "linux", "macos"] as const;
 export type Os = (typeof OSES)[number];
 
-/** Title IDs look like PPSA12345 (dash optional). Mirrors 's regex. */
+/** Title IDs look like PPSA12345 (dash optional). */
 export const TITLE_ID_REGEX = /^PPSA-?\d{5}$/i;
 
 /** Frontmatter schema for a compatibility report. */

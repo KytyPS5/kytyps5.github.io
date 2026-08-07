@@ -138,7 +138,7 @@ export const githubApi = {
   recentCommits: (perPage = 6) => fetchJson<GitHubCommit[]>(`${API}/commits?per_page=${perPage}`),
 };
 
-/* ---------- Build-time snapshot (mirrors 's build-render model) ---------- */
+/* ---------- Build-time snapshot (no runtime API calls) ---------- */
 
 /** Shape of public/data/github.json, written by scripts/fetch-github-data.mjs. */
 export interface GithubSnapshot {

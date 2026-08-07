@@ -1,9 +1,9 @@
 name: Convert compatibility report
 
-# Mirrors 's compat-report.yml: a "Compatibility report" issue is
-# rendered into src/content/compat/*.md via scripts/issue-to-compat.mjs and a
-# PR is opened for maintainer review. The data lives in this repository, so the
-# report file, the per-OS export and the website all update together.
+# A "Compatibility report" issue is rendered into src/content/compat/*.md via
+# scripts/issue-to-compat.mjs and a PR is opened for maintainer review. The
+# data lives in this repository, so the report file, the per-OS export and the
+# website all update together.
 #
 # Three ways to trigger a conversion:
 #   1. Automatic — the issue template sets the `compat-report` label, so filing
