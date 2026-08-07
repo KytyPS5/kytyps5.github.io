@@ -148,6 +148,7 @@ export function buildGameIndex(
     const ids = new Set(g.allTitleIds.map(norm));
     const gameReports: CompatReport[] = [];
     for (const id of ids) {
+      if (consumed.has(id)) continue; // never attribute a report to two games
       const found = byId.get(id);
       if (found) {
         gameReports.push(...found);

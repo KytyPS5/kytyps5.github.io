@@ -98,8 +98,20 @@ export function CompatibilityPage() {
         description="Every game in the database, from the same title list the emulator community uses. Tested games show the majority vote of their reports; everything else is not tested."
       />
 
-      {/* Stats strip */}
-      <Section className="!pt-4">
+      {games === null ? (
+        <Section className="!pt-4">
+          <div
+            className="flex min-h-[50vh] items-center justify-center"
+            role="status"
+            aria-label="Loading compatibility database"
+          >
+            <span className="size-6 animate-spin rounded-full border-2 border-border-strong border-t-accent" />
+          </div>
+        </Section>
+      ) : (
+        <>
+          {/* Stats strip */}
+          <Section className="!pt-4">
         <motion.div
           initial={{ opacity: 0, x: -56 }}
           whileInView={{ opacity: 1, x: 0 }}
@@ -319,12 +331,14 @@ export function CompatibilityPage() {
           </div>
         )}
 
-        <p className="mt-6 text-center text-sm text-text-muted">
-          {stats.tested} tested game{stats.tested === 1 ? "" : "s"} · statuses are the majority vote of
-          community reports and reflect the build they were tested on. Untested titles are grey until a
-          report lands.
-        </p>
-      </Section>
+          <p className="mt-6 text-center text-sm text-text-muted">
+            {stats.tested} tested game{stats.tested === 1 ? "" : "s"} · statuses are the majority vote of
+            community reports and reflect the build they were tested on. Untested titles are grey until a
+            report lands.
+          </p>
+          </Section>
+        </>
+      )}
 
       {/* Submit a report */}
       <Section

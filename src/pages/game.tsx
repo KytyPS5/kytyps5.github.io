@@ -21,16 +21,6 @@ function normalize(s: string) {
   return s.toLowerCase().replace(/[^a-z0-9]+/g, "");
 }
 
-/** Match a report to a games-database entry — by title ID, then name. */
-function matchGame(games: Game[], report: CompatReport): Game | undefined {
-  if (report.titleId) {
-    const byId = games.find((g) => g.allTitleIds.includes(report.titleId!));
-    if (byId) return byId;
-  }
-  const key = normalize(report.title);
-  return games.find((g) => normalize(g.name) === key);
-}
-
 function Meta({ label, value }: { label: string; value?: string }) {
   return (
     <div>
@@ -105,13 +95,22 @@ export function GamePage() {
     };
   }, []);
 
-  // Every report for this game: by title ID, then slug. Newest first.
+  // Resolve the database game first (any region variant of the title ID), then
+  // collect every report for it — by exact title ID, slug, or any of the
+  // game's region-variant IDs (matches buildGameIndex on the index page).
   const keyNorm = normalize(key);
-  const reports = COMPAT_REPORTS.filter(
-    (r) => (r.titleId && normalize(r.titleId) === keyNorm) || r.slug === key,
-  ).sort((a, b) => (a.testedDate < b.testedDate ? 1 : -1));
+  const game = games
+    ? games.find((g) => g.allTitleIds.some((id) => normalize(id) === keyNorm))
+    : undefined;
+  const reports = COMPAT_REPORTS.filter((r) => {
+    const rKey = r.titleId ? normalize(r.titleId) : "";
+    return (
+      r.slug === key ||
+      rKey === keyNorm ||
+      (game ? game.allTitleIds.some((id) => normalize(id) === rKey) : false)
+    );
+  }).sort((a, b) => (a.testedDate < b.testedDate ? 1 : -1));
   const report = reports[0];
-  const game = games ? (report ? matchGame(games, report) : games.find((g) => g.allTitleIds.some((id) => normalize(id) === keyNorm))) : undefined;
 
   // Wait for the games database before resolving content states, so the
   // not-found / no-report pages never flash with misleading content.
