@@ -49,10 +49,12 @@ export function mergeExisting(fresh, existing) {
   return fresh.map((g) => {
     const old = prev.get(g.conceptId);
     if (!old) return g;
+    // Manual flags (commentsDisabled, noStore) survive refreshes even for
+    // entries that aren't enriched yet — including hand-completed entries.
     const withOverrides =
-      old.commentsDisabled === undefined
+      old.commentsDisabled === undefined && old.noStore === undefined
         ? g
-        : { ...g, commentsDisabled: old.commentsDisabled };
+        : { ...g, commentsDisabled: old.commentsDisabled, noStore: old.noStore };
     if (!old.enriched) return withOverrides;
     const { name, cover, publisher, releaseDate, genres, enriched, noStore } = old;
     return { ...withOverrides, name, cover, publisher, releaseDate, genres, enriched, noStore };

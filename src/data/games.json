@@ -3262,7 +3262,11 @@
   "name": "Neptunia ReVerse",
   "region": "UP",
   "enriched": true,
-  "noStore": true
+  "cover": "https://image.api.playstation.com/vulcan/ap/rnd/202105/2414/1EejsoGWUbS2zTMcD4oLejcV.jpg",
+  "publisher": "Reef Entertainment",
+  "genres": [
+   "Role Playing Games"
+  ]
  },
  {
   "conceptId": 10002209,

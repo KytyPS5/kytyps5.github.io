@@ -10,7 +10,12 @@ const PSN_HASH = "cc90404ac049d935afbd9968aef523da2b6723abfb9d586e5f77ebf7c52890
 
 /** Merge a PSN concept's metadata into a game entry. */
 export function applyEnrichment(game, concept) {
-  if (!concept) return { ...game, enriched: true, noStore: true };
+  // A missing/stale concept is NOT a permanent state: mark the game noStore but
+  // leave it unenriched so a later run retries it (the US concept for Neptunia
+  // ReVerse returned null for months, which used to lock it out of ever getting
+  // its cover). enrich.mjs only processes unenriched games, so these re-enter
+  // the pending pool automatically.
+  if (!concept) return { ...game, noStore: true };
   const media = concept.media ?? [];
   const cover =
     media.find((m) => m.role === "GAMEHUB_COVER_ART")?.url ??
