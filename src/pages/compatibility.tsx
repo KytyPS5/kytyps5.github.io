@@ -8,8 +8,8 @@ import {
   COMPAT_REPORTS,
   STATUSES,
   STATUS_META,
+  aggregateStatus,
   buildGameIndex,
-  displayStatusForOs,
   filterGameIndex,
   indexStatsForOs,
   reportsForOs,
@@ -200,7 +200,7 @@ export function CompatibilityPage() {
           <div className="flex flex-col gap-3 sm:flex-row sm:items-center sm:justify-between">
             <div className="flex flex-wrap items-center gap-2">
               <span className="font-mono text-xs uppercase tracking-wider text-text-muted">OS</span>
-              {(["all", ...OSES] as (Os | "all")[]).map((os) => (
+              {(["all", ...OSES] as const).map((os) => (
                 <button
                   key={os}
                   type="button"
@@ -244,7 +244,7 @@ export function CompatibilityPage() {
                 // With an OS filter active the row status is that OS's majority
                 // vote (untested = no report for that OS yet).
                 const scoped = reportsForOs(e.reports, osFilter);
-                const status = displayStatusForOs(e.reports, osFilter);
+                const status = scoped.length > 0 ? aggregateStatus(scoped) : "untested";
                 const tested = scoped.length > 0;
                 const oses = [...new Set(e.reports.flatMap((r) => (r.os ? [r.os] : [])))];
                 return (

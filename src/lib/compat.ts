@@ -116,8 +116,8 @@ export function displayStatus(reports: readonly Pick<CompatReport, "status">[]):
 export type Os = "windows" | "linux" | "macos";
 
 /** Reports that apply within an OS scope (`"all"` = every report). */
-export function reportsForOs(reports: readonly CompatReport[], os: Os | "all"): CompatReport[] {
-  return os === "all" ? (reports as CompatReport[]) : reports.filter((r) => r.os === os);
+export function reportsForOs(reports: readonly CompatReport[], os: Os | "all"): readonly CompatReport[] {
+  return os === "all" ? reports : reports.filter((r) => r.os === os);
 }
 
 /**
