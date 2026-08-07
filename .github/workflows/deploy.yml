@@ -1,0 +1,47 @@
+name: Deploy to GitHub Pages
+
+# Builds the site and publishes it to GitHub Pages on every push to main.
+# Requires Pages → Source = "GitHub Actions" (set up once via
+#   gh api --method POST repos/DistantMyth/KytyPS5-site/pages -f build_type=workflow
+# or the repo's Settings → Pages tab).
+on:
+  push:
+    branches: [main]
+  workflow_dispatch:
+
+permissions:
+  contents: read
+  pages: write
+  id-token: write
+
+concurrency:
+  group: pages
+  cancel-in-progress: true
+
+jobs:
+  deploy:
+    environment:
+      name: github-pages
+      url: ${{ steps.deployment.outputs.page_url }}
+    runs-on: ubuntu-latest
+    steps:
+      - uses: actions/checkout@v4
+      - uses: actions/setup-node@v4
+        with:
+          node-version: 22
+          cache: npm
+      - run: npm ci
+      # prebuild validates compat reports and regenerates the GitHub snapshot,
+      # the GUI compatibility JSON and the sitemap (GITHUB_TOKEN avoids rate
+      # limits on the API fetches).
+      - name: Build
+        env:
+          GITHUB_TOKEN: ${{ secrets.GITHUB_TOKEN }}
+        run: npm run build
+      - uses: actions/configure-pages@v5
+      - uses: actions/upload-pages-artifact@v3
+        with:
+          path: dist
+      - name: Deploy
+        id: deployment
+        uses: actions/deploy-pages@v4

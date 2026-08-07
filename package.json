@@ -1,0 +1,48 @@
+{
+  "name": "kytyps5-website",
+  "private": true,
+  "version": "1.0.0",
+  "type": "module",
+  "description": "Official website for KytyPS5 — a free and open-source PlayStation 5 emulator for Windows, Linux and macOS.",
+  "scripts": {
+    "dev": "vite",
+    "prebuild": "node scripts/validate-compat.mjs && node scripts/fetch-github-data.mjs && node scripts/export-compat-json.mjs && node scripts/generate-sitemap.mjs",
+    "build": "tsc && vite build",
+    "typecheck": "tsc --noEmit",
+    "test": "vitest run",
+    "import": "node scripts/import-games.mjs",
+    "fetch:data": "node scripts/fetch-github-data.mjs",
+    "export:compat": "node scripts/export-compat-json.mjs --pretty",
+    "sitemap": "node scripts/generate-sitemap.mjs",
+    "preview": "vite preview"
+  },
+  "dependencies": {
+    "@fontsource-variable/inter": "^5.3.0",
+    "@fontsource-variable/jetbrains-mono": "^5.3.0",
+    "@fontsource-variable/space-grotesk": "^5.3.0",
+    "@radix-ui/react-accordion": "^1.2.20",
+    "@radix-ui/react-dialog": "^1.1.23",
+    "@radix-ui/react-slot": "^1.3.3",
+    "@radix-ui/react-tabs": "^1.1.21",
+    "@radix-ui/react-tooltip": "^1.2.16",
+    "class-variance-authority": "^0.7.1",
+    "clsx": "^2.1.1",
+    "framer-motion": "^13.0.0",
+    "lucide-react": "^1.30.0",
+    "react": "^19.2.8",
+    "react-dom": "^19.2.8",
+    "react-router-dom": "^7.18.2",
+    "tailwind-merge": "^3.6.0"
+  },
+  "devDependencies": {
+    "@tailwindcss/vite": "^4.3.3",
+    "@types/node": "^26.1.2",
+    "@types/react": "^19.2.18",
+    "@types/react-dom": "^19.2.4",
+    "@vitejs/plugin-react": "^6.0.5",
+    "tailwindcss": "^4.3.3",
+    "typescript": "^7.0.2",
+    "vite": "^8.2.1",
+    "vitest": "^4.1.10"
+  }
+}

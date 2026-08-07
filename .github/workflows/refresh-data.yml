@@ -1,0 +1,34 @@
+name: Refresh GitHub data
+
+# Mirrors 's weekly data-refresh workflow: regenerate the
+# build-time GitHub snapshot (stats / releases / contributors / commits) and
+# open a PR when it changed, so the deployed site stays fresh without
+# burning runtime API requests.
+on:
+  schedule:
+    - cron: "0 3 * * 1" # every Monday 03:00 UTC
+  workflow_dispatch:
+
+jobs:
+  refresh:
+    runs-on: ubuntu-latest
+    steps:
+      - uses: actions/checkout@v4
+      - uses: actions/setup-node@v4
+        with:
+          node-version: 22
+          cache: npm
+      - run: npm ci
+      - run: npm run fetch:data
+        env:
+          GITHUB_TOKEN: ${{ secrets.GITHUB_TOKEN }}
+      - name: Open PR if data changed
+        uses: peter-evans/create-pull-request@v6
+        with:
+          token: ${{ secrets.GITHUB_TOKEN }}
+          commit-message: "chore: refresh GitHub data snapshot"
+          branch: chore/refresh-data
+          title: "chore: refresh GitHub data snapshot"
+          body: |
+            Automated refresh of `public/data/github.json` from the GitHub API.
+          delete-branch: true

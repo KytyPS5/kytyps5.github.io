@@ -1,0 +1,18 @@
+# Dependencies
+node_modules/
+
+# Build output
+dist/
+
+# Local tooling / IDE metadata
+.freebuff/
+.agents/
+.claude/
+skills-lock.json
+design-system/
+*.log
+.DS_Store
+
+# Generated at build time (prebuild regenerates these)
+public/data/
+public/sitemap.xml

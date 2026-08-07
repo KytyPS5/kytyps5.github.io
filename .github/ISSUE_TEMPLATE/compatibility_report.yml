@@ -1,0 +1,67 @@
+name: Compatibility report
+description: Report how a game runs on KytyPS5
+title: "Game Name"
+labels: [compat-report]
+body:
+  - type: input
+    id: title_id
+    attributes:
+      label: Title ID
+      description: PS5 title ID (e.g. PPSA-01234).
+      placeholder: PPSA-01234
+    validations:
+      required: true
+  - type: dropdown
+    id: status
+    attributes:
+      label: Compatibility status
+      options: [nothing, boots, menus, ingame, playable-low-fps, playable]
+    validations:
+      required: true
+  - type: input
+    id: version
+    attributes:
+      label: KytyPS5 build (commit or release, not the game version)
+      description: The KytyPS5 release tag or commit SHA you tested.
+      placeholder: KytyPS5-2026-08-07-7907a50 or 7907a50
+    validations:
+      required: true
+  - type: input
+    id: tested_date
+    attributes:
+      label: Test date
+      description: The date you ran this test.
+      placeholder: YYYY-MM-DD
+    validations:
+      required: true
+  - type: input
+    id: game_version
+    attributes:
+      label: Game version
+      description: Optional game update/version, if known.
+      placeholder: "1.004"
+  - type: dropdown
+    id: os
+    attributes:
+      label: Operating system
+      options: [windows, linux, macos]
+    validations:
+      required: true
+  - type: input
+    id: hardware
+    attributes:
+      label: Hardware (CPU / GPU)
+  - type: textarea
+    id: notes
+    attributes:
+      label: What works / what breaks
+      description: Include screenshots and the log file if possible. Use dumps of games you own.
+    validations:
+      required: true
+  - type: checkboxes
+    id: ownership
+    attributes:
+      label: Testing confirmation
+      options:
+        - label: I tested a dump of a game I own.
+          required: true

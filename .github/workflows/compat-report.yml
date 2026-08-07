@@ -1,0 +1,109 @@
+name: Convert compatibility report
+
+# Mirrors 's compat-report.yml: a "Compatibility report" issue is
+# rendered into src/content/compat/*.md via scripts/issue-to-compat.mjs and a
+# PR is opened for maintainer review. The data lives in this repository, so the
+# report file, the per-OS export and the website all update together.
+#
+# Three ways to trigger a conversion:
+#   1. Automatic — the issue template sets the `compat-report` label, so filing
+#      a report through the template starts a conversion immediately.
+#   2. Maintainer comment — reply `/compat` on any issue (collaborator-only) to
+#      convert it, e.g. after you verify the report.
+#   3. One-click button — Actions → "Convert compatibility report" → Run
+#      workflow → type the issue number. Re-running it after you verify an issue
+#      overwrites that game's report with the issue's current status + OS (and
+#      opens a PR only when something changed).
+on:
+  issues:
+    types: [labeled]
+  issue_comment:
+    types: [created]
+  workflow_dispatch:
+    inputs:
+      issue_number:
+        description: Issue number to convert into a compatibility report
+        required: true
+        type: string
+
+# create-pull-request pushes a branch + opens the PR, so the token needs
+# write access to both. Required on repos whose default token is read-only.
+permissions:
+  contents: write
+  pull-requests: write
+
+jobs:
+  convert:
+    runs-on: ubuntu-latest
+    if: |
+      (github.event_name == 'issues' && github.event.label.name == 'compat-report') ||
+      (github.event_name == 'issue_comment' &&
+        github.event.issue.pull_request == null &&
+        contains(github.event.comment.body, '/compat')) ||
+      github.event_name == 'workflow_dispatch'
+    steps:
+      - uses: actions/checkout@v4
+      - uses: actions/setup-node@v4
+        with:
+          node-version: 22
+          cache: npm
+      - run: npm ci
+
+      - name: Only collaborators can convert via /compat
+        if: github.event_name == 'issue_comment'
+        env:
+          GH_TOKEN: ${{ secrets.GITHUB_TOKEN }}
+        run: |
+          AUTHOR="${{ github.event.comment.user.login }}"
+          if ! gh api "repos/${{ github.repository }}/collaborators/$AUTHOR" --silent 2>/dev/null; then
+            echo "::error::Only collaborators can trigger a conversion with /compat"
+            exit 1
+          fi
+
+      - name: Resolve issue
+        id: issue
+        env:
+          GH_TOKEN: ${{ secrets.GITHUB_TOKEN }}
+        run: |
+          if [ "${{ github.event_name }}" = "workflow_dispatch" ]; then
+            NUMBER="${{ inputs.issue_number }}"
+          else
+            NUMBER="${{ github.event.issue.number }}"
+          fi
+          if ! gh api "repos/${{ github.repository }}/issues/$NUMBER" --jq .number >/dev/null 2>&1; then
+            echo "::error::Issue #$NUMBER not found in this repository"
+            exit 1
+          fi
+          echo "number=$NUMBER" >> "$GITHUB_OUTPUT"
+          gh api "repos/${{ github.repository }}/issues/$NUMBER" --jq '.title' > /tmp/issue-title.txt
+          gh api "repos/${{ github.repository }}/issues/$NUMBER" --jq '.body' > /tmp/issue-body.txt
+
+      - name: Convert issue to report
+        env:
+          ISSUE_NUMBER: ${{ steps.issue.outputs.number }}
+        run: |
+          TITLE="$(cat /tmp/issue-title.txt)"
+          BODY="$(cat /tmp/issue-body.txt)"
+          field() { printf '%s' "$BODY" | grep -A1 "^### $1" | tail -1 | sed 's/^[[:space:]]*//;s/[[:space:]]*$//'; }
+          STATUS="$(field 'Compatibility status')"
+          VERSION="$(field 'KytyPS5 build (commit or release, not the game version)')"
+          DATE="$(field 'Test date')"
+          OS="$(field 'Operating system')"
+          HW="$(field 'Hardware (CPU / GPU)')"
+          TITLE_ID="$(field 'Title ID')"
+          GAME_VERSION="$(field 'Game version')"
+          NOTES="$(field 'What works / what breaks' | head -c 4000)"
+          ARGS=(--title "$TITLE" --status "$STATUS" --version "$VERSION" --date "$DATE" --os "$OS" --body "$NOTES" --source "#$ISSUE_NUMBER" --source-url "https://github.com/${{ github.repository }}/issues/$ISSUE_NUMBER")
+          [ -n "$HW" ] && ARGS+=(--hardware "$HW")
+          [ -n "$TITLE_ID" ] && ARGS+=(--title-id "$TITLE_ID")
+          [ -n "$GAME_VERSION" ] && [ "$GAME_VERSION" != "_Unknown_" ] && ARGS+=(--game-version "$GAME_VERSION")
+          node scripts/issue-to-compat.mjs "${ARGS[@]}"
+
+      - name: Open PR
+        uses: peter-evans/create-pull-request@v6
+        with:
+          token: ${{ secrets.GITHUB_TOKEN }}
+          commit-message: "compat: report for issue #${{ steps.issue.outputs.number }}"
+          branch: compat/report-${{ steps.issue.outputs.number }}
+          title: "compat: report for issue #${{ steps.issue.outputs.number }}"
+          delete-branch: true

@@ -1,0 +1,18 @@
+<!doctype html>
+<html lang="en">
+  <head>
+    <meta charset="UTF-8" />
+    <meta name="viewport" content="width=device-width, initial-scale=1.0" />
+    <title>KytyPS5 — Redirecting…</title>
+    <script>
+      // GitHub Pages serves this file for any unknown path. Stash the requested
+      // route, bounce to the app base, and let index.html restore it via
+      // history.replaceState so direct links / refreshes deep-link correctly.
+      sessionStorage.setItem("kytyps5-redirect", location.pathname + location.search);
+      location.replace("/KytyPS5-site/");
+    </script>
+  </head>
+  <body>
+    <p>Redirecting to <a href="/KytyPS5-site/">KytyPS5 site</a>…</p>
+  </body>
+</html>

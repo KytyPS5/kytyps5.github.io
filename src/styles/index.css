@@ -1,0 +1,163 @@
+@import "tailwindcss";
+
+/* ============================================================
+   KytyPS5 design tokens — "Iris" (dark-only)
+   ============================================================ */
+@theme {
+  /* Typography */
+  --font-sans: "Inter Variable", ui-sans-serif, system-ui, -apple-system, "Segoe UI", sans-serif;
+  --font-display: "Space Grotesk Variable", "Inter Variable", ui-sans-serif, system-ui, sans-serif;
+  --font-mono: "JetBrains Mono Variable", ui-monospace, "SF Mono", Menlo, Consolas, monospace;
+
+  /* Surfaces */
+  --color-ink: #05060b;
+  --color-surface: #0b0e16;
+  --color-elevated: #111624;
+  --color-overlay: #080a12;
+
+  /* Hairlines */
+  --color-border: rgba(255, 255, 255, 0.08);
+  --color-border-strong: rgba(255, 255, 255, 0.16);
+
+  /* Text */
+  --color-text-primary: #f2f4fa;
+  --color-text-secondary: #a6aebf;
+  --color-text-muted: #7b8496; /* ≥4.5:1 on ink (WCAG AA) */
+
+  /* Accent — the signature iris gradient */
+  --color-accent: #5b8cff;
+  --color-accent-2: #4fa3ff;
+  --color-accent-3: #8b5cf6;
+
+  /* Semantic */
+  --color-run: #34d399;
+  --color-warning: #fbbf24;
+  --color-destructive: #f87171;
+
+  /* Radius */
+  --radius-control: 10px;
+  --radius-card: 14px;
+  --radius-panel: 20px;
+  --radius-window: 24px;
+
+  /* Shadows */
+  --shadow-card: 0 1px 2px rgba(0, 0, 0, 0.4), 0 2px 8px -2px rgba(0, 0, 0, 0.45);
+  --shadow-float: 0 2px 8px -2px rgba(0, 0, 0, 0.5), 0 16px 40px -12px rgba(0, 0, 0, 0.6);
+  --shadow-glow: 0 0 0 1px rgba(91, 140, 255, 0.35), 0 8px 40px -8px rgba(91, 140, 255, 0.45);
+  --shadow-glow-soft: 0 0 0 1px rgba(91, 140, 255, 0.22), 0 4px 24px -8px rgba(91, 140, 255, 0.3);
+
+  /* Motion */
+  --ease-out-expo: cubic-bezier(0.16, 1, 0.3, 1);
+  --animate-accordion-down: accordion-down 0.22s var(--ease-out-expo);
+  --animate-accordion-up: accordion-up 0.22s var(--ease-out-expo);
+  --animate-fade-in: fade-in 0.2s ease-out;
+
+  @keyframes accordion-down {
+    from {
+      height: 0;
+    }
+    to {
+      height: var(--radix-accordion-content-height);
+    }
+  }
+
+  @keyframes accordion-up {
+    from {
+      height: var(--radix-accordion-content-height);
+    }
+    to {
+      height: 0;
+    }
+  }
+
+  @keyframes fade-in {
+    from {
+      opacity: 0;
+    }
+    to {
+      opacity: 1;
+    }
+  }
+}
+
+/* ============================================================
+   Base
+   ============================================================ */
+@layer base {
+  html {
+    color-scheme: dark;
+    scroll-behavior: smooth;
+    scroll-padding-top: 88px;
+  }
+
+  body {
+    background-color: var(--color-ink);
+    color: var(--color-text-primary);
+    font-family: var(--font-sans);
+    -webkit-font-smoothing: antialiased;
+    text-rendering: optimizeLegibility;
+    overflow-x: clip;
+  }
+
+  ::selection {
+    background: rgba(91, 140, 255, 0.35);
+    color: #ffffff;
+  }
+
+  :focus-visible {
+    outline: 2px solid var(--color-accent);
+    outline-offset: 2px;
+    border-radius: 4px;
+  }
+
+  ::-webkit-scrollbar {
+    width: 10px;
+    height: 10px;
+  }
+  ::-webkit-scrollbar-track {
+    background: transparent;
+  }
+  ::-webkit-scrollbar-thumb {
+    background: rgba(255, 255, 255, 0.14);
+    border-radius: 999px;
+    border: 2px solid var(--color-ink);
+  }
+  ::-webkit-scrollbar-thumb:hover {
+    background: rgba(255, 255, 255, 0.22);
+  }
+}
+
+/* ============================================================
+   Utilities
+   ============================================================ */
+@utility text-gradient-iris {
+  background-image: linear-gradient(100deg, var(--color-accent-2) 0%, var(--color-accent) 48%, var(--color-accent-3) 100%);
+  -webkit-background-clip: text;
+  background-clip: text;
+  color: transparent;
+}
+
+@utility bg-iris {
+  background-image: linear-gradient(100deg, var(--color-accent-2) 0%, var(--color-accent) 52%, var(--color-accent-3) 100%);
+}
+
+@utility bg-grid {
+  background-image: radial-gradient(rgba(255, 255, 255, 0.07) 1px, transparent 1px);
+  background-size: 28px 28px;
+}
+
+@utility bg-noise {
+  background-image: url("data:image/svg+xml,%3Csvg xmlns='http://www.w3.org/2000/svg' width='120' height='120'%3E%3Cfilter id='n'%3E%3CfeTurbulence type='fractalNoise' baseFrequency='0.9' numOctaves='2' stitchTiles='stitch'/%3E%3C/filter%3E%3Crect width='100%25' height='100%25' filter='url(%23n)' opacity='0.04'/%3E%3C/svg%3E");
+}
+
+/* Reduced motion — kill transitions/animations globally */
+@media (prefers-reduced-motion: reduce) {
+  *,
+  *::before,
+  *::after {
+    animation-duration: 0.01ms !important;
+    animation-iteration-count: 1 !important;
+    transition-duration: 0.01ms !important;
+    scroll-behavior: auto !important;
+  }
+}
