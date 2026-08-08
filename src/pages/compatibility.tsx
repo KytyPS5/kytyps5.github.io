@@ -233,7 +233,10 @@ export function CompatibilityPage() {
                 const scoped = reportsForOs(e.reports, osFilter);
                 const status = displayStatusForOs(e.reports, osFilter);
                 const tested = scoped.length > 0;
-                const oses = [...new Set(e.reports.flatMap((r) => (r.os ? [r.os] : [])))];
+                // OS pills follow the active filter: with "windows" selected a
+                // game's row shows only its Windows reports — a linux/macos
+                // pill would be noise under a Windows-only filter.
+                const oses = [...new Set(scoped.flatMap((r) => (r.os ? [r.os] : [])))];
                 return (
                   <li key={e.key}>
                     <Link
