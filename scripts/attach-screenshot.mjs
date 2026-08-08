@@ -132,11 +132,19 @@ for (const url of images) {
   }
 }
 
-// Attach to the report: set `screenshot` frontmatter when unset, then embed
-// every image in the body (before the `> Source:` line when present).
+// Attach to the report: set `screenshot` + `screenshotVerified` frontmatter
+// when unset (screenshots are evidence attached to a community-verified
+// report — they never imply a status), then embed every image in the body
+// (before the `> Source:` line when present).
 let { raw } = report;
 if (!/^screenshot:/m.test(raw) && stored.length > 0) {
-  raw = raw.replace(/^(---\r?\n)/, `$1screenshot: "screenshots/${stored[0]}"\n`);
+  raw = raw.replace(
+    /^(---\r?\n)/,
+    `$1screenshot: "screenshots/${stored[0]}"\nscreenshotVerified: true\n`,
+  );
+} else if (!/^screenshotVerified:/m.test(raw) && /^screenshot:/m.test(raw)) {
+  // Re-run on a report that already has a screenshot but predates the flag.
+  raw = raw.replace(/^(---\r?\n)/, `$1screenshotVerified: true\n`);
 }
 const embeds = stored.map((name) => `![${title ?? slug}](screenshots/${name})`).join("\n\n");
 if (/^> Source:/m.test(raw)) {

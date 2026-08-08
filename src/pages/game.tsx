@@ -1,6 +1,6 @@
 import * as React from "react";
 import { Link, useParams } from "react-router-dom";
-import { ArrowLeft, CheckCircle2, ExternalLink, FileQuestion } from "lucide-react";
+import { ArrowLeft, Camera, CheckCircle2, ExternalLink, FileQuestion } from "lucide-react";
 import { Seo } from "@/lib/seo";
 import {
   OSES,
@@ -47,6 +47,13 @@ function ReportBlock({ report, index }: { report: CompatReport; index: number })
         </p>
         <StatusBadge status={report.status} className="shrink-0" />
       </div>
+
+      {report.screenshotVerified && (
+        <p className="mt-4 flex items-center gap-1.5 text-xs text-text-muted">
+          <Camera className="size-3.5" aria-hidden="true" />
+          Screenshot attached to this report — the status above comes from the community report, not the image.
+        </p>
+      )}
 
       {report.testedVersion !== SITE.currentVersion && (
         <p className="mt-4 rounded-xl border border-amber-400/30 bg-amber-400/10 px-4 py-2.5 text-sm text-amber-200">

@@ -42,6 +42,14 @@ export interface CompatFrontmatter {
   /** Optional screenshot shown on the homepage carousel — a path relative to
       public/screenshots/ (e.g. "screenshots/ps5-01.png") or an absolute URL. */
   screenshot?: string;
+  /**
+   * True when a maintainer attached the screenshot via /getss to a report
+   * that already carries a community status. A screenshot NEVER implies a
+   * status by itself — the validator requires this flag (plus a linked
+   * community source) on any report with a screenshot, so the old
+   * "inferred from screenshots" reports can't come back.
+   */
+  screenshotVerified?: boolean;
 }
 
 /** Provenance of a report — issue link when community-filed. */
@@ -373,6 +381,8 @@ export function parseCompatReport(raw: string, slug: string): CompatReport {
     typeof data.gameVersion === "string" && data.gameVersion.trim() ? data.gameVersion : undefined;
   const screenshot =
     typeof data.screenshot === "string" && data.screenshot.trim() ? data.screenshot : undefined;
+  const screenshotVerified =
+    typeof data.screenshotVerified === "boolean" ? data.screenshotVerified : undefined;
 
   if (!title) errors.push("missing required frontmatter field: title");
   if (!titleId) errors.push("missing required frontmatter field: titleId");
@@ -405,6 +415,7 @@ export function parseCompatReport(raw: string, slug: string): CompatReport {
     score,
     gameVersion,
     screenshot,
+    screenshotVerified,
     notes: body,
     source,
   };

@@ -71,10 +71,26 @@ for (const file of await readdir(DIR)) {
   if (!data.os) errors.push("missing required `os` (windows | linux | macos)");
   else if (!OSES.includes(data.os)) errors.push(`os must be ${OSES.join(" | ")}`);
 
-  // Screenshots are hosted in this repo (public/screenshots/) so the carousel
-  // can't break when the upstream gallery changes: a relative path must exist,
-  // remote URLs are allowed but warn (policy — prefer local hosting).
+  // Screenshots are evidence attached to a community-verified report, never a
+  // status by themselves. The 6 "inferred from the upstream screenshot gallery"
+  // reports were removed because they invented statuses; this guard makes that
+  // impossible going forward: a screenshot requires screenshotVerified: true
+  // (set by the /getss workflow, which only runs on an existing report) AND a
+  // linked community source. Plain-text sources like "repository screenshots"
+  // are rejected — they were the old inferred-report pattern.
   if (data.screenshot) {
+    if (data.screenshotVerified !== true) {
+      errors.push(
+        '`screenshot` requires `screenshotVerified: true` — screenshots never imply a status; attach via /getss to a community report',
+      );
+    }
+    const sourceLink = raw.match(/^> Source: \[[^\]]+\]\(https?:\/\/[^)]+\)/m);
+    if (!sourceLink) {
+      errors.push(
+        '`screenshot` requires a linked community source (`> Source: [label](https://…)`) — a plain-text source like "repository screenshots" is not allowed',
+      );
+    }
+
     const shot = String(data.screenshot);
     if (/^https?:\/\//i.test(shot)) {
       console.warn(

@@ -118,6 +118,17 @@ describe("parseCompatReport", () => {
     expect(report.gameVersion).toBe("1.004");
     expect(report.score).toBe(4);
     expect(report.screenshot).toBe("https://example.com/s.png");
+    expect(report.screenshotVerified).toBeUndefined();
+  });
+
+  it("parses the screenshotVerified flag (set by /getss)", () => {
+    const withFlag = VALID.replace(
+      'hardware: "Ryzen 9 / RTX 5090"',
+      'hardware: "Ryzen 9 / RTX 5090"\nscreenshot: "screenshots/deathloop-windows-1.png"\nscreenshotVerified: true',
+    );
+    const report = parseCompatReport(withFlag, "test-game");
+    expect(report.screenshotVerified).toBe(true);
+    expect(report.screenshot).toBe("screenshots/deathloop-windows-1.png");
   });
 });
 

@@ -59,10 +59,13 @@ Community-tracked game statuses live as one Markdown report per test in
 
 **Screenshots are hosted in this repo** (`public/screenshots/`) so the homepage carousel can't
 break when the upstream KytyPS5 gallery changes. A report references one as a relative path,
-e.g. `screenshot: "screenshots/ps5-01.png"`; the carousel and the game page resolve it against
-the site's base URL. `prebuild` fails the build if a referenced screenshot file is missing
-(remote URLs are allowed but warn) — to add a slide, drop the image into `public/screenshots/`
-and set the field on the report.
+e.g. `screenshot: "screenshots/deathloop-windows-1.png"`; the carousel and the game page
+resolve it against the site's base URL. **A screenshot never implies a status by itself** — the
+`/getss` workflow attaches it to an already-verified report and sets `screenshotVerified: true`.
+`prebuild` fails the build if a report has a `screenshot` without that flag or without a linked
+community source (`> Source: [label](https://…)`), so the old "inferred from the upstream
+screenshot gallery" reports can't come back. The game page shows a small "Screenshot attached"
+note on such reports.
 
 Status ladder: `nothing → boots → playable → perfect`.
 
@@ -112,9 +115,11 @@ issue's Title ID, sets the report's `screenshot` frontmatter when it has none (t
 homepage carousel image), embeds the images in the report body, and opens a PR. The report must
 already exist — run `/compat` first if it doesn't. No Title ID? The first `PPSA-XXXXX` in the
 issue title/body/comment is used. Or use the one-click button: Actions → **Attach game
-screenshot** → Run workflow → type the issue number (URLs are then read from the issue body).
-Images are validated and size-capped, so a bad URL fails the run without shipping partial
-work.
+screenshot** → Run workflow → type the issue number (URLs are then read from the issue body).Images
+are validated and size-capped, so a bad URL fails the run without shipping partial
+work. `/getss` also sets `screenshotVerified: true` on the report, and the validator rejects
+any report with a `screenshot` that isn't verified and linked to a community source — a
+screenshot is evidence attached to a report, never a status.
 
 ### GUI status export
 
