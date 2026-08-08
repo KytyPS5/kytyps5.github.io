@@ -25,10 +25,17 @@ export type Block =
 const escapeHtml = (s: string) =>
   s.replace(/&/g, "&amp;").replace(/</g, "&lt;").replace(/>/g, "&gt;").replace(/"/g, "&quot;");
 
-/** Only allow http(s) URLs in links/images. Anything else is treated as text. */
-function safeUrl(url: string): string | null {
+/**
+ * Allow http(s) URLs, or — when `allowRelative` — any scheme-less path
+ * (e.g. "screenshots/ps5-01.png"). Other schemes (javascript:, data:, …) are
+ * rejected so links/images can never execute code; a rejected URL is rendered
+ * as literal text.
+ */
+function safeUrl(url: string, allowRelative = false): string | null {
   const trimmed = url.trim();
-  return /^https?:\/\//i.test(trimmed) ? trimmed : null;
+  if (/^https?:\/\//i.test(trimmed)) return trimmed;
+  if (allowRelative && !/^[a-z][a-z0-9+.-]*:/i.test(trimmed)) return trimmed;
+  return null;
 }
 
 /**
@@ -75,13 +82,14 @@ export function parseInline(input: string): InlineToken[] {
       continue;
     }
 
-    // Image: ![alt](src) — must be checked before links.
-    // Image: ![alt](src) — must be checked before links.
+    // Image: ![alt](src) — must be checked before links. Relative srcs are
+    // allowed (site screenshots live in public/screenshots/); the renderer
+    // resolves them against BASE_URL.
     const imageMatch = rest.match(/^!\[([^\]]*)\]/);
     if (imageMatch) {
       const urlPart = extractUrl(rest.slice(imageMatch[0].length));
       if (urlPart) {
-        const src = safeUrl(urlPart.url);
+        const src = safeUrl(urlPart.url, true);
         if (src) tokens.push({ type: "image", alt: imageMatch[1], src });
         else tokens.push({ type: "text", value: imageMatch[0] + `(${urlPart.url})` });
         rest = urlPart.after;

@@ -1,5 +1,6 @@
 import { Fragment } from "react";
 import { parseMarkdown, type Block, type InlineToken } from "@/lib/markdown";
+import { siteAssetUrl } from "@/lib/utils";
 
 /**
  * Render a markdown report body into styled HTML. All text is escaped by the
@@ -142,7 +143,7 @@ function TokenView({ token }: { token: InlineToken }) {
       return (
         <figure className="my-4 overflow-hidden rounded-card border border-border">
           <img
-            src={token.src}
+            src={siteAssetUrl(token.src)}
             alt={token.alt}
             loading="lazy"
             decoding="async"

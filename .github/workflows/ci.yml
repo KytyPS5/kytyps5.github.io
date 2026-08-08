@@ -1,5 +1,14 @@
 name: CI
 
+# Two gate levels keep report PRs cheap:
+#   - Report-only PRs (from compat-report.yml — changes limited to
+#     src/content/compat/**, public/screenshots/** or public/data/**) run only
+#     npm ci + typecheck + report validation. Report merges don't rebuild the
+#     site (deploy.yml republishes with fresh runtime data), so a full build
+#     and test suite add nothing on the PR branch.
+#   - Everything else (code, scripts, games database, pushes to main) runs the
+#     full pipeline: typecheck, tests, report validation and the production
+#     build (prebuild also regenerates the GitHub snapshot + compat JSONs).
 on:
   push:
     branches: [main]
@@ -10,15 +19,58 @@ jobs:
     runs-on: ubuntu-latest
     steps:
       - uses: actions/checkout@v7
+        with:
+          # Full history so report-only PRs can be detected by diffing against
+          # the PR base (same allowlist as deploy.yml's content-only scope).
+          fetch-depth: 0
+
       - uses: actions/setup-node@v7
         with:
           node-version: 22
           cache: npm
+
+      - name: Detect change scope
+        id: scope
+        shell: bash
+        run: |
+          # Pushes to main are always the full pipeline.
+          if [ "${{ github.event_name }}" = "push" ]; then
+            echo "scope=full" >> "$GITHUB_OUTPUT"
+            exit 0
+          fi
+          BASE="${{ github.event.pull_request.base.sha }}"
+          HEAD_SHA="${{ github.event.pull_request.head.sha }}"
+          CHANGED="$(git diff --name-only "$BASE" "$HEAD_SHA" 2>/dev/null || true)"
+          if [ -z "$CHANGED" ]; then
+            echo "scope=full" >> "$GITHUB_OUTPUT"
+            exit 0
+          fi
+          # Report-only = every changed file is a compat report, a screenshot
+          # or generated data (mirrors deploy.yml). Anything else → full.
+          if printf '%s\n' "$CHANGED" | grep -vqE '^(src/content/compat/|public/screenshots/|public/data/)'; then
+            echo "scope=full" >> "$GITHUB_OUTPUT"
+          else
+            echo "scope=report" >> "$GITHUB_OUTPUT"
+          fi
+
       - run: npm ci
+
       - run: npm run typecheck
-      - run: npm test
-      # prebuild validates compat reports and fetches the GitHub snapshot
-      # (GITHUB_TOKEN avoids anonymous rate limits).
-      - run: npm run build
+
+      # Report validation is cheap and dependency-free — gate it on every run.
+      - name: Validate compatibility reports
+        run: node scripts/validate-compat.mjs
+
+      - name: Test
+        if: steps.scope.outputs.scope != 'report'
+        run: npm test
+
+      # prebuild validates compat reports and regenerates the GitHub snapshot,
+      # the GUI + site compat JSON and the sitemap (GITHUB_TOKEN avoids rate
+      # limits on the API fetches). Skipped for report-only PRs — report merges
+      # don't rebuild the site, so the full build adds nothing on the branch.
+      - name: Build
+        if: steps.scope.outputs.scope != 'report'
         env:
           GITHUB_TOKEN: ${{ secrets.GITHUB_TOKEN }}
+        run: npm run build

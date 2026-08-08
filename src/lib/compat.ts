@@ -12,14 +12,7 @@
  * (see `displayStatus` / `aggregateStatus`).
  */
 
-export const STATUSES = [
-  "nothing",
-  "boots",
-  "menus",
-  "ingame",
-  "playable-low-fps",
-  "playable",
-] as const;
+export const STATUSES = ["nothing", "boots", "playable", "perfect"] as const;
 export type Status = (typeof STATUSES)[number];
 export type DisplayStatus = Status | "untested";
 
@@ -46,7 +39,8 @@ export interface CompatFrontmatter {
   score?: number;
   /** Optional tested game version (e.g. "1.004"). */
   gameVersion?: string;
-  /** Optional screenshot URL shown on the homepage carousel. */
+  /** Optional screenshot shown on the homepage carousel — a path relative to
+      public/screenshots/ (e.g. "screenshots/ps5-01.png") or an absolute URL. */
   screenshot?: string;
 }
 
@@ -70,46 +64,37 @@ export function gamePageKey(report: Pick<CompatReport, "titleId" | "slug">, game
 }
 
 /**
- * Status ladder colors (matches the emulator-community convention):
- *   grey    — not tested          blue    — reaches gameplay with major issues
- *   red     — crashes/no output   cyan    — playable at low/unstable FPS
- *   orange  — splash/intro only   green   — completable, minor or no issues
- *   yellow  — reaches menus
+ * Status ladder (4 tiers) with the community-convention colors:
+ *   grey   — Nothing:  doesn't boot, or boots to a black screen
+ *   red    — Boots:    splash screen or main menu, then crashes
+ *   orange — Playable: mostly playable with graphical/audio issues, random
+ *                      crashes and/or low frame rates
+ *   green  — Perfect:  plays start to finish with no issues
  */
 export const STATUS_META: Record<DisplayStatus, { label: string; color: string; description: string }> = {
   nothing: {
     label: "Nothing",
-    color: "#f87171",
-    description: "Crashes or shows no output.",
+    color: "#9ca3af",
+    description: "Game doesn't boot or only boots to a black screen.",
   },
   boots: {
     label: "Boots",
-    color: "#fb923c",
-    description: "Shows splash or intro output, no further.",
-  },
-  menus: {
-    label: "Menus",
-    color: "#facc15",
-    description: "Reaches interactive menus.",
-  },
-  ingame: {
-    label: "Ingame",
-    color: "#60a5fa",
-    description: "Reaches gameplay with major issues.",
-  },
-  "playable-low-fps": {
-    label: "Playable (low FPS)",
-    color: "#22d3ee",
-    description: "Playable, but at a low or unstable framerate.",
+    color: "#f87171",
+    description: "Game boots to either a Splash Screen or Main Menu then crashes.",
   },
   playable: {
     label: "Playable",
+    color: "#fb923c",
+    description: "Mostly playable with graphical/audio issues, random crashes and/or low frame rates.",
+  },
+  perfect: {
+    label: "Perfect",
     color: "#4ade80",
-    description: "Completable with minor or no issues.",
+    description: "Game plays from start to finish with no issues.",
   },
   untested: {
     label: "Not tested",
-    color: "#7b8496",
+    color: "#64748b",
     description: "No compatibility report yet.",
   },
 };
@@ -136,7 +121,7 @@ function groupByOs(reports: readonly OsReport[]): Map<string, OsReport[]> {
 /**
  * A game's status on "Any": the BEST result across its per-OS tests (each
  * OS's reports aggregate first — one verified report per OS). A game that is
- * playable on Windows but only ingame on macOS shows Playable overall — the
+ * playable on Windows but only boots on macOS shows Playable overall — the
  * best of any test done.
  */
 export function displayStatus(reports: readonly OsReport[]): DisplayStatus {
@@ -250,9 +235,9 @@ export interface IndexFilters {
 
 /**
  * Filter the compatibility index. Status is always evaluated inside the active
- * OS scope, so e.g. `ingame` + `linux` only matches games with a Linux report
- * voting ingame — a game whose only ingame report is OS-less (or Windows) does
- * not match. Pure + testable; the page only renders the result.
+ * OS scope, so e.g. `playable` + `linux` only matches games with a Linux
+ * report voting playable — a game whose only playable report is OS-less (or
+ * Windows) does not match. Pure + testable; the page only renders the result.
  */
 export function filterGameIndex(
   index: readonly GameIndexEntry[],
@@ -433,6 +418,12 @@ const modules = import.meta.glob("../content/compat/*.md", {
   eager: true,
 });
 
+/**
+ * Reports baked into the bundle at build time — the first-paint seed. The site
+ * ALSO fetches the generated public/data/compat.json at runtime (see
+ * `loadCompatReports` below), so a report merged through deploy.yml's
+ * content-only path goes live without a full rebuild.
+ */
 export const COMPAT_REPORTS: CompatReport[] = Object.entries(modules)
   .map(([path, raw]) => {
     const slug = path.split("/").pop()!.replace(/\.md$/, "");
@@ -446,3 +437,49 @@ export const COMPAT_REPORTS: CompatReport[] = Object.entries(modules)
   })
   .filter((r): r is CompatReport => r !== null)
   .sort((a, b) => a.title.localeCompare(b.title));
+
+/* ---------- Runtime refresh (fetch the generated compat JSON) ---------- */
+
+/** Shape of public/data/compat.json (written by scripts/export-site-compat-json.mjs). */
+interface CompatJsonPayload {
+  version: number;
+  reports: { slug: string; raw: string }[];
+}
+
+let compatJsonPromise: Promise<CompatReport[]> | null = null;
+
+/**
+ * Parse a compat.json payload (raw markdown per report) with the same parser
+ * as the bundle — one source of truth. Invalid entries are skipped and logged,
+ * and the result is sorted by title like COMPAT_REPORTS. Pure, so it's
+ * unit-tested in compat.test.ts.
+ */
+export function parseCompatPayload(payload: CompatJsonPayload | null | undefined): CompatReport[] {
+  if (!payload?.reports?.length) return [];
+  const parsed: CompatReport[] = [];
+  for (const { slug, raw } of payload.reports) {
+    try {
+      parsed.push(parseCompatReport(raw, slug));
+    } catch (error) {
+      console.error(`[compat] ${(error as Error).message}`);
+    }
+  }
+  return parsed.sort((a, b) => a.title.localeCompare(b.title));
+}
+
+/**
+ * Fetch the deployed compat JSON once (module-level cache, like loadGames).
+ * The raw markdown is parsed with the SAME parser as the bundle, so there is a
+ * single source of truth. Resolves to [] when the file is missing (dev without
+ * a build, content-only deploys before prebuild) — callers keep the bundled
+ * COMPAT_REPORTS seed in that case.
+ */
+export function loadCompatReports(): Promise<CompatReport[]> {
+  if (!compatJsonPromise) {
+    compatJsonPromise = fetch(`${import.meta.env.BASE_URL}data/compat.json`)
+      .then((res) => (res.ok ? (res.json() as Promise<CompatJsonPayload>) : null))
+      .then(parseCompatPayload)
+      .catch(() => []);
+  }
+  return compatJsonPromise;
+}

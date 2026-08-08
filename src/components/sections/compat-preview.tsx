@@ -1,7 +1,6 @@
 import { Link } from "react-router-dom";
 import { ArrowRight } from "lucide-react";
 import {
-  COMPAT_REPORTS,
   STATUSES,
   STATUS_META,
   computeStats,
@@ -9,13 +8,16 @@ import {
   groupReportsByGame,
   type Status,
 } from "@/lib/compat";
+import { useCompatReports } from "@/hooks/use-compat-reports";
 import { Reveal } from "@/components/layout/reveal";
 
 export function CompatPreview() {
   // One game per entry — status is the best result across its per-OS tests.
   // Groups always hold ≥1 report, so the per-game status is never "untested".
+  // Reports start as the bundle seed and refresh from the runtime JSON.
+  const { reports } = useCompatReports();
   const stats = computeStats(
-    [...groupReportsByGame(COMPAT_REPORTS).values()]
+    [...groupReportsByGame(reports).values()]
       .map((group) => displayStatus(group))
       .filter((s): s is Status => s !== "untested"),
   );
@@ -35,7 +37,7 @@ export function CompatPreview() {
               {stats.tested} game{stats.tested === 1 ? "" : "s"} tested so far
             </h2>
             <p className="mt-2 max-w-md text-sm leading-relaxed text-text-secondary">
-              Community-tracked statuses, from nothing to playable — with a report behind every
+              Community-tracked statuses, from nothing to perfect — with a report behind every
               entry.
             </p>
           </div>

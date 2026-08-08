@@ -12,14 +12,12 @@
 const GUI_STATUS = {
   nothing: "DoesntBoot",
   boots: "Logo",
-  menus: "MainMenu",
-  ingame: "InGame",
-  "playable-low-fps": "InGame",
   playable: "InGame",
+  perfect: "InGame",
 };
 
 /** Our ladder order — used for majority aggregation (ties to the better status). */
-export const STATUSES = ["nothing", "boots", "menus", "ingame", "playable-low-fps", "playable"];
+export const STATUSES = ["nothing", "boots", "playable", "perfect"];
 
 /** Map a site status to the GUI's accepted status string. */
 export function mapStatus(status) {

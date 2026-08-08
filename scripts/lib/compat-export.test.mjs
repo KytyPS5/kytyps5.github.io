@@ -91,14 +91,7 @@ function serializeLikeCli(db) {
 
 describe("status mapping (site ladder → GUI enum)", () => {
   it("maps every ladder status to an accepted GUI string", () => {
-    for (const status of [
-      "nothing",
-      "boots",
-      "menus",
-      "ingame",
-      "playable-low-fps",
-      "playable",
-    ]) {
+    for (const status of ["nothing", "boots", "playable", "perfect"]) {
       const mapped = mapStatus(status);
       expect(GUI_STATUSES).toContain(mapped);
       // The launcher's StatusFromText must never degrade our mapping to Unknown.
@@ -106,16 +99,14 @@ describe("status mapping (site ladder → GUI enum)", () => {
     }
   });
 
-  it("maps nothing → DoesntBoot, boots → Logo, menus → MainMenu", () => {
+  it("maps nothing → DoesntBoot, boots → Logo", () => {
     expect(mapStatus("nothing")).toBe("DoesntBoot");
     expect(mapStatus("boots")).toBe("Logo");
-    expect(mapStatus("menus")).toBe("MainMenu");
   });
 
-  it("maps all playable tiers to InGame (GUI has no playable tier)", () => {
-    expect(mapStatus("ingame")).toBe("InGame");
-    expect(mapStatus("playable-low-fps")).toBe("InGame");
+  it("maps playable + perfect to InGame (GUI has no playable tier)", () => {
     expect(mapStatus("playable")).toBe("InGame");
+    expect(mapStatus("perfect")).toBe("InGame");
   });
 
   it("falls back to Unknown for unknown statuses", () => {
@@ -125,12 +116,12 @@ describe("status mapping (site ladder → GUI enum)", () => {
 
 describe("aggregateStatuses (majority vote, ties → better)", () => {
   it("returns the majority status", () => {
-    expect(aggregateStatuses(["ingame", "ingame", "boots"])).toBe("ingame");
+    expect(aggregateStatuses(["playable", "playable", "boots"])).toBe("playable");
   });
 
   it("breaks ties toward the better status", () => {
-    expect(aggregateStatuses(["boots", "ingame"])).toBe("ingame");
-    expect(aggregateStatuses(["playable-low-fps", "ingame"])).toBe("playable-low-fps");
+    expect(aggregateStatuses(["boots", "playable"])).toBe("playable");
+    expect(aggregateStatuses(["playable", "perfect"])).toBe("perfect");
   });
 
   it("defaults to nothing for an empty group", () => {
@@ -213,19 +204,19 @@ describe("buildCompatibilityDb → GUI parse round-trip", () => {
   const reports = [
     {
       titleId: "PPSA06228",
-      status: "ingame",
+      status: "playable",
       testedVersion: "KytyPS5-2026-08-07-7907a50",
       testedDate: "2026-08-01",
     },
     {
       titleId: "PPSA06228",
-      status: "playable-low-fps",
+      status: "perfect",
       testedVersion: "KytyPS5-2026-08-07-7907a50",
       testedDate: "2026-08-05",
     },
     {
       titleId: "PPSA04877",
-      status: "menus",
+      status: "boots",
       testedVersion: "KytyPS5-2026-08-07-7907a50",
       testedDate: "2026-07-30",
     },
@@ -234,15 +225,15 @@ describe("buildCompatibilityDb → GUI parse round-trip", () => {
   it("groups by title ID and aggregates by majority", () => {
     const db = buildCompatibilityDb(reports);
     expect(Object.keys(db)).toEqual(["PPSA04877", "PPSA06228"]);
-    expect(db.PPSA06228.status).toBe("InGame"); // tie → better (playable-low-fps)
-    expect(db.PPSA04877.status).toBe("MainMenu");
+    expect(db.PPSA06228.status).toBe("InGame"); // tie → better (perfect)
+    expect(db.PPSA04877.status).toBe("Logo");
   });
 
   it("produces JSON the GUI parser accepts with no Unknown statuses", () => {
     const db = buildCompatibilityDb(reports);
     const parsed = guiParse(serializeLikeCli(db));
     expect(parsed.PPSA06228.status).toBe("InGame");
-    expect(parsed.PPSA04877.status).toBe("MainMenu");
+    expect(parsed.PPSA04877.status).toBe("Logo");
     for (const v of Object.values(parsed)) {
       expect(v.status).not.toBe("Unknown");
       expect(typeof v.comment).toBe("string");
@@ -262,7 +253,7 @@ describe("buildCompatibilityDb → GUI parse round-trip", () => {
 
   it("normalizes dashed title IDs to keys the GUI can Find", () => {
     const db = buildCompatibilityDb([
-      { titleId: "PPSA-06228", status: "ingame", testedDate: "2026-08-01" },
+      { titleId: "PPSA-06228", status: "playable", testedDate: "2026-08-01" },
     ]);
     const parsed = guiParse(serializeLikeCli(db));
     expect(guiFind(parsed, "PPSA06228").status).toBe("InGame");
@@ -271,42 +262,42 @@ describe("buildCompatibilityDb → GUI parse round-trip", () => {
 
 describe("per-OS status policy (Nmzik's cross-platform caveat)", () => {
   const reports = [
-    { titleId: "PPSA06228", status: "ingame", os: "windows", testedVersion: "b1", testedDate: "2026-08-01" },
-    { titleId: "PPSA06228", status: "playable", os: "windows", testedVersion: "b2", testedDate: "2026-08-03" },
+    { titleId: "PPSA06228", status: "playable", os: "windows", testedVersion: "b1", testedDate: "2026-08-01" },
+    { titleId: "PPSA06228", status: "perfect", os: "windows", testedVersion: "b2", testedDate: "2026-08-03" },
     { titleId: "PPSA06228", status: "boots", os: "linux", testedVersion: "b1", testedDate: "2026-08-02" },
-    { titleId: "PPSA06228", status: "menus", os: "linux", testedVersion: "b1", testedDate: "2026-08-01" },
+    { titleId: "PPSA06228", status: "nothing", os: "linux", testedVersion: "b1", testedDate: "2026-08-01" },
     // No `os` — counts toward the cross-platform status only.
     { titleId: "PPSA06228", status: "nothing", testedVersion: "b1", testedDate: "2026-08-01" },
   ];
 
   it("keeps the top-level status as the best across per-OS majorities", () => {
     const db = buildCompatibilityDb(reports);
-    // windows → playable, linux → menus, unknown-OS group → nothing.
-    // Best of those = playable.
+    // windows → perfect, linux → boots, unknown-OS group → nothing.
+    // Best of those = perfect.
     expect(db.PPSA06228.status).toBe("InGame");
     expect(db.PPSA06228.reports).toBe(5);
   });
 
   it("top-level best-of-OS can beat a cross-platform majority", () => {
     const db = buildCompatibilityDb([
-      { titleId: "PPSA06228", status: "ingame", os: "windows", testedVersion: "b1", testedDate: "2026-08-01" },
-      { titleId: "PPSA06228", status: "ingame", os: "windows", testedVersion: "b2", testedDate: "2026-08-02" },
-      // Windows majority says ingame, but Linux says playable → Any = playable.
-      { titleId: "PPSA06228", status: "playable", os: "linux", testedVersion: "b1", testedDate: "2026-08-03" },
+      { titleId: "PPSA06228", status: "playable", os: "windows", testedVersion: "b1", testedDate: "2026-08-01" },
+      { titleId: "PPSA06228", status: "playable", os: "windows", testedVersion: "b2", testedDate: "2026-08-02" },
+      // Windows majority says playable, but Linux says perfect → Any = perfect.
+      { titleId: "PPSA06228", status: "perfect", os: "linux", testedVersion: "b1", testedDate: "2026-08-03" },
     ]);
     expect(db.PPSA06228.platforms.windows.status).toBe("InGame"); // majority of the OS
     expect(db.PPSA06228.platforms.linux.status).toBe("InGame");
-    expect(db.PPSA06228.status).toBe("InGame"); // best = playable → InGame
-    expect(db.PPSA06228.comment).toContain("playable");
+    expect(db.PPSA06228.status).toBe("InGame"); // best = perfect → InGame
+    expect(db.PPSA06228.comment).toContain("perfect");
   });
 
   it("aggregates per OS with its own majority", () => {
     const db = buildCompatibilityDb(reports);
-    // windows: ingame + playable → tie → playable → InGame
+    // windows: playable + perfect → tie → perfect → InGame
     expect(db.PPSA06228.platforms.windows.status).toBe("InGame");
     expect(db.PPSA06228.platforms.windows.reports).toBe(2);
-    // linux: boots + menus → tie → menus → MainMenu
-    expect(db.PPSA06228.platforms.linux.status).toBe("MainMenu");
+    // linux: boots + nothing → tie → boots → Logo
+    expect(db.PPSA06228.platforms.linux.status).toBe("Logo");
     expect(db.PPSA06228.platforms.linux.reports).toBe(2);
   });
 
@@ -320,7 +311,7 @@ describe("per-OS status policy (Nmzik's cross-platform caveat)", () => {
 
   it("a single-OS game's top-level status equals that OS's status", () => {
     const db = buildCompatibilityDb([
-      { titleId: "PPSA06228", status: "ingame", os: "windows", testedVersion: "b1", testedDate: "2026-08-01" },
+      { titleId: "PPSA06228", status: "playable", os: "windows", testedVersion: "b1", testedDate: "2026-08-01" },
     ]);
     expect(db.PPSA06228.status).toBe("InGame");
     expect(Object.keys(db.PPSA06228.platforms)).toEqual(["windows"]);
@@ -335,7 +326,7 @@ describe("per-OS status policy (Nmzik's cross-platform caveat)", () => {
 
   it("omits the platforms block entirely when no report has an OS", () => {
     const db = buildCompatibilityDb([
-      { titleId: "PPSA01234", status: "ingame", testedDate: "2026-08-01" },
+      { titleId: "PPSA01234", status: "playable", testedDate: "2026-08-01" },
     ]);
     expect(db.PPSA01234.platforms).toBeUndefined();
     expect(db.PPSA01234.status).toBe("InGame");
@@ -344,7 +335,7 @@ describe("per-OS status policy (Nmzik's cross-platform caveat)", () => {
 
   it("excludes unrecognized OS values from platforms but keeps them in the overall", () => {
     const db = buildCompatibilityDb([
-      { titleId: "PPSA05555", status: "ingame", os: "steamos", testedDate: "2026-08-01" },
+      { titleId: "PPSA05555", status: "playable", os: "steamos", testedDate: "2026-08-01" },
       { titleId: "PPSA05555", status: "boots", os: "windows", testedDate: "2026-08-01" },
     ]);
     expect(db.PPSA05555.reports).toBe(2);
@@ -354,8 +345,8 @@ describe("per-OS status policy (Nmzik's cross-platform caveat)", () => {
 
   it("prefers the newest dated report's build even when another lacks a date", () => {
     const db = buildCompatibilityDb([
-      { titleId: "PPSA06666", status: "ingame", os: "windows", testedVersion: "old", testedDate: "2026-08-01" },
-      { titleId: "PPSA06666", status: "ingame", os: "windows", testedVersion: "new" },
+      { titleId: "PPSA06666", status: "playable", os: "windows", testedVersion: "old", testedDate: "2026-08-01" },
+      { titleId: "PPSA06666", status: "playable", os: "windows", testedVersion: "new" },
     ]);
     // The undated report must not win "latest" over the dated one.
     expect(db.PPSA06666.platforms.windows.version).toBe("old");

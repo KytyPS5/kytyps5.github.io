@@ -5,7 +5,6 @@ import { Link } from "react-router-dom";
 import { SITE } from "@/config";
 import { Seo } from "@/lib/seo";
 import {
-  COMPAT_REPORTS,
   STATUSES,
   STATUS_META,
   buildGameIndex,
@@ -17,6 +16,7 @@ import {
   type Os,
 } from "@/lib/compat";
 import { loadGames, type Game } from "@/lib/games";
+import { useCompatReports } from "@/hooks/use-compat-reports";
 import { PageHeader } from "@/components/layout/page-header";
 import { Section } from "@/components/layout/section";
 import { StatusBadge } from "@/components/compat/status-badge";
@@ -48,19 +48,30 @@ export function CompatibilityPage() {
   // Full index: every game in the database + its verified reports.
   // Nothing here is hardcoded — reports come from src/content/compat/*.md and
   // the game list from src/data/games.json (andshrew/PlayStation-Titles).
+  // Reports start as the build-time bundle and refresh from the runtime JSON.
+  const { reports, loading: reportsLoading } = useCompatReports();
   const index = React.useMemo(
-    () => (games ? buildGameIndex(games, COMPAT_REPORTS) : []),
-    [games],
+    () => (games ? buildGameIndex(games, reports) : []),
+    [games, reports],
+  );
+
+  // Only tested games are listed — untested titles are hidden entirely instead
+  // of showing up grey. With an OS filter active, only games with a report for
+  // that OS are listed (a Windows-only game disappears under the Linux filter
+  // instead of showing "Not tested").
+  const visibleIndex = React.useMemo(
+    () => index.filter((e) => displayStatusForOs(e.reports, osFilter) !== "untested"),
+    [index, osFilter],
   );
 
   // Stats and filtering are evaluated inside the active OS scope: with an OS
   // selected, a game's status is scoped to THAT OS's reports only, so status +
   // OS combinations filter predictably.
-  const stats = React.useMemo(() => indexStatsForOs(index, osFilter), [index, osFilter]);
+  const stats = React.useMemo(() => indexStatsForOs(visibleIndex, osFilter), [visibleIndex, osFilter]);
 
   const filtered = React.useMemo(
-    () => filterGameIndex(index, { status: statusFilter, os: osFilter, query }),
-    [index, statusFilter, osFilter, query],
+    () => filterGameIndex(visibleIndex, { status: statusFilter, os: osFilter, query }),
+    [visibleIndex, statusFilter, osFilter, query],
   );
 
   // Reset pagination whenever the filters change.
@@ -74,16 +85,16 @@ export function CompatibilityPage() {
     <>
       <Seo
         title="Compatibility"
-        description="Community-tracked game compatibility for KytyPS5 — every PS5 title, with statuses from not tested to playable."
+        description="Community-tracked game compatibility for KytyPS5 — tested games, from nothing to perfect."
         path="/compatibility"
       />
       <PageHeader
         eyebrow="Compatibility"
         title="Game compatibility"
-        description="Every game in the database, from the same title list the emulator community uses. Tested games show the best result across their per-OS reports; everything else is not tested."
+        description="Tested games from the same title list the emulator community uses, showing the best result across their per-OS reports. Untested titles aren't listed until a report lands."
       />
 
-      {games === null ? (
+      {games === null || reportsLoading ? (
         <Section className="!pt-4">
           <div
             className="flex min-h-[50vh] items-center justify-center"
@@ -108,19 +119,7 @@ export function CompatibilityPage() {
             <span className="font-display text-2xl font-semibold tabular-nums text-text-primary">
               {stats.total.toLocaleString()}
             </span>
-            <span className="text-xs uppercase tracking-wider text-text-muted">Total games</span>
-          </div>
-          <div className="flex flex-col items-center gap-1 bg-surface px-4 py-5">
-            <span className="font-display text-2xl font-semibold tabular-nums text-text-primary">
-              {stats.tested}
-            </span>
-            <span className="text-xs uppercase tracking-wider text-text-muted">Tested</span>
-          </div>
-          <div className="flex flex-col items-center gap-1 bg-surface px-4 py-5">
-            <span className="font-display text-2xl font-semibold tabular-nums" style={{ color: STATUS_META.untested.color }}>
-              {stats.untested.toLocaleString()}
-            </span>
-            <span className="text-xs uppercase tracking-wider text-text-muted">Not tested</span>
+            <span className="text-xs uppercase tracking-wider text-text-muted">Tested games</span>
           </div>
           {STATUSES.map((status) => (
             <div key={status} className="flex flex-col items-center gap-1 bg-surface px-4 py-5">
@@ -138,8 +137,8 @@ export function CompatibilityPage() {
         </motion.div>
 
         {/* Legend */}
-        <div className="mt-8 grid gap-3 sm:grid-cols-2 lg:grid-cols-3">
-          {([...STATUSES, "untested"] as const).map((status) => (
+        <div className="mt-8 grid gap-3 sm:grid-cols-2 lg:grid-cols-4">
+          {STATUSES.map((status) => (
             <div key={status} className="flex items-start gap-3 rounded-card border border-border bg-surface p-4">
               <StatusBadge status={status} className="mt-0.5 shrink-0" />
               <p className="text-sm text-text-secondary">{STATUS_META[status].description}</p>
@@ -165,19 +164,6 @@ export function CompatibilityPage() {
               )}
             >
               All ({stats.total.toLocaleString()})
-            </button>
-            <button
-              type="button"
-              onClick={() => setStatusFilter("untested")}
-              aria-pressed={statusFilter === "untested"}
-              className={cn(
-                "cursor-pointer rounded-full border px-3.5 py-1.5 text-xs font-medium transition-colors duration-150 focus-visible:outline-2 focus-visible:outline-accent",
-                statusFilter === "untested"
-                  ? "border-accent/50 bg-accent/15 text-accent"
-                  : "border-border bg-surface text-text-secondary hover:border-border-strong hover:text-text-primary",
-              )}
-            >
-              Not tested ({stats.untested.toLocaleString()})
             </button>
             {STATUSES.map((status) => (
               <button
@@ -327,8 +313,8 @@ export function CompatibilityPage() {
 
           <p className="mt-6 text-center text-sm text-text-muted">
             {stats.tested} tested game{stats.tested === 1 ? "" : "s"} · statuses are per operating system, and the
-            overall badge is the best result across tested OSes. Untested titles are grey until a
-            report lands.
+            overall badge is the best result across tested OSes. Untested titles aren't listed until
+            a report lands.
           </p>
           </Section>
         </>

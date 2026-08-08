@@ -2,7 +2,8 @@ import * as React from "react";
 import { Link } from "react-router-dom";
 import { AnimatePresence, motion, useReducedMotion } from "framer-motion";
 import { ChevronLeft, ChevronRight, Expand } from "lucide-react";
-import { CAROUSEL_SLIDES, type CarouselSlide } from "@/lib/slides";
+import { buildCarouselSlides, type CarouselSlide } from "@/lib/slides";
+import { useCompatReports } from "@/hooks/use-compat-reports";
 import { cn } from "@/lib/utils";
 import {
   Dialog,
@@ -33,7 +34,11 @@ export function ScreenshotCarousel() {
   const [paused, setPaused] = React.useState(false);
   const [lightbox, setLightbox] = React.useState(false);
   const reduced = useReducedMotion();
-  const count = CAROUSEL_SLIDES.length;
+  // Slides derive from the compat reports (bundle seed → runtime JSON refresh),
+  // so a merged report with a screenshot appears without a rebuild.
+  const { reports } = useCompatReports();
+  const slides = React.useMemo(() => buildCarouselSlides(reports), [reports]);
+  const count = slides.length;
 
   const next = React.useCallback(() => setIndex((i) => (i + 1) % count), [count]);
   const prev = React.useCallback(() => setIndex((i) => (i - 1 + count) % count), [count]);
@@ -48,13 +53,18 @@ export function ScreenshotCarousel() {
   React.useEffect(() => {
     if (reduced || count === 0) return;
     const img = new Image();
-    img.src = CAROUSEL_SLIDES[(index + 1) % count].src;
+    img.src = slides[(index + 1) % count].src;
     img.decoding = "async";
-  }, [index, count, reduced]);
+  }, [index, count, reduced, slides]);
+
+  // Keep the index in range when the slide list changes (e.g. runtime refresh).
+  React.useEffect(() => {
+    if (index >= count && count > 0) setIndex(count - 1);
+  }, [index, count]);
 
   if (count === 0) return null;
 
-  const current = CAROUSEL_SLIDES[index];
+  const current = slides[index];
 
   return (
     <div
@@ -150,7 +160,7 @@ export function ScreenshotCarousel() {
 
       {/* Dots */}
       <div className="mt-5 flex items-center justify-center gap-2" role="group" aria-label="Screenshot selection">
-        {CAROUSEL_SLIDES.map((shot, i) => (
+        {slides.map((shot, i) => (
           <button
             key={shot.src}
             type="button"

@@ -6,13 +6,14 @@
   "description": "Official website for KytyPS5 — a free and open-source PlayStation 5 emulator for Windows, Linux and macOS.",
   "scripts": {
     "dev": "vite",
-    "prebuild": "node scripts/validate-compat.mjs && node scripts/fetch-github-data.mjs && node scripts/export-compat-json.mjs && node scripts/generate-sitemap.mjs",
+    "prebuild": "node scripts/validate-compat.mjs && node scripts/fetch-github-data.mjs && node scripts/export-compat-json.mjs && node scripts/export-site-compat-json.mjs && node scripts/generate-sitemap.mjs",
     "build": "tsc && vite build",
     "typecheck": "tsc --noEmit",
     "test": "vitest run",
     "import": "node scripts/import-games.mjs",
     "fetch:data": "node scripts/fetch-github-data.mjs",
     "export:compat": "node scripts/export-compat-json.mjs --pretty",
+    "export:site-compat": "node scripts/export-site-compat-json.mjs --pretty",
     "sitemap": "node scripts/generate-sitemap.mjs",
     "preview": "vite preview"
   },

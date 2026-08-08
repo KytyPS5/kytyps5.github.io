@@ -3,7 +3,6 @@ import { Link, useParams } from "react-router-dom";
 import { ArrowLeft, CheckCircle2, ExternalLink, FileQuestion } from "lucide-react";
 import { Seo } from "@/lib/seo";
 import {
-  COMPAT_REPORTS,
   OSES,
   STATUS_META,
   displayStatus,
@@ -13,6 +12,7 @@ import {
   type CompatReport,
 } from "@/lib/compat";
 import { loadGames, type Game } from "@/lib/games";
+import { useCompatReports } from "@/hooks/use-compat-reports";
 import { SITE, SITE_URL } from "@/config";
 import { Markdown } from "@/lib/markdown.tsx";
 import { StatusBadge } from "@/components/compat/status-badge";
@@ -101,11 +101,12 @@ export function GamePage() {
   // Resolve the database game first (any region variant of the title ID), then
   // collect every report for it — by exact title ID, slug, or any of the
   // game's region-variant IDs (matches buildGameIndex on the index page).
+  const { reports: compatReports, loading: reportsLoading } = useCompatReports();
   const keyNorm = normalize(key);
   const game = games
     ? games.find((g) => g.allTitleIds.some((id) => normalize(id) === keyNorm))
     : undefined;
-  const reports = COMPAT_REPORTS.filter((r) => {
+  const reports = compatReports.filter((r) => {
     const rKey = r.titleId ? normalize(r.titleId) : "";
     return (
       r.slug === key ||
@@ -115,9 +116,10 @@ export function GamePage() {
   }).sort((a, b) => (a.testedDate < b.testedDate ? 1 : -1));
   const report = reports[0];
 
-  // Wait for the games database before resolving content states, so the
-  // not-found / no-report pages never flash with misleading content.
-  if (games === null) {
+  // Wait for the games database and the runtime report refresh before
+  // resolving content states, so the not-found / no-report pages never flash
+  // with misleading content (a merged report arrives via the runtime JSON).
+  if (games === null || reportsLoading) {
     return (
       <>
         <Seo title="Loading…" description="" path={`/game/${encodeURIComponent(key)}`} noindex />
@@ -268,10 +270,10 @@ export function GamePage() {
               Each OS's status comes from a verified compatibility report: anyone files one
               through the issue template, a maintainer verifies it, and a command turns it into a
               PR that gets merged. The badge above is the best result across tested OSes — an
-              untested OS stays grey until a report for it lands.
+              untested OS isn't shown until a report for it lands.
             </p>
             <div className="mt-5 grid gap-4 sm:grid-cols-3">
-              {OSES.map((os) => {
+              {OSES.filter((os) => perOs[os] !== "untested").map((os) => {
                 const osReports = reportsForOs(reports, os);
                 return (
                   <div

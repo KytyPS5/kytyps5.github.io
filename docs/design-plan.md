@@ -102,8 +102,10 @@ pass WCAG AA/AAA. Focus rings use `--accent` at 2px + 3px halo.
   opacity; plus a faint dot-grid or scanline texture at ≤4% opacity.
 - **Terminal motif:** a faux-terminal window used in the hero "install preview" and docs (JetBrains
   Mono, mac-style traffic lights kept abstract).
-- **Game screenshot carousel** sourced from the repo (`docs/screenshots/ps5-01…06.png`, served
-  from `raw.githubusercontent.com`, lazy-loaded, `loading="lazy"` + width/height reserved).
+- **Game screenshot carousel** — images mirrored into `public/screenshots/` (`ps5-01…06.png`),
+  served locally (no `raw.githubusercontent.com` hotlinks), lazy-loaded, `loading="lazy"` +
+  width/height reserved; slides derive from compatibility reports that carry a `screenshot`
+  field (see `src/lib/slides.ts`).
 
 ---
 

@@ -74,6 +74,17 @@ describe("parseInline", () => {
     ]);
   });
 
+  it("parses relative image sources (local screenshots)", () => {
+    expect(parseInline("![alt](screenshots/ps5-01.png)")).toEqual([
+      { type: "image", alt: "alt", src: "screenshots/ps5-01.png" },
+    ]);
+  });
+
+  it("rejects other image schemes as literal text", () => {
+    const [token] = parseInline("![alt](data:image/png;base64,AAAA)");
+    expect(token.type).toBe("text");
+  });
+
   it("tolerates balanced parentheses in URLs", () => {
     expect(parseInline("[see](https://example.com/foo_(bar))")).toEqual([
       { type: "link", href: "https://example.com/foo_(bar)", children: [{ type: "text", value: "see" }] },

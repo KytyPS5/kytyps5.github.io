@@ -4,7 +4,7 @@
  * under src/content/compat/. Invoked by .github/workflows/compat-report.yml.
  *
  * Usage:
- *   node scripts/issue-to-compat.mjs --title "Disgaea 6" --status ingame \
+ *   node scripts/issue-to-compat.mjs --title "Disgaea 6" --status playable \
  *     --version "main" --date 2026-08-10 --os windows --hardware "Ryzen 9 / RTX 5090" \
  *     --body "notes…" --source "#123" --source-url "https://github.com/org/repo/issues/123" \
  *     [--game-version "1.004"] [--slug disgaea-6] [--title-id PPSA01234]
@@ -18,9 +18,27 @@ import path from "node:path";
 const ROOT = path.resolve(path.dirname(fileURLToPath(import.meta.url)), "..");
 const DIR = path.join(ROOT, "src", "content", "compat");
 
-const STATUSES = ["nothing", "boots", "menus", "ingame", "playable-low-fps", "playable"];
+const STATUSES = ["nothing", "boots", "playable", "perfect"];
 const OSES = ["windows", "linux", "macos"];
 const TITLE_ID_REGEX = /^PPSA-?\d{5}$/i;
+
+/**
+ * The ladder was reduced from 6 tiers to 4 (nothing → boots → playable →
+ * perfect). Issues filed under the OLD template still carry the old statuses
+ * in their body — remap them on conversion so re-running /compat on a
+ * pre-existing issue still works. Stored reports must use the new ladder
+ * (validate-compat rejects the old values); this only normalizes issue intake.
+ */
+const LEGACY_STATUS = {
+  menus: "boots", // reached menus ≈ boots to splash/main menu
+  ingame: "playable", // gameplay with major issues ≈ mostly playable
+  "playable-low-fps": "playable", // low frame rates are part of playable
+  playable: "perfect", // completable, minor/no issues ≈ plays start to finish
+};
+
+function normalizeStatus(status) {
+  return LEGACY_STATUS[status] ?? status;
+}
 
 function arg(name) {
   const idx = process.argv.indexOf(`--${name}`);
@@ -28,7 +46,8 @@ function arg(name) {
 }
 
 const title = arg("title");
-const status = arg("status");
+const statusRaw = arg("status");
+const status = normalizeStatus(statusRaw);
 const version = arg("version");
 const date = arg("date");
 const os = arg("os");
@@ -49,7 +68,11 @@ const errors = [];
 if (!title) errors.push("--title is required");
 if (!titleId) errors.push("--title-id is required");
 else if (!TITLE_ID_REGEX.test(titleId)) errors.push(`--title-id must look like PPSA-XXXXX`);
-if (!STATUSES.includes(status)) errors.push(`--status must be one of ${STATUSES.join(" | ")}`);
+if (!status) errors.push("--status is required");
+else if (!STATUSES.includes(status)) errors.push(`--status must be one of ${STATUSES.join(" | ")}, got "${String(statusRaw)}"`);
+else if (statusRaw !== status) {
+  console.warn(`[issue-to-compat] ⚠ remapped legacy status "${statusRaw}" → "${status}" (old 6-tier ladder)`);
+}
 if (!version) errors.push("--version is required");
 if (!date || !/^\d{4}-\d{2}-\d{2}$/.test(date)) errors.push("--date must be YYYY-MM-DD");
 if (!os) errors.push("--os is required (one report per operating system)");

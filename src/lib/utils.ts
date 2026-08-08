@@ -5,6 +5,18 @@ export function cn(...inputs: ClassValue[]) {
   return twMerge(clsx(inputs));
 }
 
+/**
+ * Resolve a site-relative asset path (e.g. "screenshots/ps5-01.png") against
+ * BASE_URL so it works under any deployment subpath (GitHub Pages project
+ * sites include the repo name). Absolute http(s)/data/blob URLs and
+ * protocol-relative URLs pass through unchanged.
+ */
+export function siteAssetUrl(src: string): string {
+  if (/^(?:https?:|data:|blob:)/i.test(src) || src.startsWith("//")) return src;
+  const clean = src.replace(/^\.\//, "").replace(/^\//, "");
+  return import.meta.env.BASE_URL + clean;
+}
+
 /** Format a byte count as a human-readable size (e.g. "20.5 MB"). */
 export function formatBytes(bytes: number): string {
   if (!Number.isFinite(bytes) || bytes <= 0) return "—";

@@ -1,12 +1,32 @@
 name: Deploy to GitHub Pages
 
-# Builds the site and publishes it to GitHub Pages on every push to main.
+# Builds the site and publishes it to GitHub Pages on push to main.
 # Requires Pages → Source = "GitHub Actions" (set up once via
 #   gh api --method POST repos/DistantMyth/KytyPS5-site/pages -f build_type=workflow
 # or the repo's Settings → Pages tab).
+#
+# Two deploy paths keep merged compatibility reports cheap:
+#   - Content-only: a push touching ONLY src/content/compat/**, public/screenshots/**
+#     or public/data/** (i.e. a merged report PR). The previous build is restored
+#     from the Actions cache, the compat JSONs + sitemap are regenerated from the
+#     reports and overlaid, and the artifact is republished — no npm ci, no tsc,
+#     no vite build. The site fetches data/compat.json at runtime, so the new
+#     report goes live ~a minute after the merge.
+#   - Full build: anything else (code, scripts, games database, …). npm ci +
+#     build as before, and the dist is cached for the next content-only deploy.
+#     Also the fallback when a content-only deploy finds no cached build (first
+#     deploy, or the cache expired).
+# Pushes touching only docs/, the README, LICENSE, .gitignore or workflow files
+# skip the deploy entirely (paths-ignore below).
 on:
   push:
     branches: [main]
+    paths-ignore:
+      - "docs/**"
+      - "README.md"
+      - "LICENSE"
+      - ".gitignore"
+      - ".github/**"
   workflow_dispatch:
 
 permissions:
@@ -26,18 +46,106 @@ jobs:
     runs-on: ubuntu-latest
     steps:
       - uses: actions/checkout@v7
+        with:
+          # Full history so the change scope can be diffed against the previous commit.
+          fetch-depth: 0
+
       - uses: actions/setup-node@v7
         with:
           node-version: 22
           cache: npm
-      - run: npm ci
+
+      - name: Detect change scope
+        id: scope
+        shell: bash
+        run: |
+          if [ "${{ github.event_name }}" = "workflow_dispatch" ]; then
+            echo "scope=full" >> "$GITHUB_OUTPUT"
+            exit 0
+          fi
+          BASE="${{ github.event.before }}"
+          CHANGED="$(git diff --name-only "$BASE" HEAD 2>/dev/null || true)"
+          if [ -z "$CHANGED" ]; then
+            echo "scope=full" >> "$GITHUB_OUTPUT"
+            exit 0
+          fi
+          # Content-only = every changed file is a compat report, a screenshot
+          # or generated data. Anything else (code, scripts, games.json, …)
+          # needs the full build.
+          if printf '%s\n' "$CHANGED" | grep -vqE '^(src/content/compat/|public/screenshots/|public/data/)'; then
+            echo "scope=full" >> "$GITHUB_OUTPUT"
+          else
+            echo "scope=content" >> "$GITHUB_OUTPUT"
+          fi
+
+      # ---- Content-only path: restore the last full build from the cache ----
+      - name: Restore previous build (content-only)
+        if: steps.scope.outputs.scope == 'content'
+        uses: actions/cache/restore@v4
+        with:
+          path: dist
+          key: dist-${{ github.sha }}
+          restore-keys: dist-
+
+      - name: Check restored build
+        id: dist-check
+        if: steps.scope.outputs.scope == 'content'
+        shell: bash
+        run: |
+          if [ -f dist/index.html ]; then
+            echo "restored=true" >> "$GITHUB_OUTPUT"
+          else
+            echo "restored=false" >> "$GITHUB_OUTPUT"
+          fi
+
+      # ---- Full build (also the fallback when the content-only cache missed) ----
+      - name: Install dependencies
+        if: |
+          steps.scope.outputs.scope == 'full' ||
+          (steps.scope.outputs.scope == 'content' && steps.dist-check.outputs.restored == 'false')
+        run: npm ci
+
       # prebuild validates compat reports and regenerates the GitHub snapshot,
-      # the GUI compatibility JSON and the sitemap (GITHUB_TOKEN avoids rate
+      # the GUI + site compat JSON and the sitemap (GITHUB_TOKEN avoids rate
       # limits on the API fetches).
       - name: Build
+        if: |
+          steps.scope.outputs.scope == 'full' ||
+          (steps.scope.outputs.scope == 'content' && steps.dist-check.outputs.restored == 'false')
         env:
           GITHUB_TOKEN: ${{ secrets.GITHUB_TOKEN }}
         run: npm run build
+
+      - name: Cache built site
+        if: |
+          steps.scope.outputs.scope == 'full' ||
+          (steps.scope.outputs.scope == 'content' && steps.dist-check.outputs.restored == 'false')
+        # A retried run of the same SHA may already have cached dist — that's fine.
+        continue-on-error: true
+        uses: actions/cache/save@v4
+        with:
+          path: dist
+          key: dist-${{ github.sha }}
+
+      # ---- Content-only: regenerate data from the merged reports and overlay ----
+      # These scripts are dependency-free (node builtins only), so the fast path
+      # needs no npm ci. Screenshots + the compat JSONs + sitemap are copied into
+      # the restored dist, which keeps everything else from the last full build.
+      - name: Regenerate and overlay content
+        if: steps.scope.outputs.scope == 'content' && steps.dist-check.outputs.restored == 'true'
+        shell: bash
+        run: |
+          node scripts/validate-compat.mjs
+          node scripts/export-compat-json.mjs
+          node scripts/export-site-compat-json.mjs
+          node scripts/generate-sitemap.mjs
+          mkdir -p dist/data dist/screenshots
+          cp public/data/compatibility.json dist/data/compatibility.json
+          cp public/data/compat.json dist/data/compat.json
+          cp public/sitemap.xml dist/sitemap.xml
+          cp -r public/screenshots/. dist/screenshots/
+          echo "Content-only deploy: skipped npm ci / tsc / vite build."
+
       - uses: actions/configure-pages@v6
       - uses: actions/upload-pages-artifact@v5
         with:

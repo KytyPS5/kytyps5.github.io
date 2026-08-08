@@ -15,7 +15,8 @@ body:
     id: status
     attributes:
       label: Compatibility status
-      options: [nothing, boots, menus, ingame, playable-low-fps, playable]
+      description: "Nothing — doesn't boot or only boots to a black screen · Boots — splash screen or main menu, then crashes · Playable — mostly playable with graphical/audio issues, random crashes and/or low frame rates · Perfect — plays from start to finish with no issues."
+      options: [nothing, boots, playable, perfect]
     validations:
       required: true
   - type: input
