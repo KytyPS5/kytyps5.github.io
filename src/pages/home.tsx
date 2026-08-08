@@ -1,7 +1,10 @@
+import * as React from "react";
 import { Seo, softwareJsonLd } from "@/lib/seo";
 import { Hero } from "@/components/sections/hero";
 import { Platforms } from "@/components/sections/platforms";
 import { ScreenshotCarousel } from "@/components/sections/screenshot-carousel";
+import { buildCarouselSlides } from "@/lib/slides";
+import { useCompatReports } from "@/hooks/use-compat-reports";
 import { InstallPreview } from "@/components/sections/install-preview";
 import { HowItWorks } from "@/components/sections/how-it-works";
 import { FaqPreview } from "@/components/sections/faq-preview";
@@ -10,6 +13,25 @@ import { Section } from "@/components/layout/section";
 import { Reveal } from "@/components/layout/reveal";
 import { CompatPreview } from "@/components/sections/compat-preview";
 import { RepoStats } from "@/components/github/repo-stats";
+
+/** Screenshots section — rendered only while reports carry screenshots. */
+function ScreenshotsSection() {
+  const { reports } = useCompatReports();
+  const slides = React.useMemo(() => buildCarouselSlides(reports), [reports]);
+  if (slides.length === 0) return null;
+  return (
+    <Section
+      eyebrow="In action"
+      title="From boot to in-game"
+      description="Titles captured from the repository — 2D and 3D games across Unreal Engine 4/5, Unity and custom engines."
+      className="bg-surface/40"
+    >
+      <Reveal from="right" amount={0.3}>
+        <ScreenshotCarousel />
+      </Reveal>
+    </Section>
+  );
+}
 
 export function HomePage() {
   return (
@@ -36,17 +58,8 @@ export function HomePage() {
         <Platforms />
       </Section>
 
-      {/* Screenshots */}
-      <Section
-        eyebrow="In action"
-        title="From boot to in-game"
-        description="Titles captured from the repository — 2D and 3D games across Unreal Engine 4/5, Unity and custom engines."
-        className="bg-surface/40"
-      >
-        <Reveal from="right" amount={0.3}>
-          <ScreenshotCarousel />
-        </Reveal>
-      </Section>
+      {/* Screenshots — hidden until a report with a screenshot exists */}
+      <ScreenshotsSection />
 
       {/* Installation preview */}
       <Section>
