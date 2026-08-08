@@ -113,7 +113,7 @@ export function CompatibilityPage() {
           whileInView={{ opacity: 1, x: 0 }}
           viewport={{ once: false, amount: 0.3 }}
           transition={{ duration: 0.5, ease: [0.16, 1, 0.3, 1] }}
-          className="grid grid-cols-3 gap-px overflow-hidden rounded-panel border border-border bg-border shadow-card sm:grid-cols-5 lg:grid-cols-6"
+          className="grid grid-cols-3 gap-px overflow-hidden rounded-panel border border-border bg-border shadow-card sm:grid-cols-5"
         >
           <div className="flex flex-col items-center gap-1 bg-surface px-4 py-5">
             <span className="font-display text-2xl font-semibold tabular-nums text-text-primary">
