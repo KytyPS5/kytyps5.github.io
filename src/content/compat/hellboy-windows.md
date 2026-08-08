@@ -1,16 +1,12 @@
 ---
-titleId: "PPSA11263"
 title: "Hellboy"
+titleId: "PPSA11263"
 status: "playable"
 testedVersion: "KytyPS5-2026-08-07-7907a50"
 testedDate: "2026-08-07"
 os: "windows"
 screenshot: "screenshots/ps5-02.png"
 ---
-
-Boots and reaches gameplay, captured in the official repository screenshot gallery. Tagged
-Windows because the project README describes Windows as the primary platform receiving the most
-testing — the screenshots themselves don't state an OS.
 
 ![Hellboy running in KytyPS5](screenshots/ps5-02.png)
 
