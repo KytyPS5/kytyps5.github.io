@@ -26,8 +26,8 @@
 **Navigation (top bar):** `Download · Documentation · FAQ · Contributing · About` + CTA `Get KytyPS5` → `/download`.
 **Footer:** logo, tagline, columns (Project: Download, Documentation, FAQ, Contributing, About; External: GitHub, Releases, Issues, Discussions–none), legal line, license line.
 
-**robots.txt:** allow all, sitemap pointer. **sitemap.xml:** the 6 indexable routes with canonical URLs
-(`https://kytyps5.github.io/…` — final domain `[MAINTAINER INPUT NEEDED]`).
+**robots.txt:** allow all, sitemap pointer. **sitemap.xml:** the indexable routes with canonical URLs
+(`https://kytyps5.github.io/KytyPS5-site` — decided; site repo transfers to the KytyPS5 org).
 
 ---
 
@@ -218,11 +218,11 @@ Soft-404: wordmark, "Page not found", link home + GitHub. Not indexed.
 | Screenshots | `ps5-01…06.png`: Disgaea 6, Dreaming Sarah, Neptunia ReVerse, SILENT HILL: The Short Message, Hellboy, Paleo Pines |
 
 ### `[MAINTAINER INPUT NEEDED]` (never invented)
-1. Canonical domain for SEO (sitemap/OG).
+1. ~~Canonical domain for SEO~~ → resolved: `https://kytyps5.github.io/KytyPS5-site`.
 2. Screenshot caption verification (README alt-text has mismatches, e.g. ps5-04 alt = "Minecraft Legends" vs label "Neptunia ReVerse").
 3. Checksum strategy (none published).
 4. Formal roadmap (none in repo; only "focused on compatibility and boot reliability").
-5. Website code license (site itself — propose GPL-2.0 to match project, or MIT for site code).
+5. ~~Website code license~~ → resolved: GPL-2.0 (`LICENSE`), matching the project.
 6. Whether to list an archive of old releases.
 7. Any FAQ answers requiring maintainer sign-off.
 

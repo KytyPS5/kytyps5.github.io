@@ -10,13 +10,13 @@ export const SITE = {
   // Where visitors file compatibility reports. This repo owns the
   // compatibility_report.yml issue template + the conversion workflow, so the
   // automated issue → report → export pipeline runs here.
-  reportRepoUrl: "https://github.com/DistantMyth/KytyPS5-site",
+  reportRepoUrl: "https://github.com/KytyPS5/KytyPS5-site",
   // The repository that hosts this website.
-  siteRepoUrl: "https://github.com/DistantMyth/KytyPS5-site",
+  siteRepoUrl: "https://github.com/KytyPS5/KytyPS5-site",
   // Latest known KytyPS5 build; reports tested on other builds get an
   // "older build" note. [maintainer input — set on each release]
   currentVersion: "KytyPS5-2026-08-07-7907a50",
 } as const;
 
 /** Origin used for canonical URLs / sitemap (GitHub Pages project site). */
-export const SITE_URL = "https://distantmyth.github.io/KytyPS5-site";
+export const SITE_URL = "https://kytyps5.github.io/KytyPS5-site";

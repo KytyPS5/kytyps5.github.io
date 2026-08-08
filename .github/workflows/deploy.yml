@@ -2,7 +2,7 @@ name: Deploy to GitHub Pages
 
 # Builds the site and publishes it to GitHub Pages on push to main.
 # Requires Pages → Source = "GitHub Actions" (set up once via
-#   gh api --method POST repos/DistantMyth/KytyPS5-site/pages -f build_type=workflow
+#   gh api --method POST repos/KytyPS5/KytyPS5-site/pages -f build_type=workflow
 # or the repo's Settings → Pages tab).
 #
 # Two deploy paths keep merged compatibility reports cheap:

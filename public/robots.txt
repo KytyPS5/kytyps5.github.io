@@ -1,4 +1,4 @@
 User-agent: *
 Allow: /
 
-Sitemap: https://distantmyth.github.io/KytyPS5-site/sitemap.xml
+Sitemap: https://kytyps5.github.io/KytyPS5-site/sitemap.xml

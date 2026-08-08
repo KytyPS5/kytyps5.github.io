@@ -197,5 +197,5 @@ GitHub squashes it once CI is green.
 
 ## License
 
-Site code is original. The KytyPS5 name, screenshots and all project facts belong to the
-[KytyPS5 project](https://github.com/KytyPS5/KytyPS5) (GPL-2.0).
+Site code is licensed under GPL-2.0 (see `LICENSE`). The KytyPS5 name, screenshots and all
+project facts belong to the [KytyPS5 project](https://github.com/KytyPS5/KytyPS5) (GPL-2.0).
