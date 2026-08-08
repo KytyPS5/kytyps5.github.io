@@ -27,15 +27,6 @@ fresh checkout builds cleanly. Set `GITHUB_TOKEN` when building to avoid anonymo
 - `src/data/games.json` — the deduplicated PS5 title database (imported — don't hand-edit).
 - `public/data/*` — derived JSON served statically (regenerated at build time).
 - `scripts/` — data generators, the compat sync/conversion tooling and validators.
-- `docs/handover.md` — **maintainer documentation**: the game-status report flow, the status
-  ladder, attaching screenshots, the GUI export, the games database, CI/deploy behavior and the
-  ownership-transfer checklist.
-
-## Maintainer documentation
-
-Everything operational lives in **[docs/handover.md](docs/handover.md)** — how compatibility
-reports are filed and synced from KytyPS5 issues, how screenshots get attached, how the GUI
-status export works, the automation schedule, deployment and branch protection.
 
 ## License
 
