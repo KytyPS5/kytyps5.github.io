@@ -58,32 +58,37 @@ jobs:
             const [owner, repo] = process.env.GITHUB_REPOSITORY.split("/");
             const base = `https://${owner}.github.io/${repo}/data/github.json`;
             const cur = JSON.parse(fs.readFileSync("public/data/github.json", "utf8"));
-            delete cur.generatedAt; // timestamp always differs; compare real data only
+            const live = await (async () => {
+              if (process.env.FORCE === "true") return null;
+              try {
+                const res = await fetch(base, { cache: "no-store" });
+                if (!res.ok) return null; // not deployed yet → establish the baseline
+                return await res.json();
+              } catch {
+                return null; // unreachable / first deploy → rebuild
+              }
+            })();
 
-            // NOTE: this comparison only works because BOTH sides are fetched
-            // authenticated — the deployed file was built by deploy.yml's
-            // prebuild with GITHUB_TOKEN, and this workflow regenerates with
-            // GITHUB_TOKEN too. Anonymous responses add phantom fields
-            // (temp_clone_token, permissions, size) that would cause false
-            // "changed" results.
-            const changed = async () => {
-              if (process.env.FORCE === "true") return true;
-              let res;
-              try {
-                res = await fetch(base, { cache: "no-store" });
-                if (!res.ok) return true; // not deployed yet → establish the baseline
-              } catch {
-                return true; // unreachable / first deploy → rebuild
+            if (live === null) {
+              fs.appendFileSync(process.env.GITHUB_OUTPUT, "changed=true\n");
+              process.exit(0);
+            }
+
+            // Compare real data only. generatedAt always differs; and the repo
+            // object's temp_clone_token rotates on every authenticated call
+            // (permissions is token-shaped too) — without stripping those the
+            // JSON never matches and the site rebuilds every 30 minutes. Strip
+            // defensively: the deployed file may predate the fetch script's own
+            // sanitization.
+            for (const obj of [cur, live]) {
+              delete obj.generatedAt;
+              if (obj.repo) {
+                delete obj.repo.temp_clone_token;
+                delete obj.repo.permissions;
               }
-              let live;
-              try {
-                live = await res.json();
-                delete live.generatedAt;
-              } catch {
-                return true;
-              }
-              return JSON.stringify(cur) !== JSON.stringify(live);
-            };
+            }
+            const didChange = JSON.stringify(cur) !== JSON.stringify(live);
+            fs.appendFileSync(process.env.GITHUB_OUTPUT, `changed=${didChange}\n`);
             const didChange = await changed();
             fs.appendFileSync(process.env.GITHUB_OUTPUT, `changed=${didChange}\n`);
           })();

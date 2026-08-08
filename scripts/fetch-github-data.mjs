@@ -39,9 +39,20 @@ async function get(url, fallback) {
   }
 }
 
+const repo = await get(API, null);
+if (repo) {
+  // Per-request/token-volatile fields must never ship in the snapshot: the
+  // refresh workflow compares the deployed github.json against a freshly
+  // regenerated one, and temp_clone_token rotates on every authenticated call
+  // (permissions is token-shaped too). Keeping them would make the JSON never
+  // match, so the site would rebuild every 30 minutes for nothing.
+  delete repo.temp_clone_token;
+  delete repo.permissions;
+}
+
 const SNAPSHOT = {
   generatedAt: new Date().toISOString(),
-  repo: await get(API, null),
+  repo,
   latestRelease: await get(`${API}/releases/latest`, null),
   contributors: await get(`${API}/contributors?per_page=14`, null),
   commits: await get(`${API}/commits?per_page=6`, null),
