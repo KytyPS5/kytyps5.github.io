@@ -150,7 +150,8 @@ transfer is complete:
 - **`currentVersion` in `src/config.ts`** is a maintainer-set value ("set on each
   release") — the new owner should update it per release.
 - **Screenshots** are hosted in this repo (`public/screenshots/`) and attached via
-  the `/getss` workflow; an empty folder is fine (carousel hides until a report
+  the **Attach game screenshot** workflow (`get-screenshot.yml`, run manually from
+  Actions with an issue number); an empty folder is fine (carousel hides until a report
   carries a screenshot).
 - **License:** `LICENSE` is GPL-2.0 (site code); the KytyPS5 name, screenshots
   and project facts belong to the KytyPS5 project.

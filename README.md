@@ -60,8 +60,8 @@ Community-tracked game statuses live as one Markdown report per test in
 **Screenshots are hosted in this repo** (`public/screenshots/`) so the homepage carousel can't
 break when the upstream KytyPS5 gallery changes. A report references one as a relative path,
 e.g. `screenshot: "screenshots/deathloop-windows-1.png"`; the carousel and the game page
-resolve it against the site's base URL. **A screenshot never implies a status by itself** — the
-`/getss` workflow attaches it to an already-verified report and sets `screenshotVerified: true`.
+resolve it against the site's base URL. **A screenshot never implies a status by itself** — the **Attach game screenshot** workflow
+(`get-screenshot.yml`) attaches it to an already-verified report and sets `screenshotVerified: true`.
 `prebuild` fails the build if a report has a `screenshot` without that flag or without a linked
 community source (`> Source: [label](https://…)`), so the old "inferred from the upstream
 screenshot gallery" reports can't come back. The game page shows a small "Screenshot attached"
@@ -115,17 +115,19 @@ Issues live on the KytyPS5 repo; this repo's **sync workflow** turns them into P
 
 ### Attaching screenshots to a report
 
-Reply **`/getss <image-url> [<image-url> …]`** on an issue (collaborator-only) to attach
-screenshot(s) to the game's report. The workflow (`get-screenshot.yml`) downloads each image
-into `public/screenshots/` (must be a raster image under 10 MB), links it to the game via the
-issue's Title ID, sets the report's `screenshot` frontmatter when it has none (that's the
-homepage carousel image), embeds the images in the report body, and opens a PR. The report must
-already exist — run `/compat` first if it doesn't. No Title ID? The first `PPSA-XXXXX` in the
-issue title/body/comment is used. Or use the one-click button: Actions → **Attach game
-screenshot** → Run workflow → type the issue number (URLs are then read from the issue body).Images
-are validated and size-capped, so a bad URL fails the run without shipping partial
-work. `/getss` also sets `screenshotVerified: true` on the report, and the validator rejects
-any report with a `screenshot` that isn't verified and linked to a community source — a
+Screenshots come from a game-status issue on the KytyPS5 repo, so — like the sync workflow —
+the **Attach game screenshot** workflow runs manually: Actions → **Attach game screenshot** →
+Run workflow → type the issue number. It reads the issue through the public API (no token) and
+finds the game by its **Game ID / serial** (falling back to the legacy "Title ID" field, then
+the first `PPSA-XXXXX` in the issue title/body). Image URLs are pulled from the issue body's
+markdown images / links, downloaded into `public/screenshots/` (must be a raster image under
+10 MB — a bad URL fails the run without shipping partial work), and attached to the game's
+report: the report's `screenshot` frontmatter is set when it has none (that's the homepage
+carousel image) with `screenshotVerified: true`, and every image is embedded in the report
+body. The report must already exist — create it via **Sync compatibility reports** first;
+screenshots attach to a verified report and never imply a status. The run validates the reports
+(`validate-compat`) before opening a PR, and any report with a `screenshot` that isn't verified
+and linked to a community source (`> Source: [label](https://…)`) fails the build — a
 screenshot is evidence attached to a report, never a status.
 
 ### GUI status export
@@ -180,7 +182,7 @@ domain, change `base` in `vite.config.ts` **together with** `SITE_URL` in `src/c
 | `refresh-data.yml` | every 30 min | regenerate the GitHub snapshot; redeploy when changed |
 | `import-games.yml` | weekly | refresh the games database + enrich a batch; opens an auto-merged PR (`data/games-refresh`) gated by CI |
 | `compat-report.yml` | every 30 min / `workflow_dispatch` | poll KytyPS5 `[GAME STATUS]` issues, convert new ones into report PRs |
-| `get-screenshot.yml` | on `/getss` comments / `workflow_dispatch` | attach issue screenshots to a game's report as a PR |
+| `get-screenshot.yml` | `workflow_dispatch` (manual) | attach screenshots from a KytyPS5 issue body to the game's report as a PR |
 
 ## Deployment
 
