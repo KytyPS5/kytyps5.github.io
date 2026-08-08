@@ -258,7 +258,10 @@ export function CompatibilityPage() {
                         </span>
                       )}
                       <span className="min-w-0 flex-1">
-                        <span className="block truncate text-sm font-medium text-text-primary">
+                        <span
+                          className="block truncate text-sm font-medium"
+                          style={{ color: STATUS_META[status].color }}
+                        >
                           {e.title}
                         </span>
                         <span className="block font-mono text-xs text-text-muted">

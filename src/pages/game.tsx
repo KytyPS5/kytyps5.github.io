@@ -234,7 +234,10 @@ export function GamePage() {
             )}
 
             <div className="min-w-0 flex-1">
-              <h1 className="break-words font-display text-4xl font-bold tracking-tight text-text-primary">
+              <h1
+                className="break-words font-display text-4xl font-bold tracking-tight"
+                style={{ color: STATUS_META[aggregate].color }}
+              >
                 {title}
               </h1>
               <div className="mt-4">
