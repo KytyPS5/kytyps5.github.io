@@ -94,8 +94,6 @@ jobs:
             }
             const didChange = JSON.stringify(cur) !== JSON.stringify(live);
             fs.appendFileSync(process.env.GITHUB_OUTPUT, `changed=${didChange}\n`);
-            const didChange = await changed();
-            fs.appendFileSync(process.env.GITHUB_OUTPUT, `changed=${didChange}\n`);
           })();
           NODE
 
