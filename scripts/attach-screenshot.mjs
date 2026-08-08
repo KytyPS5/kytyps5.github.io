@@ -11,14 +11,20 @@
  *     has none yet (drives the homepage carousel), and
  *   - every image is embedded in the report body so the game page shows it.
  *
- * The report must already exist (create it via /compat first) — screenshots
- * attach to a game's verified report; this script never invents a status.
+ * URLs that aren't usable images (wrong content type, HTTP error, over the
+ * size cap, unreadable) are skipped with a warning instead of aborting the
+ * run — an issue body commonly carries non-image links such as uploaded log
+ * files. The run only fails when none of the URLs yield an image.
+ *
+ * The report must already exist (create it via the sync workflow first) —
+ * screenshots attach to a game's verified report; this script never invents
+ * a status.
  *
  * Usage:
  *   node scripts/attach-screenshot.mjs --title-id PPSA01670 --title "DEATHLOOP" \
  *     --image "https://example.com/shot1.png" --image "https://example.com/shot2.jpg"
  */
-import { mkdir, readFile, readdir, unlink, writeFile } from "node:fs/promises";
+import { mkdir, readFile, readdir, writeFile } from "node:fs/promises";
 import { existsSync } from "node:fs";
 import { fileURLToPath } from "node:url";
 import path from "node:path";
@@ -82,21 +88,36 @@ function freeName(slug, ext) {
   return `${slug}-${n}.${ext}`;
 }
 
-/** Download and validate one image; returns the stored filename. */
+/**
+ * Download and validate one image; returns the stored filename, or null when
+ * the URL is not a usable image (skipped with a warning, not fatal).
+ */
 async function fetchImage(url, slug) {
   let res;
   try {
     res = await fetch(url, { redirect: "follow" });
   } catch (err) {
-    throw new Error(`could not fetch image: ${url} (${err.message})`);
+    console.warn(`[attach-screenshot] ⚠ skipping ${url} — could not fetch (${err.message})`);
+    return null;
   }
-  if (!res.ok) throw new Error(`image download failed: HTTP ${res.status} for ${url}`);
+  if (!res.ok) {
+    console.warn(`[attach-screenshot] ⚠ skipping ${url} — HTTP ${res.status}`);
+    return null;
+  }
   const type = (res.headers.get("content-type") ?? "").split(";")[0].trim().toLowerCase();
   const ext = IMAGE_TYPES[type];
-  if (!ext) throw new Error(`not an image (content-type "${type || "unknown"}"): ${url}`);
+  if (!ext) {
+    console.warn(
+      `[attach-screenshot] ⚠ skipping ${url} — not an image (content-type "${type || "unknown"}")`,
+    );
+    return null;
+  }
   const buf = Buffer.from(await res.arrayBuffer());
   if (buf.length > MAX_BYTES) {
-    throw new Error(`image too large (${(buf.length / 1024 / 1024).toFixed(1)} MB > 10 MB): ${url}`);
+    console.warn(
+      `[attach-screenshot] ⚠ skipping ${url} — image too large (${(buf.length / 1024 / 1024).toFixed(1)} MB > 10 MB)`,
+    );
+    return null;
   }
   await mkdir(SHOTS_DIR, { recursive: true });
   const name = freeName(slug, ext);
@@ -117,19 +138,20 @@ const slug = report.file.replace(/\.md$/, "");
 const stored = [];
 for (const url of images) {
   try {
-    stored.push(await fetchImage(url, slug));
+    const name = await fetchImage(url, slug);
+    if (name) stored.push(name);
   } catch (err) {
-    console.error(`[attach-screenshot] ✗ ${err.message}`);
-    // Clean up anything already written so a failed run never ships partial work.
-    for (const name of stored) {
-      try {
-        await unlink(path.join(SHOTS_DIR, name));
-      } catch {
-        /* best-effort cleanup */
-      }
-    }
-    process.exit(1);
+    // Defensive: an unexpected error skips just this URL, not the run.
+    console.warn(`[attach-screenshot] ⚠ skipping ${url} — ${err.message}`);
   }
+}
+if (stored.length === 0) {
+  console.error(
+    `[attach-screenshot] ✗ none of the ${images.length} URL(s) were usable images — ` +
+      "no screenshot was attached. URLs must be images (png/jpeg/webp/gif) under 10 MB; " +
+      "check the links on the issue (e.g. uploaded log files aren't screenshots) and re-run.",
+  );
+  process.exit(1);
 }
 
 // Attach to the report: set `screenshot` + `screenshotVerified` frontmatter
@@ -154,8 +176,10 @@ if (/^> Source:/m.test(raw)) {
 }
 await writeFile(path.join(COMPAT_DIR, report.file), raw);
 
+const skipped = images.length - stored.length;
 console.log(
-  `[attach-screenshot] attached ${stored.length} screenshot(s) to ${report.file}: ${stored.join(", ")}`,
+  `[attach-screenshot] attached ${stored.length} screenshot(s) to ${report.file}: ${stored.join(", ")}` +
+    (skipped > 0 ? ` (skipped ${skipped} non-image URL(s))` : ""),
 );
 console.log(
   stored.length > 0 && !/^screenshot:/m.test(report.raw)

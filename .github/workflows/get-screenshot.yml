@@ -79,7 +79,12 @@ jobs:
           echo "title_id=$TITLE_ID" >> "$GITHUB_OUTPUT"
 
           # Image URLs from the issue body's markdown images / bare links.
-          URLS="$(printf '%s' "$BODY" | grep -oE 'https?://[^[:space:]>]+' || true)"
+          # Drop HTML comments first — GitHub inserts <!-- … --> placeholders
+          # for failed uploads / notes that can contain URLs. Non-image URLs
+          # that slip through (e.g. uploaded log files) are skipped by
+          # attach-screenshot.mjs rather than failing the run.
+          BODY_CLEAN="$(printf '%s' "$BODY" | perl -0pe 's/<!--.*?-->//sg')"
+          URLS="$(printf '%s' "$BODY_CLEAN" | grep -oE 'https?://[^[:space:]>]+' || true)"
           URLS="$(printf '%s\n' "$URLS" | sed 's/[),.;]*$//' | grep -v '^$' || true)"
           if [ -z "$URLS" ]; then
             echo "::error::No image URL found in the issue body — add the screenshot links to the issue and re-run."
