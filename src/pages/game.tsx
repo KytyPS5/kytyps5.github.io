@@ -13,6 +13,8 @@ import {
 } from "@/lib/compat";
 import { COMPAT_REPORTS } from "@/lib/compat-seed";
 import { loadGames, type Game } from "@/lib/games";
+import { githubApi } from "@/lib/github";
+import { useGithubData } from "@/hooks/use-github-data";
 import { useCompatGame } from "@/hooks/use-compat-game";
 import { SITE, SITE_URL } from "@/config";
 import { Markdown } from "@/lib/markdown.tsx";
@@ -34,7 +36,16 @@ function Meta({ label, value }: { label: string; value?: string }) {
   );
 }
 
-function ReportBlock({ report, index }: { report: CompatReport; index: number }) {
+function ReportBlock({
+  report,
+  index,
+  currentVersion,
+}: {
+  report: CompatReport;
+  index: number;
+  /** Latest release tag the report is compared against for the stale-build note. */
+  currentVersion: string;
+}) {
   return (
     <article className="rounded-2xl border border-border bg-surface p-7 shadow-card sm:p-8">
       <div className="flex flex-wrap items-start justify-between gap-3">
@@ -56,7 +67,7 @@ function ReportBlock({ report, index }: { report: CompatReport; index: number })
         </p>
       )}
 
-      {report.testedVersion !== SITE.currentVersion && (
+      {report.testedVersion !== currentVersion && (
         <p className="mt-4 rounded-xl border border-amber-400/30 bg-amber-400/10 px-4 py-2.5 text-sm text-amber-200">
           This report was made on an older build — behavior may have changed since.
         </p>
@@ -94,6 +105,12 @@ function ReportBlock({ report, index }: { report: CompatReport; index: number })
 
 export function GamePage() {
   const { key = "" } = useParams<{ key: string }>();
+  // The "current build" the stale-report note compares against: the latest
+  // release tag from GitHub (build-time snapshot first, then the live API),
+  // falling back to the config constant when the lookup fails. No manual
+  // version bumping on each release.
+  const { data: latestRelease } = useGithubData(githubApi.latestRelease, "latestRelease");
+  const currentVersion = latestRelease?.tag_name ?? SITE.currentVersion;
   const [games, setGames] = React.useState<Game[] | null>(null);
 
   React.useEffect(() => {
@@ -330,7 +347,7 @@ export function GamePage() {
             {reports.length > 0 ? (
               <div className="mt-5 space-y-6">
                 {reports.map((r, i) => (
-                  <ReportBlock key={r.slug} report={r} index={i} />
+                  <ReportBlock key={r.slug} report={r} index={i} currentVersion={currentVersion} />
                 ))}
                 <p className="text-sm text-text-muted">
                   Statuses are per operating system; the overall badge shows the best result across

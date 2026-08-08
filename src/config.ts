@@ -14,8 +14,9 @@ export const SITE = {
   reportRepoUrl: "https://github.com/KytyPS5/KytyPS5",
   // The repository that hosts this website.
   siteRepoUrl: "https://github.com/KytyPS5/KytyPS5-site",
-  // Latest known KytyPS5 build; reports tested on other builds get an
-  // "older build" note. [maintainer input — set on each release]
+  // Fallback "latest build" used only when the GitHub latest-release lookup
+  // fails (offline, rate-limited). The game page prefers the live release tag,
+  // so this no longer needs bumping on every release.
   currentVersion: "KytyPS5-2026-08-07-7907a50",
 } as const;
 
