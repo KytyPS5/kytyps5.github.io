@@ -113,16 +113,16 @@ export function CompatibilityPage() {
           whileInView={{ opacity: 1, x: 0 }}
           viewport={{ once: false, amount: 0.3 }}
           transition={{ duration: 0.5, ease: [0.16, 1, 0.3, 1] }}
-          className="grid grid-cols-3 gap-px overflow-hidden rounded-panel border border-border bg-border shadow-card sm:grid-cols-5"
+          className="flex flex-wrap justify-center gap-px overflow-hidden rounded-panel border border-border bg-border shadow-card"
         >
-          <div className="flex flex-col items-center gap-1 bg-surface px-4 py-5">
+          <div className="flex basis-[calc(33.3333%_-_0.6667px)] flex-col items-center gap-1 bg-surface px-4 py-5 sm:basis-[calc(20%_-_0.8px)]">
             <span className="font-display text-2xl font-semibold tabular-nums text-text-primary">
               {stats.total.toLocaleString()}
             </span>
             <span className="text-xs uppercase tracking-wider text-text-muted">Tested games</span>
           </div>
           {STATUSES.map((status) => (
-            <div key={status} className="flex flex-col items-center gap-1 bg-surface px-4 py-5">
+            <div key={status} className="flex basis-[calc(33.3333%_-_0.6667px)] flex-col items-center gap-1 bg-surface px-4 py-5 sm:basis-[calc(20%_-_0.8px)]">
               <span
                 className="font-display text-2xl font-semibold tabular-nums"
                 style={{ color: STATUS_META[status].color }}
