@@ -50,6 +50,13 @@ if (repo) {
   delete repo.permissions;
 }
 
+const latestRelease = await get(`${API}/releases/latest`, null);
+if (latestRelease && Array.isArray(latestRelease.assets)) {
+  // Asset download counts bump on every download — meaningless churn for the
+  // staleness comparison (the site shows the live count from the API).
+  for (const asset of latestRelease.assets) delete asset.download_count;
+}
+
 const SNAPSHOT = {
   generatedAt: new Date().toISOString(),
   repo,

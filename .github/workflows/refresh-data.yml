@@ -86,6 +86,11 @@ jobs:
                 delete obj.repo.temp_clone_token;
                 delete obj.repo.permissions;
               }
+              if (obj.latestRelease && Array.isArray(obj.latestRelease.assets)) {
+                // Download counts move on every download — compare releases by
+                // their identity (tag, date, notes), not by popularity noise.
+                for (const asset of obj.latestRelease.assets) delete asset.download_count;
+              }
             }
             const didChange = JSON.stringify(cur) !== JSON.stringify(live);
             fs.appendFileSync(process.env.GITHUB_OUTPUT, `changed=${didChange}\n`);
