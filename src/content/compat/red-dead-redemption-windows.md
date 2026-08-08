@@ -1,0 +1,18 @@
+---
+title: "Red Dead Redemption"
+titleId: "PPSA30528"
+status: "playable"
+testedVersion: "7907a50"
+testedDate: "2026-08-07"
+os: "windows"
+hardware: "AMD Ryzen 7 7700X / AMD Radeon 9070 XT"
+---
+
+Game boots, start a new game, cutscene plays and then it hangs on 2 frames, repeating, and cannot proceed. An endless loop.
+
+**Steps to reproduce:** Open Emulator. Boot Game. Start new game.
+
+**Extra notes:** Default settings.
+
+> Source: [KytyPS5 issue #191](https://github.com/KytyPS5/KytyPS5/issues/191)
+
