@@ -4,7 +4,7 @@ import { Hero } from "@/components/sections/hero";
 import { Platforms } from "@/components/sections/platforms";
 import { ScreenshotCarousel } from "@/components/sections/screenshot-carousel";
 import { buildCarouselSlides } from "@/lib/slides";
-import { useCompatReports } from "@/hooks/use-compat-reports";
+import { useCompatIndex } from "@/hooks/use-compat-index";
 import { InstallPreview } from "@/components/sections/install-preview";
 import { HowItWorks } from "@/components/sections/how-it-works";
 import { FaqPreview } from "@/components/sections/faq-preview";
@@ -16,8 +16,8 @@ import { RepoStats } from "@/components/github/repo-stats";
 
 /** Screenshots section — rendered only while reports carry screenshots. */
 function ScreenshotsSection() {
-  const { reports } = useCompatReports();
-  const slides = React.useMemo(() => buildCarouselSlides(reports), [reports]);
+  const { games } = useCompatIndex();
+  const slides = React.useMemo(() => buildCarouselSlides(games ?? []), [games]);
   if (slides.length === 0) return null;
   return (
     <Section

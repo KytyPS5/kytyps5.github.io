@@ -1,19 +1,20 @@
 import { describe, expect, it } from "vitest";
+import { buildSiteIndex, parseReport as jsParseReport } from "../../scripts/lib/compat-export.mjs";
 import {
   aggregateStatus,
-  buildGameIndex,
-  computeStats,
+  compatIndexStats,
+  computeIndexStats,
   displayStatus,
   displayStatusForOs,
-  filterGameIndex,
+  filterCompatIndex,
   gamePageKey,
-  groupReportsByGame,
-  indexStatsForOs,
-  parseCompatPayload,
+  osStatus,
   parseCompatReport,
+  perOsStatuses,
   reportsForOs,
   STATUSES,
   STATUS_META,
+  type CompatIndexGame,
   type Os,
 } from "@/lib/compat";
 
@@ -52,7 +53,7 @@ describe("parseCompatReport", () => {
   });
 
   it("rejects a missing title", () => {
-    const bad = VALID.replace('title: "Test Game"', '');
+    const bad = VALID.replace('title: "Test Game"', "");
     expect(() => parseCompatReport(bad, "x")).toThrow(/title/);
   });
 
@@ -153,48 +154,55 @@ describe("parseCompatReport", () => {
   });
 });
 
-describe("parseCompatPayload (runtime compat.json refresh)", () => {
-  it("parses raw markdown reports from the payload", () => {
-    const payload = {
-      version: 1,
-      reports: [{ slug: "test-game", raw: VALID }],
-    };
-    const reports = parseCompatPayload(payload);
-    expect(reports).toHaveLength(1);
-    expect(reports[0]).toMatchObject({ slug: "test-game", title: "Test Game" });
+describe("JS parser parity (scripts/lib/compat-export.mjs vs src/lib/compat.ts)", () => {
+  it("produces byte-identical reports on the same fixture", () => {
+    expect(jsParseReport(VALID, "test-game")).toEqual(parseCompatReport(VALID, "test-game"));
   });
 
-  it("returns [] for a missing or empty payload", () => {
-    expect(parseCompatPayload(null)).toEqual([]);
-    expect(parseCompatPayload(undefined)).toEqual([]);
-    expect(parseCompatPayload({ version: 1 } as never)).toEqual([]);
-    expect(parseCompatPayload({ version: 1, reports: [] })).toEqual([]);
+  it("agrees on score/boolean coercion, screenshots and source extraction", () => {
+    const full = VALID.replace(
+      'hardware: "Ryzen 9 / RTX 5090"',
+      'hardware: "Ryzen 9 / RTX 5090"\ngameVersion: "1.004"\nscore: 5\nscreenshot: "screenshots/x.png"\nscreenshotVerified: true',
+    ).replace(
+      "Boots and reaches gameplay.",
+      "Boots and reaches gameplay.\n\n> Source: [KytyPS5 issue #12](https://github.com/KytyPS5/KytyPS5/issues/12)",
+    );
+    expect(jsParseReport(full, "x")).toEqual(parseCompatReport(full, "x"));
   });
 
-  it("skips invalid entries instead of throwing", () => {
-    const payload = {
-      version: 1,
-      reports: [
-        { slug: "ok", raw: VALID },
-        { slug: "bad", raw: VALID.replace('status: "main-menu"', 'status: "broken"') },
-      ],
-    };
-    const reports = parseCompatPayload(payload);
-    expect(reports).toHaveLength(1);
-    expect(reports[0].slug).toBe("ok");
+  it("throws the same validation error message", () => {
+    const bad = VALID.replace('status: "main-menu"', 'status: "broken"');
+    expect(() => jsParseReport(bad, "x")).toThrow(/status must be one of/);
+    expect(() => parseCompatReport(bad, "x")).toThrow(/status must be one of/);
   });
 
-  it("sorts parsed reports by title like the bundle", () => {
-    const b = VALID.replace('title: "Test Game"', 'title: "Beta"');
-    const a = VALID.replace('title: "Test Game"', 'title: "Alpha"');
-    const reports = parseCompatPayload({
-      version: 1,
-      reports: [
-        { slug: "b", raw: b },
-        { slug: "a", raw: a },
-      ],
-    });
-    expect(reports.map((r) => r.title)).toEqual(["Alpha", "Beta"]);
+  it("builds the same merged index as the removed client-side buildGameIndex semantics", () => {
+    // The export's buildSiteIndex mirrors what the compatibility page used to
+    // compute with buildGameIndex + displayStatus: same game merge, same
+    // overall status, same per-OS aggregation.
+    const mk = (titleId: string, status: (typeof STATUSES)[number], os: Os, title: string) =>
+      jsParseReport(
+        VALID.replace("PPSA01234", titleId)
+          .replace('title: "Test Game"', `title: "${title}"`)
+          .replace('status: "main-menu"', `status: "${status}"`)
+          .replace('os: "windows"', `os: "${os}"`),
+        "x",
+      );
+    const games = [
+      { titleId: "PPSA00001", allTitleIds: ["PPSA00001", "PPSA00003"], name: "Alpha Game", cover: "https://c/a.png" },
+      { titleId: "PPSA00002", allTitleIds: ["PPSA00002"], name: "Beta Game" },
+    ];
+    const index = buildSiteIndex(games, [
+      mk("PPSA00003", "main-menu", "linux", "Alpha Game"), // region variant
+      mk("PPSA00002", "in-game", "windows", "Beta Game"),
+    ]);
+    const alpha = index.find((e) => e.key === "PPSA00001");
+    expect(alpha?.title).toBe("Alpha Game");
+    expect(alpha?.cover).toBe("https://c/a.png");
+    expect(alpha?.overall).toBe("main-menu");
+    expect(alpha?.os).toEqual({ linux: "main-menu" });
+    expect(displayStatus(alpha!.reports)).toBe("main-menu");
+    expect(displayStatusForOs(alpha!.reports, "linux")).toBe("main-menu");
   });
 });
 
@@ -206,16 +214,7 @@ describe("gamePageKey", () => {
   });
 });
 
-describe("computeStats", () => {
-  it("counts each status", () => {
-    const stats = computeStats(["main-menu", "logo", "main-menu", "in-game"]);
-    expect(stats.tested).toBe(4);
-    expect(stats.counts["main-menu"]).toBe(2);
-    expect(stats.counts["logo"]).toBe(1);
-    expect(stats.counts["in-game"]).toBe(1);
-    expect(stats.counts["doesnt-boot"]).toBe(0);
-  });
-
+describe("status ladder", () => {
   it("has the full ladder in order", () => {
     expect(STATUSES).toEqual(["doesnt-boot", "logo", "main-menu", "in-game"]);
   });
@@ -239,20 +238,6 @@ describe("aggregateStatus", () => {
   });
 });
 
-describe("groupReportsByGame", () => {
-  it("groups reports by normalized title ID", () => {
-    const reports = [
-      { ...parseCompatReport(VALID, "a"), slug: "a" },
-      { ...parseCompatReport(VALID.replace("PPSA01234", "PPSA-01234"), "b"), slug: "b" },
-      { ...parseCompatReport(VALID.replace("PPSA01234", "PPSA99999"), "c"), slug: "c" },
-    ];
-    const groups = groupReportsByGame(reports);
-    expect(groups.size).toBe(2);
-    expect(groups.get("PPSA01234")?.length).toBe(2);
-    expect(groups.get("PPSA99999")?.length).toBe(1);
-  });
-});
-
 describe("STATUS_META colors (status ladder palette)", () => {
   const meta = (s: string) => STATUS_META[s as keyof typeof STATUS_META].color;
 
@@ -265,14 +250,14 @@ describe("STATUS_META colors (status ladder palette)", () => {
   });
 });
 
-describe("displayStatus (best across per-OS majorities)", () => {
+describe("displayStatus / displayStatusForOs / perOsStatuses (game page aggregation)", () => {
   const r = (status: (typeof STATUSES)[number], os: Os) => ({ status, os });
 
   it("returns untested with no reports", () => {
     expect(displayStatus([])).toBe("untested");
   });
 
-  it("shows the best result across per-OS tests (the user's example)", () => {
+  it("shows the best result across per-OS tests", () => {
     // boots on macOS but playable on Windows → Any = playable, and each OS
     // filter shows its own status.
     const reports = [r("main-menu", "windows"), r("logo", "macos")];
@@ -290,134 +275,82 @@ describe("displayStatus (best across per-OS majorities)", () => {
     expect(displayStatus(reports)).toBe("in-game");
   });
 
-  it("a single-OS game's overall status equals that OS's status", () => {
-    const reports = [r("main-menu", "linux")];
-    expect(displayStatus(reports)).toBe("main-menu");
-    expect(displayStatusForOs(reports, "all")).toBe("main-menu");
-  });
-});
-
-describe("buildGameIndex", () => {
-  const report = (titleId: string, status: (typeof STATUSES)[number], title = "Game") =>
-    ({ ...parseCompatReport(VALID.replace("PPSA01234", titleId).replace('title: "Test Game"', `title: "${title}"`).replace('status: "main-menu"', `status: "${status}"`), "x"), slug: "x" });
-
-  const games = [
-    { titleId: "PPSA00001", allTitleIds: ["PPSA00001", "PPSA00001_00"], name: "Alpha Game", cover: "https://c/a.png" },
-    { titleId: "PPSA00002", allTitleIds: ["PPSA00002"], name: "Beta Game" },
-  ];
-
-  it("includes every database game (untested ones included)", () => {
-    const index = buildGameIndex(games, []);
-    expect(index).toHaveLength(2);
-    expect(index.every((e) => e.reports.length === 0)).toBe(true);
-    expect(displayStatus(index[0].reports)).toBe("untested");
-  });
-
-  it("merges reports into their game and surfaces tested games first", () => {
-    const index = buildGameIndex(games, [
-      report("PPSA00002", "logo", "Beta Game"),
-      report("PPSA00001", "main-menu", "Alpha Game"),
-    ]);
-    expect(index).toHaveLength(2);
-    expect(index[0].key).toBe("PPSA00001");
-    expect(index[0].reports).toHaveLength(1);
-    expect(displayStatus(index[0].reports)).toBe("main-menu");
-    expect(index[1].key).toBe("PPSA00002");
-    expect(index[1].cover).toBeUndefined();
-  });
-
-  it("matches a report whose title ID is a region variant of the game", () => {
-    // The game's primary ID is PPSA00001 but another region shares the concept.
-    const variants = [
-      { titleId: "PPSA00001", allTitleIds: ["PPSA00001", "PPSA00003"], name: "Alpha Game" },
-    ];
-    const index = buildGameIndex(variants, [report("PPSA00003", "logo", "Alpha Game")]);
-    expect(index[0].reports).toHaveLength(1);
-    expect(displayStatus(index[0].reports)).toBe("logo");
-  });
-
-  it("keeps report-only games (title ID not in the database)", () => {
-    const index = buildGameIndex(games, [report("PPSA09999", "logo", "Mystery Game")]);
-    expect(index).toHaveLength(3);
-    const extra = index.find((e) => e.key === "PPSA09999");
-    expect(extra?.title).toBe("Mystery Game");
-    expect(extra?.reports).toHaveLength(1);
-  });
-
-  it("aggregates multiple reports per game", () => {
-    const index = buildGameIndex(games, [
-      report("PPSA00001", "main-menu", "Alpha Game"),
-      report("PPSA00001", "in-game", "Alpha Game"),
-    ]);
-    expect(index[0].reports).toHaveLength(2);
-    expect(displayStatus(index[0].reports)).toBe("in-game"); // tie -> better
-  });
-});
-
-describe("per-OS status and filtering (reportsForOs / displayStatusForOs / filterGameIndex / indexStatsForOs)", () => {
-  // Build a report with a chosen status and OS (os is required in the schema).
-  const mk = (titleId: string, status: (typeof STATUSES)[number], os: Os, title = "Game") => {
-    const raw = VALID.replace("PPSA01234", titleId)
-      .replace('title: "Test Game"', `title: "${title}"`)
-      .replace('status: "main-menu"', `status: "${status}"`)
-      .replace('os: "windows"', `os: "${os}"`);
-    return { ...parseCompatReport(raw, "x"), slug: "x" };
-  };
-
-  const games = [
-    { titleId: "PPSA00001", allTitleIds: ["PPSA00001"], name: "Alpha" },
-    { titleId: "PPSA00002", allTitleIds: ["PPSA00002"], name: "Beta" },
-  ];
-
-  it("displayStatusForOs is untested when no report exists for that OS", () => {
-    const reports = [mk("PPSA00001", "main-menu", "linux", "Alpha")];
-    expect(displayStatusForOs(reports, "linux")).toBe("main-menu");
-    expect(displayStatusForOs(reports, "windows")).toBe("untested");
-    expect(displayStatusForOs(reports, "all")).toBe("main-menu");
-  });
-
   it("reportsForOs scopes reports by OS", () => {
-    const reports = [
-      mk("PPSA00001", "main-menu", "linux", "Alpha"),
-      mk("PPSA00001", "logo", "windows", "Alpha"),
-    ];
+    const reports = [r("main-menu", "linux"), r("logo", "windows")];
     expect(reportsForOs(reports, "linux")).toHaveLength(1);
     expect(reportsForOs(reports, "all")).toHaveLength(2);
   });
 
-  it("filterGameIndex: OS+status only matches that OS's reports (the regression)", () => {
-    const index = buildGameIndex(games, [
-      mk("PPSA00001", "main-menu", "linux", "Alpha"), // Linux playable
-      mk("PPSA00002", "main-menu", "windows", "Beta"), // Windows playable
-    ]);
-    expect(filterGameIndex(index, { status: "main-menu", os: "linux" }).map((e) => e.key)).toEqual(["PPSA00001"]);
-    expect(filterGameIndex(index, { status: "main-menu", os: "windows" }).map((e) => e.key)).toEqual(["PPSA00002"]);
-    expect(filterGameIndex(index, { status: "main-menu", os: "macos" })).toHaveLength(0);
-    expect(filterGameIndex(index, { status: "main-menu", os: "all" }).map((e) => e.key).sort()).toEqual(["PPSA00001", "PPSA00002"]);
+  it("perOsStatuses fills every OS slot", () => {
+    const reports = [r("main-menu", "windows")];
+    expect(perOsStatuses(reports)).toEqual({ windows: "main-menu", linux: "untested", macos: "untested" });
+  });
+});
+
+describe("slim index helpers (compat-index.json payload)", () => {
+  const alpha: CompatIndexGame = {
+    key: "PPSA00001",
+    title: "Alpha",
+    titleId: "PPSA00001",
+    overall: "in-game",
+    os: { windows: "in-game", linux: "logo" },
+    reportCounts: { windows: 1, linux: 1 },
+    latestTested: "2026-08-07",
+  };
+  const beta: CompatIndexGame = {
+    key: "PPSA00002",
+    title: "Beta",
+    titleId: "PPSA00002",
+    overall: "main-menu",
+    os: { windows: "main-menu" },
+    reportCounts: { windows: 1 },
+  };
+
+  it("osStatus maps any/all scopes onto the precomputed statuses", () => {
+    expect(osStatus(alpha, "all")).toBe("in-game");
+    expect(osStatus(alpha, "windows")).toBe("in-game");
+    expect(osStatus(alpha, "linux")).toBe("logo");
+    expect(osStatus(alpha, "macos")).toBe("untested");
   });
 
-  it("filterGameIndex: OS + not-tested shows games with no report on that OS", () => {
-    const index = buildGameIndex(games, [mk("PPSA00001", "main-menu", "linux", "Alpha")]);
-    // Alpha has no Windows report, Beta has none at all — both are not tested on Windows.
-    expect(filterGameIndex(index, { status: "untested", os: "windows" }).map((e) => e.key)).toEqual(["PPSA00001", "PPSA00002"]);
-    // On Linux, Alpha's report votes playable, so only Beta is not tested.
-    expect(filterGameIndex(index, { status: "untested", os: "linux" }).map((e) => e.key)).toEqual(["PPSA00002"]);
-  });
+  it("compatIndexStats counts within the OS scope", () => {
+    const all = compatIndexStats([alpha, beta], "all");
+    expect(all.total).toBe(2);
+    expect(all.tested).toBe(2);
+    expect(all.untested).toBe(0);
+    expect(all.counts["in-game"]).toBe(1);
+    expect(all.counts["main-menu"]).toBe(1);
 
-  it("indexStatsForOs counts only that OS's reports, and 'all' counts best-across-OS", () => {
-    const index = buildGameIndex(games, [
-      mk("PPSA00001", "main-menu", "linux", "Alpha"),
-      mk("PPSA00002", "in-game", "windows", "Beta"),
-    ]);
-    const linux = indexStatsForOs(index, "linux");
+    const linux = compatIndexStats([alpha, beta], "linux");
     expect(linux.total).toBe(2);
     expect(linux.tested).toBe(1);
     expect(linux.untested).toBe(1);
-    expect(linux.counts["main-menu"]).toBe(1);
+    expect(linux.counts["logo"]).toBe(1);
+  });
 
-    const any = indexStatsForOs(index, "all");
-    expect(any.tested).toBe(2);
-    expect(any.counts["main-menu"]).toBe(1);
-    expect(any.counts["in-game"]).toBe(1);
+  it("filterCompatIndex scopes status inside the OS (the regression)", () => {
+    expect(filterCompatIndex([alpha, beta], { status: "in-game", os: "all" }).map((e) => e.key)).toEqual(["PPSA00001"]);
+    expect(filterCompatIndex([alpha, beta], { status: "logo", os: "linux" }).map((e) => e.key)).toEqual(["PPSA00001"]);
+    // Alpha's logo report is Linux-only — it must not match a Windows scope.
+    expect(filterCompatIndex([alpha, beta], { status: "logo", os: "windows" })).toEqual([]);
+    expect(filterCompatIndex([alpha, beta], { status: "in-game", os: "windows" }).map((e) => e.key)).toEqual(["PPSA00001"]);
+  });
+
+  it("filterCompatIndex: OS + not-tested shows games with no report on that OS", () => {
+    expect(filterCompatIndex([alpha, beta], { status: "untested", os: "macos" }).map((e) => e.key)).toEqual(["PPSA00001", "PPSA00002"]);
+    expect(filterCompatIndex([alpha, beta], { status: "untested", os: "linux" }).map((e) => e.key)).toEqual(["PPSA00002"]);
+  });
+
+  it("filterCompatIndex searches title and titleId", () => {
+    expect(filterCompatIndex([alpha, beta], { query: "beta" }).map((e) => e.key)).toEqual(["PPSA00002"]);
+    expect(filterCompatIndex([alpha, beta], { query: "psa00001" }).map((e) => e.key)).toEqual(["PPSA00001"]);
+  });
+
+  it("computeIndexStats counts overall statuses for the preview bar", () => {
+    const stats = computeIndexStats([alpha, beta]);
+    expect(stats.tested).toBe(2);
+    expect(stats.counts["in-game"]).toBe(1);
+    expect(stats.counts["main-menu"]).toBe(1);
+    expect(stats.counts["logo"]).toBe(0);
   });
 });

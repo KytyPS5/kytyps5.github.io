@@ -3,7 +3,7 @@ import { Link } from "react-router-dom";
 import { AnimatePresence, motion, useReducedMotion } from "framer-motion";
 import { ChevronLeft, ChevronRight, Expand } from "lucide-react";
 import { buildCarouselSlides, type CarouselSlide } from "@/lib/slides";
-import { useCompatReports } from "@/hooks/use-compat-reports";
+import { useCompatIndex } from "@/hooks/use-compat-index";
 import { cn } from "@/lib/utils";
 import {
   Dialog,
@@ -34,10 +34,11 @@ export function ScreenshotCarousel() {
   const [paused, setPaused] = React.useState(false);
   const [lightbox, setLightbox] = React.useState(false);
   const reduced = useReducedMotion();
-  // Slides derive from the compat reports (bundle seed → runtime JSON refresh),
-  // so a merged report with a screenshot appears without a rebuild.
-  const { reports } = useCompatReports();
-  const slides = React.useMemo(() => buildCarouselSlides(reports), [reports]);
+  // Slides derive from the slim compat index's screenshots (committed seed →
+  // runtime JSON refresh), so a merged report with a screenshot appears
+  // without a rebuild.
+  const { games } = useCompatIndex();
+  const slides = React.useMemo(() => buildCarouselSlides(games ?? []), [games]);
   const count = slides.length;
 
   const next = React.useCallback(() => setIndex((i) => (i + 1) % count), [count]);

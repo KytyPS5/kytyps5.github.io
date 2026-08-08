@@ -7,16 +7,13 @@ import { Seo } from "@/lib/seo";
 import {
   STATUSES,
   STATUS_META,
-  buildGameIndex,
-  displayStatusForOs,
-  filterGameIndex,
-  indexStatsForOs,
-  reportsForOs,
+  compatIndexStats,
+  filterCompatIndex,
+  osStatus,
   type DisplayStatus,
   type Os,
 } from "@/lib/compat";
-import { loadGames, type Game } from "@/lib/games";
-import { useCompatReports } from "@/hooks/use-compat-reports";
+import { useCompatIndex } from "@/hooks/use-compat-index";
 import { PageHeader } from "@/components/layout/page-header";
 import { Section } from "@/components/layout/section";
 import { StatusBadge } from "@/components/compat/status-badge";
@@ -34,43 +31,29 @@ export function CompatibilityPage() {
   const [query, setQuery] = React.useState("");
   const [visible, setVisible] = React.useState(PAGE_SIZE);
 
-  const [games, setGames] = React.useState<Game[] | null>(null);
-  React.useEffect(() => {
-    let alive = true;
-    loadGames()
-      .then((g) => alive && setGames(g))
-      .catch(() => {});
-    return () => {
-      alive = false;
-    };
-  }, []);
-
-  // Full index: every game in the database + its verified reports.
-  // Nothing here is hardcoded — reports come from src/content/compat/*.md and
-  // the game list from src/data/games.json (andshrew/PlayStation-Titles).
-  // Reports start as the build-time bundle and refresh from the runtime JSON.
-  const { reports, loading: reportsLoading } = useCompatReports();
-  const index = React.useMemo(
-    () => (games ? buildGameIndex(games, reports) : []),
-    [games, reports],
-  );
+  // Slim index: every TESTED game with its statuses precomputed at export time
+  // (reports from src/content/compat/*.md merged with src/data/games.json).
+  // Starts as the committed seed and refreshes from the deployed JSON — the
+  // client never parses report markdown or aggregates statuses.
+  const { games, loading: reportsLoading } = useCompatIndex();
+  const index = games ?? [];
 
   // Only tested games are listed — untested titles are hidden entirely instead
   // of showing up grey. With an OS filter active, only games with a report for
   // that OS are listed (a Windows-only game disappears under the Linux filter
   // instead of showing "Not tested").
   const visibleIndex = React.useMemo(
-    () => index.filter((e) => displayStatusForOs(e.reports, osFilter) !== "untested"),
+    () => index.filter((e) => osStatus(e, osFilter) !== "untested"),
     [index, osFilter],
   );
 
   // Stats and filtering are evaluated inside the active OS scope: with an OS
   // selected, a game's status is scoped to THAT OS's reports only, so status +
   // OS combinations filter predictably.
-  const stats = React.useMemo(() => indexStatsForOs(visibleIndex, osFilter), [visibleIndex, osFilter]);
+  const stats = React.useMemo(() => compatIndexStats(visibleIndex, osFilter), [visibleIndex, osFilter]);
 
   const filtered = React.useMemo(
-    () => filterGameIndex(visibleIndex, { status: statusFilter, os: osFilter, query }),
+    () => filterCompatIndex(visibleIndex, { status: statusFilter, os: osFilter, query }),
     [visibleIndex, statusFilter, osFilter, query],
   );
 
@@ -94,7 +77,7 @@ export function CompatibilityPage() {
         description="Tested games from the same title list the emulator community uses, showing the best result across their per-OS reports. Untested titles aren't listed until a report lands."
       />
 
-      {games === null || reportsLoading ? (
+      {reportsLoading ? (
         <Section className="!pt-4">
           <div
             className="flex min-h-[50vh] items-center justify-center"
@@ -230,13 +213,17 @@ export function CompatibilityPage() {
                 // "Any" shows the best across tested OSes; with an OS filter
                 // active the row status is that OS's report status (untested =
                 // no report for that OS yet).
-                const scoped = reportsForOs(e.reports, osFilter);
-                const status = displayStatusForOs(e.reports, osFilter);
-                const tested = scoped.length > 0;
+                const status = osStatus(e, osFilter);
+                const count =
+                  osFilter === "all"
+                    ? Object.values(e.reportCounts).reduce((n, c) => n + (c ?? 0), 0)
+                    : (e.reportCounts[osFilter] ?? 0);
+                const tested = count > 0;
                 // OS pills follow the active filter: with "windows" selected a
                 // game's row shows only its Windows reports — a linux/macos
                 // pill would be noise under a Windows-only filter.
-                const oses = [...new Set(scoped.flatMap((r) => (r.os ? [r.os] : [])))];
+                const oses =
+                  osFilter === "all" ? Object.keys(e.os) : e.os[osFilter] ? [osFilter] : [];
                 return (
                   <li key={e.key}>
                     <Link
@@ -286,7 +273,7 @@ export function CompatibilityPage() {
                       <span className="flex shrink-0 items-center gap-3">
                         {tested && (
                           <span className="hidden font-mono text-xs text-text-muted md:inline">
-                            {scoped.length} report{scoped.length === 1 ? "" : "s"}
+                            {count} report{count === 1 ? "" : "s"}
                           </span>
                         )}
                         <StatusBadge status={status} />
