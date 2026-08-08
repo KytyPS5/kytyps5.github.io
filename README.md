@@ -128,8 +128,11 @@ npm run import -- --force          # accept a >5% change to the list
 
 The title list is imported from the community-maintained PlayStation-Titles dataset and enriched
 from the public PlayStation Store GraphQL endpoint (throttled 600 ms/concept, incremental).
-`.github/workflows/import-games.yml` refreshes the list and enriches a batch weekly. Games
-without enrichment show a letter avatar until their concept is fetched.
+`.github/workflows/import-games.yml` refreshes the list and enriches a batch weekly; changes open
+a PR (`data/games-refresh`) instead of pushing to main directly — CI gates the diff, and
+auto-merge squashes the PR once CI passes (the owner's direct pushes still work via admin
+bypass). Re-runs update the standing PR in place, so there's at most one open refresh PR at a
+time. Games without enrichment show a letter avatar until their concept is fetched.
 
 **If the import reports "persisted-query hash rejected (HTTP 400)":** open a PS5 game page on
 store.playstation.com with devtools → Network, filter `metGetConceptById`, copy
@@ -148,7 +151,7 @@ domain, change `base` in `vite.config.ts` **together with** `SITE_URL` in `src/c
 | `ci.yml` | every push / PR | full gates (typecheck, tests, build) for code changes; report-only PRs get typecheck + report validation only |
 | `deploy.yml` | every push to `main` (except docs-only) | full rebuild on code changes; content-only deploys (report merges) republish the cached build with fresh data — no `npm ci` / `tsc` / `vite build` |
 | `refresh-data.yml` | every 30 min | regenerate the GitHub snapshot; redeploy when changed |
-| `import-games.yml` | weekly | refresh the games database + enrich a batch |
+| `import-games.yml` | weekly | refresh the games database + enrich a batch; opens an auto-merged PR (`data/games-refresh`) gated by CI |
 | `compat-report.yml` | on issues / `workflow_dispatch` | convert reports into PRs |
 
 ## Deployment
@@ -164,6 +167,11 @@ and sitemap are regenerated from the reports, and the artifact is republished �
 restores the requested path into the SPA. One caveat: GitHub Pages serves deep routes to
 crawlers with an HTTP 404 status, so search-engine indexing of the sitemap'd pages benefits
 from a custom domain and/or prerendering.
+
+**Branch protection:** `main` requires the `CI / test` status check to pass before merges
+(admins are exempt, so the owner can still push directly). This is what makes the weekly
+games-database PR auto-merge: `import-games.yml` opens the PR and enables auto-merge, and
+GitHub squashes it once CI is green.
 
 ## License
 

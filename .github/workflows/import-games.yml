@@ -3,6 +3,12 @@ name: Refresh games database
 # Refresh the PS5 title list from the PlayStation-Titles dataset weekly and
 # enrich a batch of concepts with PlayStation Store metadata. Manual runs can
 # tune the enrich count.
+#
+# Changes open a PR (data/games-refresh) instead of pushing to main directly:
+# CI gates the diff, a bad import can't break main, and auto-merge merges the
+# PR once CI passes. Re-runs update the standing PR in place, so there is at
+# most one open refresh PR at any time. Auto-merge requires branch protection
+# on main with CI / test as a required status check (see README → Automation).
 on:
   schedule:
     - cron: "0 4 * * 1" # Mondays 04:00 UTC
@@ -13,7 +19,8 @@ on:
         default: "300"
 
 permissions:
-  contents: write
+  contents: write # push the PR branch
+  pull-requests: write # open the PR + enable auto-merge
 
 jobs:
   import:
@@ -31,9 +38,25 @@ jobs:
         run: |
           [[ "$ENRICH" =~ ^[0-9]+$ ]] || { echo "enrich must be a number"; exit 1; }
           node scripts/import-games.mjs --enrich "$ENRICH"
-      - name: Commit changes
-        run: |
-          git config user.name "github-actions[bot]"
-          git config user.email "github-actions[bot]@users.noreply.github.com"
-          git add src/data/games.json
-          git diff --cached --quiet || (git commit -m "data: refresh games database" && git push)
+      - name: Open refresh PR
+        id: cpr
+        uses: peter-evans/create-pull-request@v6
+        with:
+          token: ${{ secrets.GITHUB_TOKEN }}
+          # Only the games database is ever touched by the import script.
+          add-paths: src/data/games.json
+          commit-message: "data: refresh games database"
+          branch: data/games-refresh
+          title: "data: refresh games database"
+          delete-branch: true
+
+      - name: Enable auto-merge
+        # No PR when the database didn't change (create-pull-request exits
+        # cleanly without output) — nothing to merge in that case.
+        if: steps.cpr.outputs.pull-request-number != ''
+        uses: peter-evans/enable-pull-request-automerge@v2
+        with:
+          token: ${{ secrets.GITHUB_TOKEN }}
+          pull-request-number: ${{ steps.cpr.outputs.pull-request-number }}
+          merge-method: squash
+          delete-branch: true
