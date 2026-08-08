@@ -1,25 +1,22 @@
 name: Attach game screenshot
 
-# A `/getss <image-url> [<image-url> …]` comment on an issue downloads the
-# image(s) into public/screenshots/ and attaches them to the compatibility
-# report for the game identified by the issue's Title ID, then opens a PR.
-# The report must already exist (create it with /compat first) — screenshots
-# attach to a verified report; this workflow never invents a status.
+# Downloads screenshot(s) from a game-status issue on the KytyPS5 repo into
+# public/screenshots/ and attaches them to the compatibility report for the
+# game identified by the issue's Game ID / serial, then opens a PR. The report
+# must already exist (create it via "Sync compatibility reports" first) —
+# screenshots attach to a verified report; this workflow never invents a
+# status.
 #
-# The issue identifies the game: the Title ID from the compatibility report
-# template, or the first PPSA-XXXXX found in the issue title/body/comment.
-#
-# Two ways to trigger:
-#   1. Maintainer comment — reply `/getss <url>` on any issue (collaborator-only).
-#   2. One-click button — Actions → "Attach game screenshot" → Run workflow →
-#      type the issue number (screenshots are pulled from the issue body).
+# Issues live on KytyPS5/KytyPS5, so this workflow reads them through the
+# PUBLIC API (no token — the Actions GITHUB_TOKEN can't read other repos, and
+# public reads don't need one). It can't be triggered by comments on that
+# repo, so it runs manually: Actions → "Attach game screenshot" → Run workflow
+# → type the issue number (image URLs are read from the issue body).
 on:
-  issue_comment:
-    types: [created]
   workflow_dispatch:
     inputs:
       issue_number:
-        description: Issue number whose body contains the screenshot URLs
+        description: KytyPS5 issue number whose body contains the screenshot URLs
         required: true
         type: string
 
@@ -30,11 +27,6 @@ permissions:
 jobs:
   attach:
     runs-on: ubuntu-latest
-    if: |
-      (github.event_name == 'issue_comment' &&
-        github.event.issue.pull_request == null &&
-        contains(github.event.comment.body, '/getss')) ||
-      github.event_name == 'workflow_dispatch'
     steps:
       - uses: actions/checkout@v4
       - uses: actions/setup-node@v4
@@ -43,34 +35,20 @@ jobs:
           cache: npm
       - run: npm ci
 
-      - name: Only collaborators can attach screenshots via /getss
-        if: github.event_name == 'issue_comment'
-        env:
-          GH_TOKEN: ${{ secrets.GITHUB_TOKEN }}
-        run: |
-          AUTHOR="${{ github.event.comment.user.login }}"
-          if ! gh api "repos/${{ github.repository }}/collaborators/$AUTHOR" --silent 2>/dev/null; then
-            echo "::error::Only collaborators can trigger a screenshot attachment with /getss"
-            exit 1
-          fi
-
-      - name: Resolve issue
+      - name: Fetch the issue from KytyPS5/KytyPS5
         id: issue
-        env:
-          GH_TOKEN: ${{ secrets.GITHUB_TOKEN }}
         run: |
-          if [ "${{ github.event_name }}" = "workflow_dispatch" ]; then
-            NUMBER="${{ inputs.issue_number }}"
-          else
-            NUMBER="${{ github.event.issue.number }}"
-          fi
-          if ! gh api "repos/${{ github.repository }}/issues/$NUMBER" --jq .number >/dev/null 2>&1; then
-            echo "::error::Issue #$NUMBER not found in this repository"
-            exit 1
-          fi
-          echo "number=$NUMBER" >> "$GITHUB_OUTPUT"
-          gh api "repos/${{ github.repository }}/issues/$NUMBER" --jq '.title' > /tmp/issue-title.txt
-          gh api "repos/${{ github.repository }}/issues/$NUMBER" --jq '.body' > /tmp/issue-body.txt
+          curl -sf "https://api.github.com/repos/KytyPS5/KytyPS5/issues/${{ inputs.issue_number }}" \
+            -o /tmp/kytyps5-issue.json || {
+              echo "::error::Issue #${{ inputs.issue_number }} not found on KytyPS5/KytyPS5"
+              exit 1
+            }
+          node - <<'NODE'
+          const fs = require("node:fs");
+          const issue = JSON.parse(fs.readFileSync("/tmp/kytyps5-issue.json", "utf8"));
+          fs.writeFileSync("/tmp/issue-title.txt", issue.title ?? "");
+          fs.writeFileSync("/tmp/issue-body.txt", issue.body ?? "");
+          NODE
 
       - name: Collect screenshots and game ID
         id: collect
@@ -79,41 +57,38 @@ jobs:
           BODY="$(cat /tmp/issue-body.txt)"
           echo "title=$TITLE" >> "$GITHUB_OUTPUT"
 
-          # Title ID: the template's "Title ID" field, else the first
-          # PPSA-XXXXX in the issue title / body / comment.
-          TITLE_ID="$(printf '%s' "$BODY" | awk -v h='### Title ID' '
+          # Game ID: the template's "Game ID / serial" field, the legacy
+          # "Title ID" field, else the first PPSA-XXXXX in title / body.
+          TITLE_ID="$(printf '%s' "$BODY" | awk -v h='### Game ID / serial' '
             $0 == h { f = 1; next }
             f && /^### / { exit }
+            f && /^## / { exit }
             f && NF { print; exit }
           ')"
-          [ -z "$TITLE_ID" ] && TITLE_ID="$( { printf '%s\n' "$TITLE"; printf '%s' "$BODY"; [ "${{ github.event_name }}" = "issue_comment" ] && printf '%s' "${{ github.event.comment.body }}"; } | grep -oiE 'PPSA-?[0-9]{5}' | head -1 || true )"
+          [ -z "$TITLE_ID" ] && TITLE_ID="$(printf '%s' "$BODY" | awk -v h='### Title ID' '
+            $0 == h { f = 1; next }
+            f && /^### / { exit }
+            f && /^## / { exit }
+            f && NF { print; exit }
+          ')"
+          [ -z "$TITLE_ID" ] && TITLE_ID="$( { printf '%s\n' "$TITLE"; printf '%s' "$BODY"; } | grep -oiE 'PPSA-?[0-9]{5}' | head -1 || true )"
           if [ -z "$TITLE_ID" ]; then
-            echo "::error::No Title ID found — file the issue via the compatibility report template (or mention the PPSA-XXXXX in the issue/comment), then reply /getss again."
+            echo "::error::No Game ID found — file the issue via the Game Emulation Status Report template (or mention the PPSA-XXXXX), then run this workflow again."
             exit 1
           fi
           echo "title_id=$TITLE_ID" >> "$GITHUB_OUTPUT"
 
-          # Image URLs: from the /getss comment, or (workflow_dispatch) from
-          # the issue body's markdown images / bare image links.
-          if [ "${{ github.event_name }}" = "issue_comment" ]; then
-            COMMENT="${{ github.event.comment.body }}"
-            # Everything after "/getss", then every http(s) URL token.
-            URLS="$(printf '%s' "$COMMENT" | sed 's/.*\/getss//I' | grep -oE 'https?://[^[:space:]>]+' || true)"
-          else
-            URLS="$(printf '%s' "$BODY" | grep -oE 'https?://[^[:space:]>]+' || true)"
-          fi
-          # Trim trailing punctuation that grep may have captured.
+          # Image URLs from the issue body's markdown images / bare links.
+          URLS="$(printf '%s' "$BODY" | grep -oE 'https?://[^[:space:]>]+' || true)"
           URLS="$(printf '%s\n' "$URLS" | sed 's/[),.;]*$//' | grep -v '^$' || true)"
           if [ -z "$URLS" ]; then
-            echo "::error::No image URL found — reply /getss <image-url> (or include the image links in the issue body)."
+            echo "::error::No image URL found in the issue body — add the screenshot links to the issue and re-run."
             exit 1
           fi
           printf '%s\n' "$URLS" > /tmp/image-urls.txt
           echo "url_count=$(wc -l < /tmp/image-urls.txt)" >> "$GITHUB_OUTPUT"
 
       - name: Attach screenshots to the report
-        env:
-          ISSUE_NUMBER: ${{ steps.issue.outputs.number }}
         run: |
           TITLE="${{ steps.collect.outputs.title }}"
           TITLE_ID="${{ steps.collect.outputs.title_id }}"
@@ -128,7 +103,7 @@ jobs:
         uses: peter-evans/create-pull-request@v6
         with:
           token: ${{ secrets.GITHUB_TOKEN }}
-          commit-message: "data: screenshots for issue #${{ steps.issue.outputs.number }}"
-          branch: screenshots/issue-${{ steps.issue.outputs.number }}
-          title: "data: screenshots for issue #${{ steps.issue.outputs.number }}"
+          commit-message: "data: screenshots for KytyPS5 issue #${{ inputs.issue_number }}"
+          branch: screenshots/issue-${{ inputs.issue_number }}
+          title: "data: screenshots for KytyPS5 issue #${{ inputs.issue_number }}"
           delete-branch: true

@@ -1,7 +1,7 @@
 ---
 title: "ELDEN RING NIGHTREIGN"
 titleId: "PPSA25380"
-status: "nothing"
+status: "doesnt-boot"
 testedVersion: "0.2.2"
 testedDate: "2026-08-01"
 os: "windows"

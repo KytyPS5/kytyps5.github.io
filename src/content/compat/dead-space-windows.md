@@ -1,7 +1,7 @@
 ---
 title: "Dead Space"
 titleId: "PPSA03845"
-status: "nothing"
+status: "doesnt-boot"
 testedVersion: "769edf4"
 testedDate: "2026-08-07"
 os: "windows"

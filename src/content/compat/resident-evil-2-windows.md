@@ -1,7 +1,7 @@
 ---
 title: "Resident Evil 2"
 titleId: "PPSA04288"
-status: "nothing"
+status: "doesnt-boot"
 testedVersion: "0.0.5.5"
 testedDate: "2026-07-19"
 os: "windows"

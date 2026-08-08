@@ -1,7 +1,7 @@
 ---
 title: "R-Type Final 3 Evolved"
 titleId: "PPSA08394"
-status: "boots"
+status: "logo"
 testedVersion: "0.0.7"
 testedDate: "2026-07-18"
 os: "windows"

@@ -1,7 +1,7 @@
 ---
 title: "Alan Wake Remastered"
 titleId: "PPSA01924"
-status: "boots"
+status: "main-menu"
 testedVersion: "0.0.5.5 BETA"
 testedDate: "2026-07-18"
 os: "windows"

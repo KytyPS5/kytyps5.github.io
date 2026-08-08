@@ -1,7 +1,7 @@
 ---
 title: "Marvel's Spider-Man: Miles Morales"
 titleId: "PPSA01417"
-status: "boots"
+status: "logo"
 testedVersion: "3c850b6"
 testedDate: "2026-08-08"
 os: "windows"

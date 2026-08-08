@@ -1,7 +1,7 @@
 ---
 title: "GYLT"
 titleId: "PPSA13526"
-status: "boots"
+status: "logo"
 testedVersion: "769edf4"
 testedDate: "2026-08-07"
 os: "windows"

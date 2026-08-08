@@ -1,7 +1,7 @@
 ---
 title: "Invincible VS"
 titleId: "PPSA30568"
-status: "nothing"
+status: "doesnt-boot"
 testedVersion: "v0.2.2"
 testedDate: "2026-07-19"
 os: "windows"

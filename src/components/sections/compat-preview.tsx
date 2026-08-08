@@ -37,8 +37,8 @@ export function CompatPreview() {
               {stats.tested} game{stats.tested === 1 ? "" : "s"} tested so far
             </h2>
             <p className="mt-2 max-w-md text-sm leading-relaxed text-text-secondary">
-              Community-tracked statuses, from nothing to perfect — with a report behind every
-              entry.
+              Community-tracked statuses, from doesn't boot to in game — with a report behind
+              every entry.
             </p>
           </div>
           <Link

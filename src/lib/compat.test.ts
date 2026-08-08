@@ -20,7 +20,7 @@ import {
 const VALID = `---
 titleId: "PPSA01234"
 title: "Test Game"
-status: "playable"
+status: "main-menu"
 testedVersion: "main"
 testedDate: "2026-08-07"
 os: "windows"
@@ -37,7 +37,7 @@ describe("parseCompatReport", () => {
       slug: "test-game",
       title: "Test Game",
       titleId: "PPSA01234",
-      status: "playable",
+      status: "main-menu",
       testedVersion: "main",
       testedDate: "2026-08-07",
       os: "windows",
@@ -47,7 +47,7 @@ describe("parseCompatReport", () => {
   });
 
   it("rejects an unknown status", () => {
-    const bad = VALID.replace('status: "playable"', 'status: "broken"');
+    const bad = VALID.replace('status: "main-menu"', 'status: "broken"');
     expect(() => parseCompatReport(bad, "x")).toThrow(/status must be one of/);
   });
 
@@ -176,7 +176,7 @@ describe("parseCompatPayload (runtime compat.json refresh)", () => {
       version: 1,
       reports: [
         { slug: "ok", raw: VALID },
-        { slug: "bad", raw: VALID.replace('status: "playable"', 'status: "broken"') },
+        { slug: "bad", raw: VALID.replace('status: "main-menu"', 'status: "broken"') },
       ],
     };
     const reports = parseCompatPayload(payload);
@@ -208,16 +208,16 @@ describe("gamePageKey", () => {
 
 describe("computeStats", () => {
   it("counts each status", () => {
-    const stats = computeStats(["playable", "boots", "playable", "perfect"]);
+    const stats = computeStats(["main-menu", "logo", "main-menu", "in-game"]);
     expect(stats.tested).toBe(4);
-    expect(stats.counts.playable).toBe(2);
-    expect(stats.counts.boots).toBe(1);
-    expect(stats.counts.perfect).toBe(1);
-    expect(stats.counts.nothing).toBe(0);
+    expect(stats.counts["main-menu"]).toBe(2);
+    expect(stats.counts["logo"]).toBe(1);
+    expect(stats.counts["in-game"]).toBe(1);
+    expect(stats.counts["doesnt-boot"]).toBe(0);
   });
 
   it("has the full ladder in order", () => {
-    expect(STATUSES).toEqual(["nothing", "boots", "playable", "perfect"]);
+    expect(STATUSES).toEqual(["doesnt-boot", "logo", "main-menu", "in-game"]);
   });
 });
 
@@ -225,17 +225,17 @@ describe("aggregateStatus", () => {
   const r = (status: (typeof STATUSES)[number]) => ({ status });
 
   it("returns the majority vote", () => {
-    expect(aggregateStatus([r("playable"), r("playable"), r("boots")])).toBe("playable");
-    expect(aggregateStatus([r("perfect"), r("perfect"), r("playable")])).toBe("perfect");
+    expect(aggregateStatus([r("main-menu"), r("main-menu"), r("logo")])).toBe("main-menu");
+    expect(aggregateStatus([r("in-game"), r("in-game"), r("main-menu")])).toBe("in-game");
   });
 
   it("breaks ties toward the better status", () => {
-    expect(aggregateStatus([r("playable"), r("perfect")])).toBe("perfect");
-    expect(aggregateStatus([r("nothing"), r("boots")])).toBe("boots");
+    expect(aggregateStatus([r("main-menu"), r("in-game")])).toBe("in-game");
+    expect(aggregateStatus([r("doesnt-boot"), r("logo")])).toBe("logo");
   });
 
   it("handles a single report", () => {
-    expect(aggregateStatus([r("boots")])).toBe("boots");
+    expect(aggregateStatus([r("logo")])).toBe("logo");
   });
 });
 
@@ -257,10 +257,10 @@ describe("STATUS_META colors (status ladder palette)", () => {
   const meta = (s: string) => STATUS_META[s as keyof typeof STATUS_META].color;
 
   it("uses the requested grey/red/orange/green palette", () => {
-    expect(meta("nothing")).toBe("#9ca3af"); // grey
-    expect(meta("boots")).toBe("#f87171"); // red
-    expect(meta("playable")).toBe("#fb923c"); // orange
-    expect(meta("perfect")).toBe("#4ade80"); // green
+    expect(meta("doesnt-boot")).toBe("#9ca3af"); // grey
+    expect(meta("logo")).toBe("#f87171"); // red
+    expect(meta("main-menu")).toBe("#fb923c"); // orange
+    expect(meta("in-game")).toBe("#4ade80"); // green
     expect(meta("untested")).toBe("#64748b"); // muted slate (hidden from lists)
   });
 });
@@ -275,31 +275,31 @@ describe("displayStatus (best across per-OS majorities)", () => {
   it("shows the best result across per-OS tests (the user's example)", () => {
     // boots on macOS but playable on Windows → Any = playable, and each OS
     // filter shows its own status.
-    const reports = [r("playable", "windows"), r("boots", "macos")];
-    expect(displayStatus(reports)).toBe("playable");
-    expect(displayStatusForOs(reports, "windows")).toBe("playable");
-    expect(displayStatusForOs(reports, "macos")).toBe("boots");
+    const reports = [r("main-menu", "windows"), r("logo", "macos")];
+    expect(displayStatus(reports)).toBe("main-menu");
+    expect(displayStatusForOs(reports, "windows")).toBe("main-menu");
+    expect(displayStatusForOs(reports, "macos")).toBe("logo");
     expect(displayStatusForOs(reports, "linux")).toBe("untested");
   });
 
   it("majority-votes within an OS before comparing across OSes", () => {
     // Windows: playable twice; Linux: perfect once → Any = perfect (best), not
     // the cross-platform majority (playable).
-    const reports = [r("playable", "windows"), r("playable", "windows"), r("perfect", "linux")];
-    expect(displayStatusForOs(reports, "windows")).toBe("playable");
-    expect(displayStatus(reports)).toBe("perfect");
+    const reports = [r("main-menu", "windows"), r("main-menu", "windows"), r("in-game", "linux")];
+    expect(displayStatusForOs(reports, "windows")).toBe("main-menu");
+    expect(displayStatus(reports)).toBe("in-game");
   });
 
   it("a single-OS game's overall status equals that OS's status", () => {
-    const reports = [r("playable", "linux")];
-    expect(displayStatus(reports)).toBe("playable");
-    expect(displayStatusForOs(reports, "all")).toBe("playable");
+    const reports = [r("main-menu", "linux")];
+    expect(displayStatus(reports)).toBe("main-menu");
+    expect(displayStatusForOs(reports, "all")).toBe("main-menu");
   });
 });
 
 describe("buildGameIndex", () => {
   const report = (titleId: string, status: (typeof STATUSES)[number], title = "Game") =>
-    ({ ...parseCompatReport(VALID.replace("PPSA01234", titleId).replace('title: "Test Game"', `title: "${title}"`).replace('status: "playable"', `status: "${status}"`), "x"), slug: "x" });
+    ({ ...parseCompatReport(VALID.replace("PPSA01234", titleId).replace('title: "Test Game"', `title: "${title}"`).replace('status: "main-menu"', `status: "${status}"`), "x"), slug: "x" });
 
   const games = [
     { titleId: "PPSA00001", allTitleIds: ["PPSA00001", "PPSA00001_00"], name: "Alpha Game", cover: "https://c/a.png" },
@@ -315,13 +315,13 @@ describe("buildGameIndex", () => {
 
   it("merges reports into their game and surfaces tested games first", () => {
     const index = buildGameIndex(games, [
-      report("PPSA00002", "boots", "Beta Game"),
-      report("PPSA00001", "playable", "Alpha Game"),
+      report("PPSA00002", "logo", "Beta Game"),
+      report("PPSA00001", "main-menu", "Alpha Game"),
     ]);
     expect(index).toHaveLength(2);
     expect(index[0].key).toBe("PPSA00001");
     expect(index[0].reports).toHaveLength(1);
-    expect(displayStatus(index[0].reports)).toBe("playable");
+    expect(displayStatus(index[0].reports)).toBe("main-menu");
     expect(index[1].key).toBe("PPSA00002");
     expect(index[1].cover).toBeUndefined();
   });
@@ -331,13 +331,13 @@ describe("buildGameIndex", () => {
     const variants = [
       { titleId: "PPSA00001", allTitleIds: ["PPSA00001", "PPSA00003"], name: "Alpha Game" },
     ];
-    const index = buildGameIndex(variants, [report("PPSA00003", "boots", "Alpha Game")]);
+    const index = buildGameIndex(variants, [report("PPSA00003", "logo", "Alpha Game")]);
     expect(index[0].reports).toHaveLength(1);
-    expect(displayStatus(index[0].reports)).toBe("boots");
+    expect(displayStatus(index[0].reports)).toBe("logo");
   });
 
   it("keeps report-only games (title ID not in the database)", () => {
-    const index = buildGameIndex(games, [report("PPSA09999", "boots", "Mystery Game")]);
+    const index = buildGameIndex(games, [report("PPSA09999", "logo", "Mystery Game")]);
     expect(index).toHaveLength(3);
     const extra = index.find((e) => e.key === "PPSA09999");
     expect(extra?.title).toBe("Mystery Game");
@@ -346,11 +346,11 @@ describe("buildGameIndex", () => {
 
   it("aggregates multiple reports per game", () => {
     const index = buildGameIndex(games, [
-      report("PPSA00001", "playable", "Alpha Game"),
-      report("PPSA00001", "perfect", "Alpha Game"),
+      report("PPSA00001", "main-menu", "Alpha Game"),
+      report("PPSA00001", "in-game", "Alpha Game"),
     ]);
     expect(index[0].reports).toHaveLength(2);
-    expect(displayStatus(index[0].reports)).toBe("perfect"); // tie -> better
+    expect(displayStatus(index[0].reports)).toBe("in-game"); // tie -> better
   });
 });
 
@@ -359,7 +359,7 @@ describe("per-OS status and filtering (reportsForOs / displayStatusForOs / filte
   const mk = (titleId: string, status: (typeof STATUSES)[number], os: Os, title = "Game") => {
     const raw = VALID.replace("PPSA01234", titleId)
       .replace('title: "Test Game"', `title: "${title}"`)
-      .replace('status: "playable"', `status: "${status}"`)
+      .replace('status: "main-menu"', `status: "${status}"`)
       .replace('os: "windows"', `os: "${os}"`);
     return { ...parseCompatReport(raw, "x"), slug: "x" };
   };
@@ -370,16 +370,16 @@ describe("per-OS status and filtering (reportsForOs / displayStatusForOs / filte
   ];
 
   it("displayStatusForOs is untested when no report exists for that OS", () => {
-    const reports = [mk("PPSA00001", "playable", "linux", "Alpha")];
-    expect(displayStatusForOs(reports, "linux")).toBe("playable");
+    const reports = [mk("PPSA00001", "main-menu", "linux", "Alpha")];
+    expect(displayStatusForOs(reports, "linux")).toBe("main-menu");
     expect(displayStatusForOs(reports, "windows")).toBe("untested");
-    expect(displayStatusForOs(reports, "all")).toBe("playable");
+    expect(displayStatusForOs(reports, "all")).toBe("main-menu");
   });
 
   it("reportsForOs scopes reports by OS", () => {
     const reports = [
-      mk("PPSA00001", "playable", "linux", "Alpha"),
-      mk("PPSA00001", "boots", "windows", "Alpha"),
+      mk("PPSA00001", "main-menu", "linux", "Alpha"),
+      mk("PPSA00001", "logo", "windows", "Alpha"),
     ];
     expect(reportsForOs(reports, "linux")).toHaveLength(1);
     expect(reportsForOs(reports, "all")).toHaveLength(2);
@@ -387,17 +387,17 @@ describe("per-OS status and filtering (reportsForOs / displayStatusForOs / filte
 
   it("filterGameIndex: OS+status only matches that OS's reports (the regression)", () => {
     const index = buildGameIndex(games, [
-      mk("PPSA00001", "playable", "linux", "Alpha"), // Linux playable
-      mk("PPSA00002", "playable", "windows", "Beta"), // Windows playable
+      mk("PPSA00001", "main-menu", "linux", "Alpha"), // Linux playable
+      mk("PPSA00002", "main-menu", "windows", "Beta"), // Windows playable
     ]);
-    expect(filterGameIndex(index, { status: "playable", os: "linux" }).map((e) => e.key)).toEqual(["PPSA00001"]);
-    expect(filterGameIndex(index, { status: "playable", os: "windows" }).map((e) => e.key)).toEqual(["PPSA00002"]);
-    expect(filterGameIndex(index, { status: "playable", os: "macos" })).toHaveLength(0);
-    expect(filterGameIndex(index, { status: "playable", os: "all" }).map((e) => e.key).sort()).toEqual(["PPSA00001", "PPSA00002"]);
+    expect(filterGameIndex(index, { status: "main-menu", os: "linux" }).map((e) => e.key)).toEqual(["PPSA00001"]);
+    expect(filterGameIndex(index, { status: "main-menu", os: "windows" }).map((e) => e.key)).toEqual(["PPSA00002"]);
+    expect(filterGameIndex(index, { status: "main-menu", os: "macos" })).toHaveLength(0);
+    expect(filterGameIndex(index, { status: "main-menu", os: "all" }).map((e) => e.key).sort()).toEqual(["PPSA00001", "PPSA00002"]);
   });
 
   it("filterGameIndex: OS + not-tested shows games with no report on that OS", () => {
-    const index = buildGameIndex(games, [mk("PPSA00001", "playable", "linux", "Alpha")]);
+    const index = buildGameIndex(games, [mk("PPSA00001", "main-menu", "linux", "Alpha")]);
     // Alpha has no Windows report, Beta has none at all — both are not tested on Windows.
     expect(filterGameIndex(index, { status: "untested", os: "windows" }).map((e) => e.key)).toEqual(["PPSA00001", "PPSA00002"]);
     // On Linux, Alpha's report votes playable, so only Beta is not tested.
@@ -406,18 +406,18 @@ describe("per-OS status and filtering (reportsForOs / displayStatusForOs / filte
 
   it("indexStatsForOs counts only that OS's reports, and 'all' counts best-across-OS", () => {
     const index = buildGameIndex(games, [
-      mk("PPSA00001", "playable", "linux", "Alpha"),
-      mk("PPSA00002", "perfect", "windows", "Beta"),
+      mk("PPSA00001", "main-menu", "linux", "Alpha"),
+      mk("PPSA00002", "in-game", "windows", "Beta"),
     ]);
     const linux = indexStatsForOs(index, "linux");
     expect(linux.total).toBe(2);
     expect(linux.tested).toBe(1);
     expect(linux.untested).toBe(1);
-    expect(linux.counts.playable).toBe(1);
+    expect(linux.counts["main-menu"]).toBe(1);
 
     const any = indexStatsForOs(index, "all");
     expect(any.tested).toBe(2);
-    expect(any.counts.playable).toBe(1);
-    expect(any.counts.perfect).toBe(1);
+    expect(any.counts["main-menu"]).toBe(1);
+    expect(any.counts["in-game"]).toBe(1);
   });
 });

@@ -1,7 +1,7 @@
 ---
 title: "Grand Theft Auto V"
 titleId: "PPSA04264"
-status: "boots"
+status: "main-menu"
 testedVersion: "v0.2.2 a3a0046 2026.08.04 v0.2.2 869329e 2026.08.05 (Latest "
 testedDate: "2026-08-04"
 os: "windows"

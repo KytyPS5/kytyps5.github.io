@@ -1,7 +1,7 @@
 ---
 title: "Raiden IV x Mikado Remix"
 titleId: "PPSA08832"
-status: "playable"
+status: "in-game"
 testedVersion: "0.0.5.5"
 testedDate: "2026-07-19"
 os: "windows"

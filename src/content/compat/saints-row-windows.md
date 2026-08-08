@@ -1,7 +1,7 @@
 ---
 title: "Saints Row"
 titleId: "PPSA02813"
-status: "nothing"
+status: "doesnt-boot"
 testedVersion: "v0.2.2 869329e 2026.08.05"
 testedDate: "2026-08-06"
 os: "windows"

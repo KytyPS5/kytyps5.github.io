@@ -1,7 +1,7 @@
 ---
 title: "Fortnite"
 titleId: "PPSA01922"
-status: "boots"
+status: "logo"
 testedVersion: "Commit dbcb444"
 testedDate: "2026-07-23"
 os: "windows"

@@ -1,7 +1,7 @@
 ---
 title: "Ghost of Yōtei"
 titleId: "PPSA26344"
-status: "nothing"
+status: "doesnt-boot"
 testedVersion: "v0.2.2"
 testedDate: "2026-07-25"
 os: "windows"

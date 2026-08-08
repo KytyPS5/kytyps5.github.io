@@ -68,17 +68,18 @@ export function ContributingPage() {
               <Bug className="size-5" aria-hidden="true" />
             </span>
             <h3 className="mt-4 font-display text-lg font-semibold tracking-tight">
-              Use the game bug template
+              Use the game-status template
             </h3>
             <p className="mt-2.5 text-sm leading-relaxed text-text-secondary">
               Search existing issues first, then use the{" "}
-              <span className="text-text-primary">Game Emulation Bug Report</span> template and
-              attach the complete log file. The project is in an early stage, so please be mindful
-              when opening new issues.
+              <span className="text-text-primary">Game Emulation Status Report</span> template —
+              it asks for the game, title ID, build, status, host system and the complete log
+              file. The project is in an early stage, so please be mindful when opening new
+              issues.
             </p>
             <Button asChild variant="secondary" size="sm" className="mt-5">
               <a href={`${REPO_URL}/issues/new/choose`} target="_blank" rel="noreferrer noopener">
-                Open the issue template
+                Open the issue templates
               </a>
             </Button>
           </div>

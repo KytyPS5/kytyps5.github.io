@@ -1,7 +1,7 @@
 ---
 title: "Beyond a Steel Sky"
 titleId: "PPSA03979"
-status: "boots"
+status: "logo"
 testedVersion: "0.0.5.5"
 testedDate: "2026-07-19"
 os: "windows"

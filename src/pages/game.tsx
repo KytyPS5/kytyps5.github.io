@@ -277,10 +277,10 @@ export function GamePage() {
               Status by operating system
             </h2>
             <p className="mt-2 max-w-xl text-sm leading-relaxed text-text-secondary">
-              Each OS's status comes from a verified compatibility report: anyone files one
-              through the issue template, a maintainer verifies it, and a command turns it into a
-              PR that gets merged. The badge above is the best result across tested OSes — an
-              untested OS isn't shown until a report for it lands.
+              Each OS's status comes from a verified report: anyone files a game-status issue on
+              the KytyPS5 repo, the site's sync workflow turns it into a report PR, and a
+              maintainer merges it after review. The badge above is the best result across tested
+              OSes — an untested OS isn't shown until a report for it lands.
             </p>
             <div className="mt-5 grid gap-4 sm:grid-cols-3">
               {OSES.filter((os) => perOs[os] !== "untested").map((os) => {

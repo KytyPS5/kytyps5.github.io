@@ -1,7 +1,7 @@
 ---
 title: "The Callisto Protocol"
 titleId: "PPSA03351"
-status: "nothing"
+status: "doesnt-boot"
 testedVersion: "0.0.7"
 testedDate: "2026-07-18"
 os: "windows"

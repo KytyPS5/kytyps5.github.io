@@ -1,7 +1,7 @@
 ---
 title: "Another Crab's Treasure"
 titleId: "PPSA20423"
-status: "nothing"
+status: "doesnt-boot"
 testedVersion: "v.0.2.2"
 testedDate: "2026-08-06"
 os: "windows"

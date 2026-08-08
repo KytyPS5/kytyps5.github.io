@@ -1,7 +1,7 @@
 ---
 title: "Grand Theft Auto: Vice City - The Defintitive Edition"
 titleId: "PPSA03531"
-status: "playable"
+status: "main-menu"
 testedVersion: "769edf4"
 testedDate: "2026-08-07"
 os: "windows"

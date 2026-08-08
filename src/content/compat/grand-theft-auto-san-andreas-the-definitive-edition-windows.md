@@ -1,7 +1,7 @@
 ---
 title: "Grand Theft Auto: San Andreas - The Definitive Edition"
 titleId: "PPSA03525"
-status: "boots"
+status: "main-menu"
 testedVersion: "769edf4"
 testedDate: "2026-08-07"
 os: "windows"

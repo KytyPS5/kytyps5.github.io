@@ -1,7 +1,7 @@
 ---
 title: "PAW PATROL WORLD"
 titleId: "PPSA09190"
-status: "playable"
+status: "main-menu"
 testedVersion: "V.0.2.2"
 testedDate: "2026-08-05"
 os: "windows"

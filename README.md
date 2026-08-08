@@ -67,18 +67,19 @@ community source (`> Source: [label](https://…)`), so the old "inferred from t
 screenshot gallery" reports can't come back. The game page shows a small "Screenshot attached"
 note on such reports.
 
-Status ladder: `nothing → boots → playable → perfect`.
+Status ladder: `doesnt-boot → logo → main-menu → in-game` — the exact options of the
+**Game Emulation Status Report** issue template on the KytyPS5 repo (see below).
 
-**Statuses are per operating system.** A status is set when a compatibility report is **filed
-through the issue template, verified by a maintainer, and merged** (see the `/compat` update flow
-below) — one verified report per game and OS. The overall "Any" badge is the **best result across
-tested OSes** — a game that is playable on Windows but only boots on macOS shows *Playable* on
-"Any" and Windows and *Boots* on macOS. An OS with no report yet isn't shown on the game page
-until a report for it lands.
+**Statuses are per operating system.** A status is set when a game-status issue is **filed on the
+KytyPS5 repo, converted into a report PR by the sync workflow, and merged after maintainer
+review** (see the update flow below) — one verified report per game and OS. The overall "Any"
+badge is the **best result across tested OSes** — a game that is in game on Windows but only
+reaches the logo on macOS shows *In game* on "Any" and Windows and *Logo* on macOS. An OS with
+no report yet isn't shown on the game page until a report for it lands.
 
-**Status colors:** grey = Nothing (doesn't boot or black screen) · red = Boots (splash screen or
-main menu, then crashes) · orange = Playable (mostly playable with graphical/audio issues, random
-crashes and/or low frame rates) · green = Perfect (plays start to finish with no issues).
+**Status colors:** grey = Doesn't boot (shows no first logo or startup screen) · red = Logo (shows
+a logo / startup screen, no main menu) · orange = Main menu (reaches its menus, no gameplay) ·
+green = In game (reaches controllable gameplay, even if bugs prevent completion).
 
 The Compatibility page lists **tested games only** — untested titles are hidden entirely instead
 of showing up grey, both on "Any" and per-OS filters (a Windows-only game disappears under the
@@ -88,26 +89,29 @@ hardcoded.
 
 ### Filing a report
 
-The "File a compatibility report" button links to a GitHub issue template
-(`compatibility_report.yml`): **Title ID** (required), status, build, date, OS, hardware,
-**What works / what breaks** (required), plus optional **Steps to reproduce** and **Extra
-notes**. Each issue is one test on one operating system. The `compat-report.yml` workflow
-converts verified issues into report PRs automatically — the report's body carries the
-issue's notes verbatim, and the steps / extra notes (when filled in) become `## Steps to
-reproduce` and `## Extra notes` sections on the game page.
+The "File a game-status report" button links to the **Game Emulation Status Report** template
+(`kytyps5-game-emulation.yaml`) on the **KytyPS5 repo**: game title, **Game ID / serial**
+(required), KytyPS5 build, **Compatibility status** (doesn't boot → logo → main menu → in game),
+**Result details**, **Steps to reproduce**, **Expected behavior**, OS/CPU/GPU/RAM, and the
+complete log file. Each issue is one test on one operating system. The `compat-report.yml`
+workflow converts open issues into report PRs automatically — the report's body carries the
+issue's details verbatim, and the steps / expected behavior / extra notes (when filled in)
+become `## Steps to reproduce`, `## Expected behavior` and `## Extra notes` sections on the
+game page.
 
 ### Updating a status after you verify an issue
 
-Three ways, all ending in a PR you merge (the site then republishes with the new status for that
-game's OS):
+Issues live on the KytyPS5 repo; this repo's **sync workflow** turns them into PRs you merge
+(the site then republishes with the new status for that game's OS):
 
-1. **Automatic** — issues filed through the template carry the `compat-report` label, so a
-   conversion PR opens by itself.
-2. **Type a command** — reply **`/compat`** on an issue (collaborator-only) to convert it
-   immediately.
-3. **Click a button** — Actions → **Convert compatibility report** → Run workflow → type the
-   issue number. Re-running after you verify an issue overwrites that game's report with the
-   issue's current status + OS (a PR opens only when something changed).
+1. **Automatic** — the workflow polls KytyPS5's open `[GAME STATUS]` issues every 30 minutes and
+   opens a PR with any reports that don't exist yet (already-converted issues are tracked by
+   each report's `> Source:` line, so there is no mirror or extra state).
+2. **Click a button** — Actions → **Sync compatibility reports** → Run workflow → type an issue
+   number. An explicit number always converts (or re-converts, overwriting that game's report)
+   — use it after you verified an issue and the report should reflect its current status.
+3. Issues that can't be converted (e.g. Game ID answered "Unknown") fail loudly in the run log
+   and are retried on the next poll — fix the issue upstream and it converts itself.
 
 ### Attaching screenshots to a report
 
@@ -129,10 +133,11 @@ screenshot is evidence attached to a report, never a status.
 `scripts/export-compat-json.mjs` emits `public/data/compatibility.json` in the shape the
 KytyPS5 launcher already parses — one entry per game with a GUI status string
 (`InGame | MainMenu | Logo | DoesntBoot | Unknown`), a short comment, and an optional per-OS
-`platforms` block (status, report count, latest tested build). Statuses map as
-`nothing → DoesntBoot`, `boots → Logo`, and both `playable` and `perfect` → `InGame`.
-The launcher's parser reads only `status` + `comment`, so the extra fields are additive. The
-file is a cheap static download the launcher can fetch on every launch.
+`platforms` block (status, report count, latest tested build). Statuses map 1:1
+(`doesnt-boot → DoesntBoot`, `logo → Logo`, `main-menu → MainMenu`, `in-game → InGame`) — the
+site ladder and the GUI enum are now identical, replacing the old lossy `playable/perfect →
+InGame` collapse. The launcher's parser reads only `status` + `comment`, so the extra fields
+are additive. The file is a cheap static download the launcher can fetch on every launch.
 
 ## Games database
 
@@ -162,7 +167,8 @@ store.playstation.com with devtools → Network, filter `metGetConceptById`, cop
 ## Configuration
 
 `src/config.ts` holds the site metadata: the repository URLs, `SITE_URL`, the repo where
-compatibility reports land, and the current version string. If the site moves to a custom
+game-status reports are filed (`reportRepoUrl` = KytyPS5/KytyPS5, which owns the status-report
+issue template), and the current version string. If the site moves to a custom
 domain, change `base` in `vite.config.ts` **together with** `SITE_URL` in `src/config.ts`.
 
 ## Automation
@@ -173,7 +179,7 @@ domain, change `base` in `vite.config.ts` **together with** `SITE_URL` in `src/c
 | `deploy.yml` | every push to `main` (except docs-only) | full rebuild on code changes; content-only deploys (report merges) republish the cached build with fresh data — no `npm ci` / `tsc` / `vite build` |
 | `refresh-data.yml` | every 30 min | regenerate the GitHub snapshot; redeploy when changed |
 | `import-games.yml` | weekly | refresh the games database + enrich a batch; opens an auto-merged PR (`data/games-refresh`) gated by CI |
-| `compat-report.yml` | on issues / `workflow_dispatch` | convert reports into PRs |
+| `compat-report.yml` | every 30 min / `workflow_dispatch` | poll KytyPS5 `[GAME STATUS]` issues, convert new ones into report PRs |
 | `get-screenshot.yml` | on `/getss` comments / `workflow_dispatch` | attach issue screenshots to a game's report as a PR |
 
 ## Deployment

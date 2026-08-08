@@ -12,7 +12,7 @@
  * (see `displayStatus` / `aggregateStatus`).
  */
 
-export const STATUSES = ["nothing", "boots", "playable", "perfect"] as const;
+export const STATUSES = ["doesnt-boot", "logo", "main-menu", "in-game"] as const;
 export type Status = (typeof STATUSES)[number];
 export type DisplayStatus = Status | "untested";
 
@@ -72,33 +72,34 @@ export function gamePageKey(report: Pick<CompatReport, "titleId" | "slug">, game
 }
 
 /**
- * Status ladder (4 tiers) with the community-convention colors:
- *   grey   — Nothing:  doesn't boot, or boots to a black screen
- *   red    — Boots:    splash screen or main menu, then crashes
- *   orange — Playable: mostly playable with graphical/audio issues, random
- *                      crashes and/or low frame rates
- *   green  — Perfect:  plays start to finish with no issues
+ * Status ladder (4 tiers) — the exact options of the Game Emulation Status
+ * Report issue template on the KytyPS5 repo, with the community-convention
+ * colors:
+ *   grey   — Doesn't boot: shows no first logo or startup screen
+ *   red    — Logo:         shows a logo / startup screen, no main menu
+ *   orange — Main menu:    reaches its menus, does not enter gameplay
+ *   green  — In game:      reaches controllable gameplay (bugs may remain)
  */
 export const STATUS_META: Record<DisplayStatus, { label: string; color: string; description: string }> = {
-  nothing: {
-    label: "Nothing",
+  "doesnt-boot": {
+    label: "Doesn't boot",
     color: "#9ca3af",
-    description: "Game doesn't boot or only boots to a black screen.",
+    description: "The game does not show its first logo or startup screen.",
   },
-  boots: {
-    label: "Boots",
+  logo: {
+    label: "Logo",
     color: "#f87171",
-    description: "Game boots to either a Splash Screen or Main Menu then crashes.",
+    description: "The game shows a logo or startup screen but does not reach the main menu.",
   },
-  playable: {
-    label: "Playable",
+  "main-menu": {
+    label: "Main menu",
     color: "#fb923c",
-    description: "Mostly playable with graphical/audio issues, random crashes and/or low frame rates.",
+    description: "The game reaches its menus but does not enter gameplay.",
   },
-  perfect: {
-    label: "Perfect",
+  "in-game": {
+    label: "In game",
     color: "#4ade80",
-    description: "Game plays from start to finish with no issues.",
+    description: "The game reaches controllable gameplay, even if bugs prevent completion.",
   },
   untested: {
     label: "Not tested",

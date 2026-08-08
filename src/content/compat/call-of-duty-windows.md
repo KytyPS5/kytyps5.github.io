@@ -1,7 +1,7 @@
 ---
 title: "Call of Duty®"
 titleId: "PPSA01649"
-status: "nothing"
+status: "doesnt-boot"
 testedVersion: "v0.2.2"
 testedDate: "2026-08-01"
 os: "windows"

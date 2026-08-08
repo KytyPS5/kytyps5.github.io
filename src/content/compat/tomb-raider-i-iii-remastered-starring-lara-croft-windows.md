@@ -1,7 +1,7 @@
 ---
 title: "Tomb Raider I-III Remastered Starring Lara Croft"
 titleId: "PPSA16901"
-status: "playable"
+status: "in-game"
 testedVersion: "v.0.2.2 a3a0046 2026.08.04 v.0.2.2 869329e 2026.08.05 (Lates"
 testedDate: "2026-08-04"
 os: "windows"

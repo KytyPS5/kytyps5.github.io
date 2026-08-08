@@ -123,10 +123,11 @@ transfer is complete:
 
 - [ ] Add the site link to `KytyPS5/KytyPS5`'s README:
       `https://kytyps5.github.io/KytyPS5-site/`
-- [ ] If the compat workflow's issue template moves or the status-report template
-      changes on the emulator repo, coordinate so the site's
-      `compatibility_report.yml` template and the `/compat` conversion workflow
-      stay in sync (see `src/config.ts` → `reportRepoUrl`).
+- [ ] Game-status issues are filed on the emulator repo (Game Emulation Status
+      Report template) and converted here by the `compat-report.yml` sync
+      workflow — if the template's fields or status options change on the
+      emulator repo, update `scripts/issue-to-compat.mjs` to match
+      (see `src/config.ts` → `reportRepoUrl`).
 
 ---
 
@@ -136,8 +137,8 @@ transfer is complete:
 - [ ] GitHub stats / latest release render (build-time snapshot + live fetch).
 - [ ] `data/compat.json` and `data/compatibility.json` are served.
 - [ ] Deep links work (404 fallback restores the route).
-- [ ] File a test compatibility report → `/compat` conversion → merged → status
-      updates on the site.
+- [ ] File a test game-status issue on the emulator repo → `compat-report.yml`
+      sync converts it → merged PR → status updates on the site.
 - [ ] Old `distantmyth.github.io/KytyPS5-site` URL no longer serves (expected).
 
 ---

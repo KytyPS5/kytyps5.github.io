@@ -90,6 +90,17 @@ export function Footer() {
             Entertainment or PlayStation.
           </p>
           <p>This website is open source. Screenshots © their respective owners.</p>
+          <p>
+            Website maintained by{" "}
+            <a
+              href="https://github.com/DistantMyth"
+              target="_blank"
+              rel="noreferrer noopener"
+              className="font-medium text-text-secondary transition-colors duration-150 hover:text-accent focus-visible:outline-2 focus-visible:outline-accent"
+            >
+              DistantMyth
+            </a>
+          </p>
         </div>
       </Container>
     </footer>

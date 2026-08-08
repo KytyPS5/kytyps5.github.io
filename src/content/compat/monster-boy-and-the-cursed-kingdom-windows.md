@@ -1,7 +1,7 @@
 ---
 title: "Monster Boy and the Cursed Kingdom"
 titleId: "PPSA02787"
-status: "boots"
+status: "main-menu"
 testedVersion: "0.0.5.5"
 testedDate: "2026-07-19"
 os: "windows"
