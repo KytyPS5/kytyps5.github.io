@@ -103,6 +103,19 @@ game's OS):
    issue number. Re-running after you verify an issue overwrites that game's report with the
    issue's current status + OS (a PR opens only when something changed).
 
+### Attaching screenshots to a report
+
+Reply **`/getss <image-url> [<image-url> …]`** on an issue (collaborator-only) to attach
+screenshot(s) to the game's report. The workflow (`get-screenshot.yml`) downloads each image
+into `public/screenshots/` (must be a raster image under 10 MB), links it to the game via the
+issue's Title ID, sets the report's `screenshot` frontmatter when it has none (that's the
+homepage carousel image), embeds the images in the report body, and opens a PR. The report must
+already exist — run `/compat` first if it doesn't. No Title ID? The first `PPSA-XXXXX` in the
+issue title/body/comment is used. Or use the one-click button: Actions → **Attach game
+screenshot** → Run workflow → type the issue number (URLs are then read from the issue body).
+Images are validated and size-capped, so a bad URL fails the run without shipping partial
+work.
+
 ### GUI status export
 
 `scripts/export-compat-json.mjs` emits `public/data/compatibility.json` in the shape the
@@ -153,6 +166,7 @@ domain, change `base` in `vite.config.ts` **together with** `SITE_URL` in `src/c
 | `refresh-data.yml` | every 30 min | regenerate the GitHub snapshot; redeploy when changed |
 | `import-games.yml` | weekly | refresh the games database + enrich a batch; opens an auto-merged PR (`data/games-refresh`) gated by CI |
 | `compat-report.yml` | on issues / `workflow_dispatch` | convert reports into PRs |
+| `get-screenshot.yml` | on `/getss` comments / `workflow_dispatch` | attach issue screenshots to a game's report as a PR |
 
 ## Deployment
 
