@@ -60,7 +60,9 @@ if (latestRelease && Array.isArray(latestRelease.assets)) {
 const SNAPSHOT = {
   generatedAt: new Date().toISOString(),
   repo,
-  latestRelease: await get(`${API}/releases/latest`, null),
+  // Reuse the fetch above (already stripped of download counts) rather than
+  // re-fetching — same shape, one fewer API call per run.
+  latestRelease,
   contributors: await get(`${API}/contributors?per_page=14`, null),
   commits: await get(`${API}/commits?per_page=6`, null),
 };
