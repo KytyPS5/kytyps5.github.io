@@ -8,16 +8,20 @@
 // Title keys are trimmed + uppercased (mirrors the GUI's TitleKey()).
 // Pure functions + a thin CLI wrapper (kept dependency-free for the build).
 
-/** Map our status ladder to the GUI's GameStatus enum strings. */
+/**
+ * Map our status ladder to the GUI's GameStatus enum strings. The site ladder
+ * now matches the Game Emulation Status Report template 1:1, so this is a
+ * direct translation (previously playable + perfect both collapsed to InGame).
+ */
 const GUI_STATUS = {
-  nothing: "DoesntBoot",
-  boots: "Logo",
-  playable: "InGame",
-  perfect: "InGame",
+  "doesnt-boot": "DoesntBoot",
+  logo: "Logo",
+  "main-menu": "MainMenu",
+  "in-game": "InGame",
 };
 
 /** Our ladder order — used for majority aggregation (ties to the better status). */
-export const STATUSES = ["nothing", "boots", "playable", "perfect"];
+export const STATUSES = ["doesnt-boot", "logo", "main-menu", "in-game"];
 
 /** Map a site status to the GUI's accepted status string. */
 export function mapStatus(status) {
@@ -29,7 +33,7 @@ export function mapStatus(status) {
  * most reports submitted wins; ties break toward the better status.
  */
 export function aggregateStatuses(statuses) {
-  if (statuses.length === 0) return "nothing";
+  if (statuses.length === 0) return STATUSES[0];
   const counts = new Map();
   for (const s of statuses) counts.set(s, (counts.get(s) ?? 0) + 1);
   let best = statuses[0];
@@ -66,7 +70,7 @@ export function bestStatuses(reports) {
     const s = aggregateStatuses(statuses);
     if (best === null || STATUSES.indexOf(s) > STATUSES.indexOf(best)) best = s;
   }
-  return best ?? "nothing";
+  return best ?? STATUSES[0];
 }
 
 /**

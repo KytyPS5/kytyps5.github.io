@@ -1,7 +1,7 @@
 ---
 title: "DREDGE"
 titleId: "PPSA09076"
-status: "playable"
+status: "in-game"
 testedVersion: "0.2.2"
 testedDate: "2026-07-19"
 os: "windows"

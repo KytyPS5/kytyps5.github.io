@@ -1,7 +1,7 @@
 ---
 title: "Aliens: Dark Descent"
 titleId: "PPSA08312"
-status: "boots"
+status: "logo"
 testedVersion: "0.0.5.5 BETA"
 testedDate: "2026-07-18"
 os: "windows"

@@ -1,7 +1,7 @@
 ---
 title: "Gear Club Unlimited 2: Ultimate Edition"
 titleId: "PPSA05027"
-status: "boots"
+status: "logo"
 testedVersion: "0.0.5.5"
 testedDate: "2026-07-19"
 os: "windows"

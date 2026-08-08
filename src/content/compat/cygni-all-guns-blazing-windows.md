@@ -1,7 +1,7 @@
 ---
 title: "CYGNI: All Guns Blazing"
 titleId: "PPSA05991"
-status: "playable"
+status: "in-game"
 testedVersion: "Build 79edf4"
 testedDate: "2026-08-07"
 os: "windows"

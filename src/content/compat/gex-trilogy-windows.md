@@ -1,7 +1,7 @@
 ---
 title: "Gex Trilogy"
 titleId: "PPSA28542"
-status: "boots"
+status: "in-game"
 testedVersion: "Latest"
 testedDate: "2026-07-20"
 os: "windows"
@@ -13,6 +13,8 @@ Game crashed just after the first screen
 **Steps to reproduce:** Open Emulator Boot game Played until screen transition.
 
 **Extra notes:** [screenshot]
+
+**Retest (2026-07-20):** Goes in game — the original crash appears hardware-specific (issue closed as resolved).
 
 > Source: [KytyPS5 issue #85](https://github.com/KytyPS5/KytyPS5/issues/85)
 

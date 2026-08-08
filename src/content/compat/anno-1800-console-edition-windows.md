@@ -1,7 +1,7 @@
 ---
 title: "Anno 1800 Console Edition"
 titleId: "PPSA04719"
-status: "boots"
+status: "logo"
 testedVersion: "2026-08-08-87428d7"
 testedDate: "2026-08-08"
 os: "windows"

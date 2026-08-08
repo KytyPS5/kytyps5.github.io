@@ -1,7 +1,7 @@
 ---
 title: "EA Sports College Football 25"
 titleId: "PPSA04184"
-status: "boots"
+status: "logo"
 testedVersion: "0.2.2"
 testedDate: "2026-07-19"
 os: "windows"

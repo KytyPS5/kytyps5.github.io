@@ -1,7 +1,7 @@
 ---
 title: "tmnt mutants unleashed"
 titleId: "PPSA17245"
-status: "playable"
+status: "in-game"
 testedVersion: "KytyPS5-2026-08-03-d09c81d"
 testedDate: "2026-08-03"
 os: "windows"

@@ -1,7 +1,7 @@
 ---
 title: "Teenage Mutant Ninja Turtles: The Cowabunga collection"
 titleId: "PPSA04489"
-status: "perfect"
+status: "in-game"
 testedVersion: "0.0.5.5 BETA"
 testedDate: "2026-07-20"
 os: "windows"

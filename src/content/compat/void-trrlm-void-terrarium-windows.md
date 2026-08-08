@@ -1,7 +1,7 @@
 ---
 title: "void tRrLM();++ //Void Terrarium++"
 titleId: "PPSA03061"
-status: "playable"
+status: "in-game"
 testedVersion: "0.0.5.5 BETA"
 testedDate: "2026-07-20"
 os: "windows"

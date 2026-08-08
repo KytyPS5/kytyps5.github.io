@@ -1,7 +1,7 @@
 ---
 title: "DEATHLOOP"
 titleId: "PPSA01670"
-status: "boots"
+status: "logo"
 testedVersion: "2026-08-08-87428d7"
 testedDate: "2026-08-08"
 os: "windows"

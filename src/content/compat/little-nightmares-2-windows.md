@@ -1,7 +1,7 @@
 ---
 title: "Little Nightmares 2"
 titleId: "PPSA02154"
-status: "boots"
+status: "logo"
 testedVersion: "0.0.5.5 BETA"
 testedDate: "2026-07-19"
 os: "windows"

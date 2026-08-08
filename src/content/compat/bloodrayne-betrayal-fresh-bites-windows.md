@@ -1,7 +1,7 @@
 ---
 title: "BloodRayne Betrayal: Fresh Bites"
 titleId: "PPSA03364"
-status: "playable"
+status: "in-game"
 testedVersion: "0.0.5.5 BETA"
 testedDate: "2026-07-21"
 os: "windows"

@@ -1,7 +1,7 @@
 ---
 title: "Daymare: 1994 Sandcastle"
 titleId: "PPSA09483"
-status: "boots"
+status: "main-menu"
 testedVersion: "769edf4"
 testedDate: "2026-08-07"
 os: "windows"

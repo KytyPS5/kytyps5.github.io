@@ -1,7 +1,7 @@
 ---
 title: "NAIAD"
 titleId: "PPSA09904"
-status: "boots"
+status: "main-menu"
 testedVersion: "bd9086e"
 testedDate: "2026-07-19"
 os: "windows"

@@ -1,7 +1,7 @@
 ---
 title: "PAC-MAN WORLD 2 Re-PAC"
 titleId: "PPSA18189"
-status: "playable"
+status: "in-game"
 testedVersion: "0.2.2 — build KytyPS5-2026-08-05-f380d69-15-g8523229"
 testedDate: "2026-08-08"
 os: "windows"

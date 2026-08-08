@@ -1,7 +1,7 @@
 ---
 title: "EA UFC 5"
 titleId: "PPSA03541"
-status: "nothing"
+status: "doesnt-boot"
 testedVersion: "KytyPS5 #104: Commit a65d17a"
 testedDate: "2026-07-27"
 os: "windows"

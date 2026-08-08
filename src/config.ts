@@ -7,10 +7,11 @@ export const SITE = {
   description:
     "KytyPS5 is a free and open-source PlayStation 5 emulator written in C++ for Windows, Linux and macOS. Track game compatibility, read reports, and follow development.",
   repoUrl: "https://github.com/KytyPS5/KytyPS5",
-  // Where visitors file compatibility reports. This repo owns the
-  // compatibility_report.yml issue template + the conversion workflow, so the
-  // automated issue → report → export pipeline runs here.
-  reportRepoUrl: "https://github.com/KytyPS5/KytyPS5-site",
+  // Where visitors file game-status reports: the KytyPS5 repo owns the Game
+  // Emulation Status Report issue template (kytyps5-game-emulation.yaml), and
+  // the site repo's sync workflow polls those issues and turns them into
+  // report PRs.
+  reportRepoUrl: "https://github.com/KytyPS5/KytyPS5",
   // The repository that hosts this website.
   siteRepoUrl: "https://github.com/KytyPS5/KytyPS5-site",
   // Latest known KytyPS5 build; reports tested on other builds get an

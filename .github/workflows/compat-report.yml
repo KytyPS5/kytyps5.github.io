@@ -1,29 +1,33 @@
-name: Convert compatibility report
+name: Sync compatibility reports
 
-# A "Compatibility report" issue is rendered into src/content/compat/*.md via
-# scripts/issue-to-compat.mjs and a PR is opened for maintainer review. The
-# data lives in this repository, so the report file, the per-OS export and the
-# website all update together.
+# Game-status issues live on the KytyPS5 repo (Game Emulation Status Report
+# template, kytyps5-game-emulation.yaml). GitHub Actions can't react to another
+# repo's events, so this workflow POLLS the KytyPS5 issues API instead of
+# mirroring issues here — there is exactly one copy of every issue.
 #
-# Three ways to trigger a conversion:
-#   1. Automatic — the issue template sets the `compat-report` label, so filing
-#      a report through the template starts a conversion immediately.
-#   2. Maintainer comment — reply `/compat` on any issue (collaborator-only) to
-#      convert it, e.g. after you verify the report.
-#   3. One-click button — Actions → "Convert compatibility report" → Run
-#      workflow → type the issue number. Re-running it after you verify an issue
-#      overwrites that game's report with the issue's current status + OS (and
-#      opens a PR only when something changed).
+# Every 30 minutes it converts any open "[GAME STATUS]" issue that doesn't
+# already have a site report into src/content/compat/*.md and opens a PR via
+# create-pull-request (which keeps the PR updated in place, so re-runs only
+# add new reports). Already-converted issues are skipped via the report's own
+# `> Source:` line — no extra state. Maintainer verification happens at PR
+# review: the merged PR is the gate, exactly as before.
+#
+# Manual runs: Actions → "Sync compatibility reports" → Run workflow → type a
+# KytyPS5 issue number. An explicit number always converts (or re-converts,
+# overwriting the game's report) — use it after you verified an issue and the
+# report should reflect its current status.
+#
+# Issues that can't be converted (e.g. Game ID / serial answered "Unknown")
+# fail loudly in the log and are retried on the next poll, so fixing the issue
+# upstream is enough — no manual cleanup.
 on:
-  issues:
-    types: [labeled]
-  issue_comment:
-    types: [created]
+  schedule:
+    - cron: "*/30 * * * *" # every 30 minutes (may be delayed under load)
   workflow_dispatch:
     inputs:
       issue_number:
-        description: Issue number to convert into a compatibility report
-        required: true
+        description: Convert a specific KytyPS5 issue (re-runs overwrite that game's report)
+        required: false
         type: string
 
 # create-pull-request pushes a branch + opens the PR, so the token needs
@@ -35,12 +39,6 @@ permissions:
 jobs:
   convert:
     runs-on: ubuntu-latest
-    if: |
-      (github.event_name == 'issues' && github.event.label.name == 'compat-report') ||
-      (github.event_name == 'issue_comment' &&
-        github.event.issue.pull_request == null &&
-        contains(github.event.comment.body, '/compat')) ||
-      github.event_name == 'workflow_dispatch'
     steps:
       - uses: actions/checkout@v4
       - uses: actions/setup-node@v4
@@ -49,90 +47,56 @@ jobs:
           cache: npm
       - run: npm ci
 
-      - name: Only collaborators can convert via /compat
-        if: github.event_name == 'issue_comment'
-        env:
-          GH_TOKEN: ${{ secrets.GITHUB_TOKEN }}
+      - name: Fetch unconverted game-status issues
+        id: fetch
         run: |
-          AUTHOR="${{ github.event.comment.user.login }}"
-          if ! gh api "repos/${{ github.repository }}/collaborators/$AUTHOR" --silent 2>/dev/null; then
-            echo "::error::Only collaborators can trigger a conversion with /compat"
-            exit 1
+          ARGS=(--repo KytyPS5/KytyPS5 --output /tmp/status-issues.json)
+          if [ -n "${{ inputs.issue_number }}" ]; then
+            ARGS+=(--issue-number "${{ inputs.issue_number }}")
           fi
+          node scripts/fetch-status-issues.mjs "${ARGS[@]}"
+          COUNT="$(node -e 'const a = require("/tmp/status-issues.json"); console.log(a.length)')"
+          echo "count=$COUNT" >> "$GITHUB_OUTPUT"
+          echo "Found $COUNT game-status issue(s) to convert."
 
-      - name: Resolve issue
-        id: issue
-        env:
-          GH_TOKEN: ${{ secrets.GITHUB_TOKEN }}
+      - name: Convert issues to reports
+        if: steps.fetch.outputs.count != '0'
         run: |
-          if [ "${{ github.event_name }}" = "workflow_dispatch" ]; then
-            NUMBER="${{ inputs.issue_number }}"
-          else
-            NUMBER="${{ github.event.issue.number }}"
-          fi
-          if ! gh api "repos/${{ github.repository }}/issues/$NUMBER" --jq .number >/dev/null 2>&1; then
-            echo "::error::Issue #$NUMBER not found in this repository"
-            exit 1
-          fi
-          echo "number=$NUMBER" >> "$GITHUB_OUTPUT"
-          gh api "repos/${{ github.repository }}/issues/$NUMBER" --jq '.title' > /tmp/issue-title.txt
-          gh api "repos/${{ github.repository }}/issues/$NUMBER" --jq '.body' > /tmp/issue-body.txt
-
-      - name: Convert issue to report
-        env:
-          ISSUE_NUMBER: ${{ steps.issue.outputs.number }}
-        run: |
-          TITLE="$(cat /tmp/issue-title.txt)"
-          BODY="$(cat /tmp/issue-body.txt)"
-          # GitHub issue forms render answers under a blank line ("### Title ID"
-          # followed by an empty line), so grep -A1 grabs the blank. Extract
-          # everything between the heading and the next "### " instead — this
-          # also keeps multi-line textarea answers intact.
-          field() {
-            printf '%s' "$BODY" | awk -v h="### $1" '
-              $0 == h { f = 1; next }
-              f && /^### / { exit }
-              f && NF { print; seen = 1; next }
-              f && seen { print "" }
-            '
+          node - <<'NODE'
+          const issues = require("/tmp/status-issues.json");
+          const { execFileSync } = require("node:child_process");
+          const fs = require("node:fs");
+          let ok = 0, failed = 0;
+          for (const issue of issues) {
+            const bodyFile = `/tmp/issue-${issue.number}-body.txt`;
+            fs.writeFileSync(bodyFile, issue.body ?? "");
+            const args = [
+              "scripts/issue-to-compat.mjs",
+              "--issue-body-file", bodyFile,
+              "--date", String(issue.created_at).slice(0, 10),
+              "--source", `KytyPS5 issue #${issue.number}`,
+              "--source-url", `https://github.com/KytyPS5/KytyPS5/issues/${issue.number}`,
+            ];
+            try {
+              execFileSync("node", args, { stdio: "inherit" });
+              ok++;
+            } catch {
+              failed++;
+              console.error(
+                `::warning::issue #${issue.number} could not be converted — fix it on KytyPS5/KytyPS5 ` +
+                `(e.g. fill in a real PPSA title ID instead of "Unknown") and the next poll will retry.`,
+              );
+            }
           }
-          STATUS="$(field 'Compatibility status')"
-          VERSION="$(field 'KytyPS5 build (commit or release, not the game version)')"
-          DATE="$(field 'Test date')"
-          OS="$(field 'Operating system')"
-          HW="$(field 'Hardware (CPU / GPU)')"
-          TITLE_ID="$(field 'Title ID')"
-          GAME_VERSION="$(field 'Game version')"
-          NOTES="$(field 'What works / what breaks' | head -c 4000)"
-          STEPS="$(field 'Steps to reproduce' | head -c 4000)"
-          EXTRA_NOTES="$(field 'Extra notes' | head -c 4000)"
-          if [ -z "$TITLE_ID" ] || [ -z "$STATUS" ] || [ -z "$VERSION" ] || [ -z "$DATE" ] || [ -z "$OS" ]; then
-            echo "::error::Issue #$ISSUE_NUMBER doesn't match the compatibility report template — fill in Title ID, Compatibility status, build, Test date and Operating system, then reply /compat again (or file a new report via the template)."
-            exit 1
-          fi
-          ARGS=(--title "$TITLE" --title-id "$TITLE_ID" --status "$STATUS" --version "$VERSION" --date "$DATE" --os "$OS" --body "$NOTES" --source "#$ISSUE_NUMBER" --source-url "https://github.com/${{ github.repository }}/issues/$ISSUE_NUMBER")
-          [ -n "$HW" ] && ARGS+=(--hardware "$HW")
-          # GitHub renders empty optional textareas as "_No response_" — treat
-          # that as the field being absent, not as content to store.
-          case "$STEPS" in
-            ""|"_Unknown_"|"_No response_") ;; # empty — skip
-            *) ARGS+=(--steps "$STEPS") ;;
-          esac
-          case "$EXTRA_NOTES" in
-            ""|"_Unknown_"|"_No response_") ;; # empty — skip
-            *) ARGS+=(--extra-notes "$EXTRA_NOTES") ;;
-          esac
-          case "$GAME_VERSION" in
-            ""|"_Unknown_"|"_No response_") ;; # template defaults — skip
-            *) ARGS+=(--game-version "$GAME_VERSION") ;;
-          esac
-          node scripts/issue-to-compat.mjs "${ARGS[@]}"
+          console.log(`Converted ${ok} issue(s), ${failed} failed.`);
+          NODE
 
-      - name: Open PR
+      - name: Open or update the report PR
+        if: steps.fetch.outputs.count != '0'
         uses: peter-evans/create-pull-request@v6
         with:
           token: ${{ secrets.GITHUB_TOKEN }}
-          commit-message: "compat: report for issue #${{ steps.issue.outputs.number }}"
-          branch: compat/report-${{ steps.issue.outputs.number }}
-          title: "compat: report for issue #${{ steps.issue.outputs.number }}"
+          commit-message: "compat: sync reports from KytyPS5 game-status issues"
+          branch: compat/status-reports
+          title: "compat: sync reports from KytyPS5 game-status issues"
           delete-branch: true

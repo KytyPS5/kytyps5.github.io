@@ -85,7 +85,7 @@ export function CompatibilityPage() {
     <>
       <Seo
         title="Compatibility"
-        description="Community-tracked game compatibility for KytyPS5 — tested games, from nothing to perfect."
+        description="Community-tracked game compatibility for KytyPS5 — tested games, from doesn't boot to in game."
         path="/compatibility"
       />
       <PageHeader
@@ -330,7 +330,7 @@ export function CompatibilityPage() {
       <Section
         eyebrow="Submit"
         title="Tested a game? File a report"
-        description="Reports start as GitHub issues through the compatibility template — a maintainer converts verified submissions into the database, and every report links back to its source issue."
+        description="Reports start as game-status issues on the KytyPS5 repo, filed through the Game Emulation Status Report template — a sync workflow turns them into report PRs here, and every report links back to its source issue."
         className="bg-surface/40"
       >
         <div className="flex flex-col items-center gap-5 rounded-window border border-border bg-surface p-10 text-center sm:p-14">
@@ -341,24 +341,24 @@ export function CompatibilityPage() {
             The template asks for everything we need
           </h2>
           <p className="max-w-lg text-sm leading-relaxed text-text-secondary sm:text-base">
-            Title ID, status, KytyPS5 build, OS, hardware and what works or breaks. Issues filed
-            through the template become per-OS database reports automatically: a maintainer
-            verifies the issue and the report — with its status for that OS — is merged as a PR.
-            The overall badge is the best result across tested OSes.
+            Game title, title ID, status (doesn't boot → logo → main menu → in game), KytyPS5
+            build, OS and hardware. Issues filed through the template are picked up by the site's
+            sync workflow and become per-OS database reports as a PR — a maintainer verifies the
+            report and merges it. The overall badge is the best result across tested OSes.
           </p>
           <div className="mt-2 flex flex-wrap items-center justify-center gap-4">
             <Button asChild size="lg">
               <a
-                href={`${SITE.reportRepoUrl}/issues/new?template=compatibility_report.yml`}
+                href={`${SITE.reportRepoUrl}/issues/new?template=kytyps5-game-emulation.yaml`}
                 target="_blank"
                 rel="noreferrer noopener"
               >
                 <FileText className="size-5" aria-hidden="true" />
-                File a compatibility report
+                File a game-status report
               </a>
             </Button>
             <a
-              href={`${SITE.reportRepoUrl}/issues?q=is%3Aissue%20label%3Acompat-report`}
+              href={`${SITE.reportRepoUrl}/issues?q=is%3Aissue%20%22%5BGAME%20STATUS%5D%22%20in%3Atitle`}
               target="_blank"
               rel="noreferrer noopener"
               className="inline-flex items-center gap-1.5 rounded-md text-sm font-medium text-accent transition-colors duration-150 hover:text-accent-2 focus-visible:outline-2 focus-visible:outline-accent"

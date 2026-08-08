@@ -1,7 +1,7 @@
 ---
 title: "Final Vendetta"
 titleId: "PPSA07063"
-status: "perfect"
+status: "in-game"
 testedVersion: "0.2.2"
 testedDate: "2026-07-18"
 os: "windows"

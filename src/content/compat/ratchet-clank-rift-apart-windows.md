@@ -1,7 +1,7 @@
 ---
 title: "Ratchet & Clank: Rift Apart"
 titleId: "PPSA01474"
-status: "boots"
+status: "logo"
 testedVersion: "3c850b6"
 testedDate: "2026-08-08"
 os: "windows"

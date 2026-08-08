@@ -1,7 +1,7 @@
 ---
 title: "Arcade Spirits: The New Challengers"
 titleId: "PPSA06409"
-status: "playable"
+status: "in-game"
 testedVersion: "0.0.5.5 BETA"
 testedDate: "2026-07-18"
 os: "windows"

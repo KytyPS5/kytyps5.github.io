@@ -1,7 +1,7 @@
 ---
 title: "Teardown"
 titleId: "PPSA15246"
-status: "playable"
+status: "doesnt-boot"
 testedVersion: "v0.2.2 cc76827"
 testedDate: "2026-07-29"
 os: "windows"

@@ -12,7 +12,7 @@ import path from "node:path";
 const ROOT = path.resolve(path.dirname(fileURLToPath(import.meta.url)), "..");
 const DIR = path.join(ROOT, "src", "content", "compat");
 
-const STATUSES = ["nothing", "boots", "playable", "perfect"];
+const STATUSES = ["doesnt-boot", "logo", "main-menu", "in-game"];
 const OSES = ["windows", "linux", "macos"];
 const TITLE_ID_REGEX = /^PPSA-?\d{5}$/i;
 

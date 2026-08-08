@@ -1,7 +1,7 @@
 ---
 title: "Turok"
 titleId: "PPSA24558"
-status: "boots"
+status: "main-menu"
 testedVersion: "0.2.2"
 testedDate: "2026-07-25"
 os: "windows"

@@ -1,7 +1,7 @@
 ---
 title: "BUBBLE BOBBLE Sugar Dungeons"
 titleId: "PPSA26356"
-status: "playable"
+status: "in-game"
 testedVersion: "2026-07-22-8587638"
 testedDate: "2026-07-24"
 os: "windows"

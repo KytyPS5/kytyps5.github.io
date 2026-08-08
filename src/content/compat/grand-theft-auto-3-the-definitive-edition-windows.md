@@ -1,7 +1,7 @@
 ---
 title: "Grand Theft Auto 3: The Definitive Edition"
 titleId: "PPSA03528"
-status: "playable"
+status: "main-menu"
 testedVersion: "769edf4"
 testedDate: "2026-08-07"
 os: "windows"

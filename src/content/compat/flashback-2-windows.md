@@ -1,7 +1,7 @@
 ---
 title: "Flashback 2"
 titleId: "PPSA08546"
-status: "boots"
+status: "main-menu"
 testedVersion: "769edf4"
 testedDate: "2026-08-07"
 os: "windows"

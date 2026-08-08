@@ -1,7 +1,7 @@
 ---
 title: "A Plague Tale: Requiem"
 titleId: "PPSA05366"
-status: "nothing"
+status: "doesnt-boot"
 testedVersion: "0.0.5.5 BETA"
 testedDate: "2026-07-18"
 os: "windows"

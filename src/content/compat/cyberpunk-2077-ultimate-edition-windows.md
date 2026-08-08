@@ -1,7 +1,7 @@
 ---
 title: "Cyberpunk 2077 Ultimate Edition"
 titleId: "PPSA03974"
-status: "nothing"
+status: "doesnt-boot"
 testedVersion: "769edf4"
 testedDate: "2026-08-07"
 os: "windows"

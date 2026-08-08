@@ -1,7 +1,7 @@
 ---
 title: "Resident Evil 7 Gold Edition"
 titleId: "PPSA04404"
-status: "nothing"
+status: "doesnt-boot"
 testedVersion: "0.0.5.5 BETA"
 testedDate: "2026-07-19"
 os: "windows"

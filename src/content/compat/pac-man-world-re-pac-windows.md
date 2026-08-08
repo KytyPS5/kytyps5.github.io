@@ -1,7 +1,7 @@
 ---
 title: "Pac-Man World Re-Pac"
 titleId: "PPSA06399"
-status: "boots"
+status: "main-menu"
 testedVersion: "0.0.5.5"
 testedDate: "2026-07-19"
 os: "windows"
