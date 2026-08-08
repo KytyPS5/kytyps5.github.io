@@ -6,7 +6,8 @@
  * Usage:
  *   node scripts/issue-to-compat.mjs --title "Disgaea 6" --status playable \
  *     --version "main" --date 2026-08-10 --os windows --hardware "Ryzen 9 / RTX 5090" \
- *     --body "notes…" --source "#123" --source-url "https://github.com/org/repo/issues/123" \
+ *     --body "notes…" --steps "1. Boot…" --extra-notes "settings…" \
+ *     --source "#123" --source-url "https://github.com/org/repo/issues/123" \
  *     [--game-version "1.004"] [--slug disgaea-6] [--title-id PPSA01234]
  *
  * Writes (or overwrites) src/content/compat/<slug>.md with the report.
@@ -41,7 +42,10 @@ function normalizeStatus(status) {
 }
 
 function arg(name) {
-  const idx = process.argv.indexOf(`--${name}`);
+  // Exact-token match: `--title` must not match the `--title-id` flag (a
+  // plain indexOf would collide on the shared prefix). Value follows the flag.
+  const flag = `--${name}`;
+  const idx = process.argv.findIndex((a) => a === flag);
   return idx > -1 && process.argv[idx + 1] ? process.argv[idx + 1] : undefined;
 }
 
@@ -53,6 +57,8 @@ const date = arg("date");
 const os = arg("os");
 const hardware = arg("hardware");
 const body = arg("body") || "See the original issue for details.";
+const steps = arg("steps");
+const extraNotes = arg("extra-notes");
 const source = arg("source");
 const sourceUrl = arg("source-url");
 const gameVersion = arg("game-version");
@@ -82,6 +88,15 @@ if (errors.length) {
   process.exit(1);
 }
 
+// Report body = the issue's "What works / what breaks" followed by optional
+// "Steps to reproduce" and "Extra notes" sections (rendered as markdown
+// headings, which the site's markdown parser supports). Sections are omitted
+// when the submitter left the field empty, so reports stay concise.
+const bodySections = [body];
+if (steps) bodySections.push(`## Steps to reproduce\n\n${steps}`);
+if (extraNotes) bodySections.push(`## Extra notes\n\n${extraNotes}`);
+const reportBody = bodySections.join("\n\n");
+
 const frontmatter = [
   "---",
   `title: "${title}"`,
@@ -94,7 +109,7 @@ const frontmatter = [
   gameVersion ? `gameVersion: "${gameVersion}"` : null,
   "---",
   "",
-  body,
+  reportBody,
   "",
   source && sourceUrl
     ? `> Source: [GitHub compatibility report ${source}](${sourceUrl})`

@@ -89,9 +89,12 @@ hardcoded.
 ### Filing a report
 
 The "File a compatibility report" button links to a GitHub issue template
-(`compatibility_report.yml`): **Title ID** (required), status, build, date, OS, hardware and
-notes. Each issue is one test on one operating system. The `compat-report.yml` workflow converts
-verified issues into report PRs automatically.
+(`compatibility_report.yml`): **Title ID** (required), status, build, date, OS, hardware,
+**What works / what breaks** (required), plus optional **Steps to reproduce** and **Extra
+notes**. Each issue is one test on one operating system. The `compat-report.yml` workflow
+converts verified issues into report PRs automatically — the report's body carries the
+issue's notes verbatim, and the steps / extra notes (when filled in) become `## Steps to
+reproduce` and `## Extra notes` sections on the game page.
 
 ### Updating a status after you verify an issue
 

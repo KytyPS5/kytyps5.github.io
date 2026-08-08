@@ -349,10 +349,19 @@ function parseFrontmatter(raw: string): { data: Record<string, unknown>; body: s
   return { data, body: match[2].trim() };
 }
 
-/** Extract a `> Source: [label](url)` or `> Source: label` line from the body. */
+/**
+ * Extract a `> Source: [label](url)` or `> Source: label` line from the body.
+ * The LAST such line wins: the report converter always appends the real source
+ * at the end, so a `> Source:` blockquote typed inside a report's notes (e.g.
+ * an "Extra notes" section quoting its own source) must not be mistaken for
+ * the report's provenance.
+ */
 export function extractSource(raw: string): { source?: ReportSource; body: string } {
   const lines = raw.split(/\r?\n/);
-  const sourceLine = lines.findIndex((l) => /^>\s*Source:/.test(l));
+  let sourceLine = -1;
+  for (let i = 0; i < lines.length; i++) {
+    if (/^>\s*Source:/.test(lines[i])) sourceLine = i;
+  }
   if (sourceLine === -1) return { body: raw };
   const text = lines[sourceLine].replace(/^>\s*Source:\s*/i, "").trim();
   const link = text.match(/^\[([^\]]+)\]\(([^)]+)\)$/);

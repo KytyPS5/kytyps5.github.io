@@ -109,6 +109,27 @@ describe("parseCompatReport", () => {
     expect(report.source?.url).toBeUndefined();
   });
 
+  it("uses the LAST source line — a blockquote inside the notes isn't the provenance", () => {
+    // A report's "Extra notes" section can legitimately quote its own source
+    // ("…the upstream issue said > Source: …"). The converter always appends
+    // the real source at the end, so the last `> Source:` line must win.
+    const withInnerQuote = `${VALID.trim()}
+
+## Extra notes
+
+> Source: mentioned inside the notes, not the report's provenance
+
+> Source: [GitHub compatibility report #12](https://github.com/org/repo/issues/12)
+`;
+    const report = parseCompatReport(withInnerQuote, "test-game");
+    expect(report.source).toEqual({
+      label: "GitHub compatibility report #12",
+      url: "https://github.com/org/repo/issues/12",
+    });
+    expect(report.notes).toContain("mentioned inside the notes, not the report's provenance");
+    expect(report.notes).toContain("## Extra notes");
+  });
+
   it("parses gameVersion, score and screenshot", () => {
     const withExtra = VALID.replace(
       'hardware: "Ryzen 9 / RTX 5090"',

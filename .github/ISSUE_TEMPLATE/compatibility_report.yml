@@ -60,6 +60,19 @@ body:
       description: Include screenshots and the log file if possible. Use dumps of games you own.
     validations:
       required: true
+  - type: textarea
+    id: steps
+    attributes:
+      label: Steps to reproduce
+      description: What did you do to get this result? (e.g. boot sequence, settings changed, save state, specific level/scene). Optional but helpful for maintainers to reproduce the result.
+      placeholder: "1. Launch the game
+2. Load a save at …
+3. …"
+  - type: textarea
+    id: extra_notes
+    attributes:
+      label: Extra notes
+      description: Anything else that may help — settings used, controller/audio quirks, network state, screenshots, log excerpts. Optional.
   - type: checkboxes
     id: ownership
     attributes:

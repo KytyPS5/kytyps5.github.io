@@ -104,12 +104,24 @@ jobs:
           TITLE_ID="$(field 'Title ID')"
           GAME_VERSION="$(field 'Game version')"
           NOTES="$(field 'What works / what breaks' | head -c 4000)"
+          STEPS="$(field 'Steps to reproduce' | head -c 4000)"
+          EXTRA_NOTES="$(field 'Extra notes' | head -c 4000)"
           if [ -z "$TITLE_ID" ] || [ -z "$STATUS" ] || [ -z "$VERSION" ] || [ -z "$DATE" ] || [ -z "$OS" ]; then
             echo "::error::Issue #$ISSUE_NUMBER doesn't match the compatibility report template — fill in Title ID, Compatibility status, build, Test date and Operating system, then reply /compat again (or file a new report via the template)."
             exit 1
           fi
           ARGS=(--title "$TITLE" --title-id "$TITLE_ID" --status "$STATUS" --version "$VERSION" --date "$DATE" --os "$OS" --body "$NOTES" --source "#$ISSUE_NUMBER" --source-url "https://github.com/${{ github.repository }}/issues/$ISSUE_NUMBER")
           [ -n "$HW" ] && ARGS+=(--hardware "$HW")
+          # GitHub renders empty optional textareas as "_No response_" — treat
+          # that as the field being absent, not as content to store.
+          case "$STEPS" in
+            ""|"_Unknown_"|"_No response_") ;; # empty — skip
+            *) ARGS+=(--steps "$STEPS") ;;
+          esac
+          case "$EXTRA_NOTES" in
+            ""|"_Unknown_"|"_No response_") ;; # empty — skip
+            *) ARGS+=(--extra-notes "$EXTRA_NOTES") ;;
+          esac
           case "$GAME_VERSION" in
             ""|"_Unknown_"|"_No response_") ;; # template defaults — skip
             *) ARGS+=(--game-version "$GAME_VERSION") ;;
