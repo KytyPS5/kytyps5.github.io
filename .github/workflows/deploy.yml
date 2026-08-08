@@ -10,8 +10,9 @@ name: Deploy to GitHub Pages
 #     or public/data/** (i.e. a merged report PR). The previous build is restored
 #     from the Actions cache, the compat JSONs + sitemap are regenerated from the
 #     reports and overlaid, and the artifact is republished — no npm ci, no tsc,
-#     no vite build. The site fetches data/compat.json at runtime, so the new
-#     report goes live ~a minute after the merge.
+#     no vite build. The site fetches data/compat-index.json + per-game
+#     data/compat/<KEY>.json at runtime, so a new report goes live ~a minute
+#     after the merge.
 #   - Full build: anything else (code, scripts, games database, …). npm ci +
 #     build as before, and the dist is cached for the next content-only deploy.
 #     Also the fallback when a content-only deploy finds no cached build (first
@@ -139,9 +140,10 @@ jobs:
           node scripts/export-compat-json.mjs
           node scripts/export-site-compat-json.mjs
           node scripts/generate-sitemap.mjs
-          mkdir -p dist/data dist/screenshots
+          mkdir -p dist/data dist/data/compat dist/screenshots
           cp public/data/compatibility.json dist/data/compatibility.json
-          cp public/data/compat.json dist/data/compat.json
+          cp public/data/compat-index.json dist/data/compat-index.json
+          cp -r public/data/compat/. dist/data/compat/
           cp public/sitemap.xml dist/sitemap.xml
           cp -r public/screenshots/. dist/screenshots/
           echo "Content-only deploy: skipped npm ci / tsc / vite build."

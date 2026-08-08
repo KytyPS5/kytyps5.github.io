@@ -11,8 +11,9 @@ import {
   reportsForOs,
   type CompatReport,
 } from "@/lib/compat";
+import { COMPAT_REPORTS } from "@/lib/compat-seed";
 import { loadGames, type Game } from "@/lib/games";
-import { useCompatReports } from "@/hooks/use-compat-reports";
+import { useCompatGame } from "@/hooks/use-compat-game";
 import { SITE, SITE_URL } from "@/config";
 import { Markdown } from "@/lib/markdown.tsx";
 import { StatusBadge } from "@/components/compat/status-badge";
@@ -107,20 +108,29 @@ export function GamePage() {
 
   // Resolve the database game first (any region variant of the title ID), then
   // collect every report for it — by exact title ID, slug, or any of the
-  // game's region-variant IDs (matches buildGameIndex on the index page).
-  const { reports: compatReports, loading: reportsLoading } = useCompatReports();
+  // game's region-variant IDs.
   const keyNorm = normalize(key);
   const game = games
     ? games.find((g) => g.allTitleIds.some((id) => normalize(id) === keyNorm))
     : undefined;
-  const reports = compatReports.filter((r) => {
+  // Per-game detail: the deployed data/compat/<KEY>.json carries this game's
+  // full reports (notes, hardware, source, …) — fetched only on game pages.
+  // The detail key is the game's primary title ID (so any region-variant URL
+  // resolves to the same file); report-only games use the URL key itself.
+  const detailKey = (game ? game.titleId : key).toUpperCase().replace(/[^A-Z0-9]/g, "");
+  const { detail, loading: reportsLoading } = useCompatGame(detailKey);
+  // Fallback: the build-time bundle snapshot, matched locally. Covers a detail
+  // 404 (untested game, legacy slug link, dev without a build) with the same
+  // matching as before — slug, exact title ID, or any region variant.
+  const seedReports = COMPAT_REPORTS.filter((r) => {
     const rKey = r.titleId ? normalize(r.titleId) : "";
     return (
       r.slug === key ||
       rKey === keyNorm ||
       (game ? game.allTitleIds.some((id) => normalize(id) === rKey) : false)
     );
-  }).sort((a, b) => (a.testedDate < b.testedDate ? 1 : -1));
+  });
+  const reports = (detail ?? seedReports).sort((a, b) => (a.testedDate < b.testedDate ? 1 : -1));
   const report = reports[0];
 
   // Wait for the games database and the runtime report refresh before

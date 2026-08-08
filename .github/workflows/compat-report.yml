@@ -91,6 +91,15 @@ jobs:
           console.log(`Converted ${ok} issue(s), ${failed} failed.`);
           NODE
 
+      # Regenerate the committed slim-index seed (src/data/compat-index.json) so
+      # the report PR carries it too — otherwise the seed in the repo drifts
+      # stale after every merged report (the deployed site still refreshes it at
+      # runtime; this keeps dev / first paint current). public/data/* is
+      # gitignored, so only the tracked seed is added to the PR.
+      - name: Regenerate the site index seed
+        if: steps.fetch.outputs.count != '0'
+        run: node scripts/export-site-compat-json.mjs
+
       - name: Open or update the report PR
         if: steps.fetch.outputs.count != '0'
         uses: peter-evans/create-pull-request@v6

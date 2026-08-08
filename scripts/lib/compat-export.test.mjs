@@ -6,8 +6,10 @@ import { describe, expect, it } from "vitest";
 import {
   aggregateStatuses,
   buildCompatibilityDb,
+  buildSiteIndex,
   mapStatus,
   parseFrontmatter,
+  parseReport,
   titleKey,
 } from "./compat-export.mjs";
 
@@ -357,5 +359,167 @@ describe("per-OS status policy (Nmzik's cross-platform caveat)", () => {
     expect(parsed.PPSA06228.status).toBe("InGame");
     expect(typeof parsed.PPSA06228.comment).toBe("string");
     expect(parsed.PPSA06228.platforms).toBeUndefined();
+  });
+});
+
+describe("parseReport (JS twin of the site parser — src/lib/compat.ts)", () => {
+  const VALID = `---
+titleId: "PPSA01234"
+title: "Test Game"
+status: "main-menu"
+testedVersion: "main"
+testedDate: "2026-08-07"
+os: "windows"
+hardware: "Ryzen 9 / RTX 5090"
+---
+
+Boots and reaches gameplay.
+`;
+
+  it("parses a valid report with every field", () => {
+    const report = parseReport(VALID, "test-game");
+    expect(report).toMatchObject({
+      slug: "test-game",
+      title: "Test Game",
+      titleId: "PPSA01234",
+      status: "main-menu",
+      testedVersion: "main",
+      testedDate: "2026-08-07",
+      os: "windows",
+      hardware: "Ryzen 9 / RTX 5090",
+    });
+    expect(report.notes).toBe("Boots and reaches gameplay.");
+  });
+
+  it("coerces score, gameVersion, screenshot and screenshotVerified", () => {
+    const withExtra = VALID.replace(
+      'hardware: "Ryzen 9 / RTX 5090"',
+      'hardware: "Ryzen 9 / RTX 5090"\ngameVersion: "1.004"\nscore: 4\nscreenshot: "https://example.com/s.png"\nscreenshotVerified: true',
+    );
+    const report = parseReport(withExtra, "test-game");
+    expect(report.score).toBe(4);
+    expect(report.gameVersion).toBe("1.004");
+    expect(report.screenshot).toBe("https://example.com/s.png");
+    expect(report.screenshotVerified).toBe(true);
+  });
+
+  it("extracts the LAST source line (a quote inside the notes isn't the provenance)", () => {
+    const withSource = `${VALID.trim()}
+
+## Extra notes
+
+> Source: mentioned inside the notes, not the provenance
+
+> Source: [KytyPS5 issue #12](https://github.com/KytyPS5/KytyPS5/issues/12)
+`;
+    const report = parseReport(withSource, "test-game");
+    expect(report.source).toEqual({
+      label: "KytyPS5 issue #12",
+      url: "https://github.com/KytyPS5/KytyPS5/issues/12",
+    });
+    expect(report.notes).toContain("mentioned inside the notes, not the provenance");
+  });
+
+  it("rejects invalid reports with the site's error contract", () => {
+    expect(() => parseReport(VALID.replace('status: "main-menu"', 'status: "broken"'), "x")).toThrow(
+      /status must be one of/,
+    );
+    expect(() => parseReport(VALID.replace('os: "windows"\n', ""), "x")).toThrow(
+      /missing required frontmatter field: os/,
+    );
+    expect(() => parseReport(VALID.replace("PPSA01234", "PPSA-12"), "x")).toThrow(/PPSA-XXXXX/);
+  });
+});
+
+describe("buildSiteIndex (slim website index)", () => {
+  const report = (titleId, status, os = "windows", title = "Game", extra = "") =>
+    parseReport(
+      `---
+titleId: "${titleId}"
+title: "${title}"
+status: "${status}"
+testedVersion: "main"
+testedDate: "${extra ? "2026-08-07" : "2026-08-01"}"
+os: "${os}"
+${extra}
+---
+
+Notes.
+`,
+      title.toLowerCase().replace(/\s+/g, "-"),
+    );
+
+  const games = [
+    { titleId: "PPSA00001", allTitleIds: ["PPSA00001", "PPSA00003"], name: "Alpha Game", cover: "https://c/a.png" },
+    { titleId: "PPSA00002", allTitleIds: ["PPSA00002"], name: "Beta Game" },
+  ];
+
+  it("drops untested games — the index only lists tested titles", () => {
+    expect(buildSiteIndex(games, [])).toEqual([]);
+  });
+
+  it("merges reports into their game and precomputes overall + per-OS statuses", () => {
+    const index = buildSiteIndex(games, [
+      report("PPSA00001", "main-menu", "windows", "Alpha Game"),
+      report("PPSA00001", "logo", "linux", "Alpha Game"),
+    ]);
+    expect(index).toHaveLength(1);
+    const entry = index[0];
+    expect(entry.key).toBe("PPSA00001");
+    expect(entry.title).toBe("Alpha Game");
+    expect(entry.cover).toBe("https://c/a.png");
+    expect(entry.overall).toBe("main-menu"); // best across per-OS majorities
+    expect(entry.os).toEqual({ windows: "main-menu", linux: "logo" });
+    expect(entry.reportCounts).toEqual({ windows: 1, linux: 1 });
+    expect(entry.latestTested).toBe("2026-08-01"); // newest across both reports
+    expect(entry.reports).toHaveLength(2);
+  });
+
+  it("precomputes per-OS statuses via majority, ties to the better status", () => {
+    const index = buildSiteIndex(games, [
+      report("PPSA00001", "main-menu", "windows", "Alpha Game"),
+      report("PPSA00001", "in-game", "windows", "Alpha Game"),
+    ]);
+    expect(index[0].os.windows).toBe("in-game");
+    expect(index[0].overall).toBe("in-game");
+    expect(index[0].reportCounts.windows).toBe(2);
+  });
+
+  it("matches a report whose title ID is a region variant of the game", () => {
+    const index = buildSiteIndex(games, [report("PPSA00003", "logo", "windows", "Alpha Game")]);
+    expect(index[0].key).toBe("PPSA00001");
+    expect(index[0].reports).toHaveLength(1);
+  });
+
+  it("keeps report-only games (title ID not in the database)", () => {
+    const index = buildSiteIndex(games, [report("PPSA09999", "logo", "windows", "Mystery Game")]);
+    expect(index).toHaveLength(1);
+    expect(index[0].key).toBe("PPSA09999");
+    expect(index[0].title).toBe("Mystery Game");
+    expect(index[0].cover).toBeUndefined();
+  });
+
+  it("collects screenshot entries (newest first) for the carousel", () => {
+    const older = {
+      ...report("PPSA00001", "main-menu", "windows", "Alpha Game", 'screenshot: "screenshots/a.png"'),
+      testedDate: "2026-08-01",
+    };
+    const newer = {
+      ...report("PPSA00001", "logo", "linux", "Alpha Game", 'screenshot: "screenshots/b.png"'),
+      testedDate: "2026-08-05",
+    };
+    const index = buildSiteIndex(games, [older, newer]);
+    expect(index[0].screenshots).toEqual([
+      { title: "Alpha Game", screenshot: "screenshots/b.png", testedDate: "2026-08-05" },
+      { title: "Alpha Game", screenshot: "screenshots/a.png", testedDate: "2026-08-01" },
+    ]);
+  });
+
+  it("sorts entries by title", () => {
+    const index = buildSiteIndex(games, [
+      report("PPSA00002", "main-menu", "windows", "Beta Game"),
+      report("PPSA00001", "main-menu", "windows", "Alpha Game"),
+    ]);
+    expect(index.map((e) => e.key)).toEqual(["PPSA00001", "PPSA00002"]);
   });
 });

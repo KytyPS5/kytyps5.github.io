@@ -1,26 +1,17 @@
+import * as React from "react";
 import { Link } from "react-router-dom";
 import { ArrowRight } from "lucide-react";
-import {
-  STATUSES,
-  STATUS_META,
-  computeStats,
-  displayStatus,
-  groupReportsByGame,
-  type Status,
-} from "@/lib/compat";
-import { useCompatReports } from "@/hooks/use-compat-reports";
+import { STATUSES, STATUS_META, computeIndexStats } from "@/lib/compat";
+import { useCompatIndex } from "@/hooks/use-compat-index";
 import { Reveal } from "@/components/layout/reveal";
 
 export function CompatPreview() {
-  // One game per entry — status is the best result across its per-OS tests.
-  // Groups always hold ≥1 report, so the per-game status is never "untested".
-  // Reports start as the bundle seed and refresh from the runtime JSON.
-  const { reports } = useCompatReports();
-  const stats = computeStats(
-    [...groupReportsByGame(reports).values()]
-      .map((group) => displayStatus(group))
-      .filter((s): s is Status => s !== "untested"),
-  );
+  // One slim entry per tested game — its overall status is the best result
+  // across per-OS tests, precomputed by the site export. The index starts as
+  // the committed seed and refreshes from the deployed JSON.
+  const { games } = useCompatIndex();
+  const stats = React.useMemo(() => computeIndexStats(games ?? []), [games]);
+  if (!games) return null; // wait for the first-paint seed / runtime refresh
   const segments = STATUSES.map((status) => ({
     status,
     count: stats.counts[status],
