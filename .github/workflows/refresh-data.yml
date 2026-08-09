@@ -56,7 +56,11 @@ jobs:
           (async () => {
             const fs = require("fs");
             const [owner, repo] = process.env.GITHUB_REPOSITORY.split("/");
-            const base = `https://${owner}.github.io/${repo}/data/github.json`;
+            const rootRepo = `${owner}.github.io`.toLowerCase();
+            const site = repo.toLowerCase() === rootRepo
+              ? `https://${owner}.github.io`
+              : `https://${owner}.github.io/${repo}`;
+            const base = `${site}/data/github.json`;
             const cur = JSON.parse(fs.readFileSync("public/data/github.json", "utf8"));
             const live = await (async () => {
               if (process.env.FORCE === "true") return null;
