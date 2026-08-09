@@ -45,7 +45,7 @@ export function HomePage() {
       <Hero />
 
       {/* Project statistics */}
-      <Section id="overview" containerClassName="!max-w-[1000px]" className="!py-0">
+      <Section id="overview" containerClassName="!max-w-[1000px] mt-16" className="!py-0">
         <RepoStats />
       </Section>
 
