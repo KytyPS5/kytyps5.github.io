@@ -4,8 +4,8 @@
     <meta charset="UTF-8" />
     <meta name="viewport" content="width=device-width, initial-scale=1.0" />
     <script>
-      // GitHub Pages deep-link support: /KytyPS5-site/<route> 404s, so 404.html
-      // stores the requested path here and bounces to the base. Restore it now
+      // GitHub Pages deep-link support: unknown routes use 404.html, which
+      // stores the requested path and bounces to the root. Restore it now
       // so BrowserRouter renders the right route on refresh / direct links.
       (function () {
         try {
@@ -26,7 +26,7 @@
     <meta name="color-scheme" content="dark" />
     <meta name="author" content="KytyPS5 contributors" />
     <link rel="icon" type="image/svg+xml" href="/favicon.svg" />
-    <link rel="canonical" href="https://kytyps5.github.io/KytyPS5-site/" />
+    <link rel="canonical" href="https://kytyps5.github.io/" />
 
     <!-- OpenGraph -->
     <meta property="og:type" content="website" />
@@ -36,7 +36,7 @@
       property="og:description"
       content="A free and open-source PlayStation 5 emulator for Windows, Linux and macOS. Early development, focused on compatibility and boot reliability."
     />
-    <meta property="og:url" content="https://kytyps5.github.io/KytyPS5-site/" />
+    <meta property="og:url" content="https://kytyps5.github.io/" />
     <meta property="og:image" content="https://raw.githubusercontent.com/KytyPS5/KytyPS5/main/docs/screenshots/ps5-01.png" />
 
     <!-- Twitter -->

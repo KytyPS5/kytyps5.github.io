@@ -5,9 +5,8 @@ import tailwindcss from "@tailwindcss/vite";
 
 // https://vite.dev/config/
 export default defineConfig({
-  // GitHub Pages project site: https://kytyps5.github.io/KytyPS5-site/
-  // Change to "/" (or remove) if the site moves to a custom domain / user page.
-  base: "/KytyPS5-site/",
+  // GitHub Pages organization site: https://kytyps5.github.io/
+  base: "/",
   plugins: [react(), tailwindcss()],
   resolve: {
     alias: {

@@ -2,7 +2,7 @@
 
 The official website for **[KytyPS5](https://github.com/KytyPS5/KytyPS5)** — a free and
 open-source PlayStation 5 emulator for Windows, Linux and macOS. Live at
-**[kytyps5.github.io/KytyPS5-site](https://kytyps5.github.io/KytyPS5-site)**.
+**[kytyps5.github.io](https://kytyps5.github.io/)**.
 
 Dark-first, premium, accessible and fast. Built with React 19, Vite, TypeScript, Tailwind CSS v4,
 Radix UI primitives, Framer Motion and Lucide icons.
