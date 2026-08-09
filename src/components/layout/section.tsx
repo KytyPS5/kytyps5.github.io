@@ -30,7 +30,7 @@ export function Section({
 }: SectionProps) {
   const reduced = useReducedMotion();
   return (
-    <section id={id} className={cn("relative py-20 sm:py-28", className)}>
+    <section id={id} className={cn("relative py-20 sm:py-28 overflow-hidden", className)}>
       <Container className={containerClassName}>
         {(eyebrow || title || description) && (
           <motion.div
