@@ -10,8 +10,6 @@ name: CI
 #     full pipeline: typecheck, tests, report validation and the production
 #     build (prebuild also regenerates the GitHub snapshot + compat JSONs).
 on:
-  push:
-    branches: [main]
   pull_request:
 
 jobs:
