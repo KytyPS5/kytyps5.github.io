@@ -8,9 +8,9 @@ import { BUILD_STEPS } from "@/lib/content";
 
 export function InstallPreview() {
   return (
-    <div className="grid items-center gap-10 lg:grid-cols-2 lg:gap-16">
+    <div className="grid grid-cols-1 items-center gap-6 lg:grid-cols-2 lg:gap-16">
       <Reveal from="left" className="flex flex-col">
-        <div>
+        <div className="flex flex-col items-center text-center lg:text-start lg:items-start">
           <p className="font-mono text-xs uppercase tracking-[0.2em] text-accent">Get started</p>
           <h2 className="mt-4 font-display text-3xl font-semibold tracking-tight sm:text-4xl">
             Up and running in minutes
@@ -24,7 +24,7 @@ export function InstallPreview() {
             </code>{" "}
             automatically.
           </p>
-          <div className="mt-6 flex flex-wrap items-center gap-4">
+          <div className="mt-6 flex flex-wrap items-center justify-center gap-4 ">
             <Button asChild size="lg">
               <Link to="/download">
                 <Download className="size-5" aria-hidden="true" />
@@ -46,7 +46,7 @@ export function InstallPreview() {
       </Reveal>
       <Reveal from="right" delay={0.12}>
         <Tabs defaultValue="linux">
-          <TabsList aria-label="Choose your operating system">
+          <TabsList aria-label="Choose your operating system" className="mx-auto flex w-fit lg:mx-0 lg:inline-flex">
             <TabsTrigger value="windows">Windows</TabsTrigger>
             <TabsTrigger value="linux">Linux</TabsTrigger>
             <TabsTrigger value="macos">macOS</TabsTrigger>
