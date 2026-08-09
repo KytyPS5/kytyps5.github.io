@@ -13,12 +13,12 @@ export const SITE = {
   // report PRs.
   reportRepoUrl: "https://github.com/KytyPS5/KytyPS5",
   // The repository that hosts this website.
-  siteRepoUrl: "https://github.com/KytyPS5/KytyPS5-site",
+  siteRepoUrl: "https://github.com/KytyPS5/kytyps5.github.io",
   // Fallback "latest build" used only when the GitHub latest-release lookup
   // fails (offline, rate-limited). The game page prefers the live release tag,
   // so this no longer needs bumping on every release.
   currentVersion: "KytyPS5-2026-08-07-7907a50",
 } as const;
 
-/** Origin used for canonical URLs / sitemap (GitHub Pages project site). */
-export const SITE_URL = "https://kytyps5.github.io/KytyPS5-site";
+/** Origin used for canonical URLs / sitemap (GitHub Pages organization site). */
+export const SITE_URL = "https://kytyps5.github.io";

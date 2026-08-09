@@ -3,8 +3,8 @@ import { createRoot } from "react-dom/client";
 import { BrowserRouter } from "react-router-dom";
 import { MotionConfig } from "framer-motion";
 
-// Vite injects the deployment subpath here (e.g. "/KytyPS5-site/" on GitHub
-// Pages, "/" in dev), so BrowserRouter matches routes under the base URL.
+// Vite injects the deployment base here, so BrowserRouter matches routes
+// under the same URL in development and on GitHub Pages.
 const BASENAME = import.meta.env.BASE_URL;
 
 // Self-hosted fonts (no third-party CDN)
