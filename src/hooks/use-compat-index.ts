@@ -8,7 +8,9 @@ export interface CompatIndexState {
   loading: boolean;
 }
 
-let compatIndexPromise: Promise<CompatIndexGame[] | null> | null = null;
+/** Resolved value + in-flight promise, cached at module scope so the index is fetched once and shared. */
+let cache: CompatIndexGame[] | null = null;
+let promise: Promise<CompatIndexGame[] | null> | null = null;
 
 /**
  * The deployed slim index, loaded once (module-level cache). Resolves to the
@@ -17,52 +19,42 @@ let compatIndexPromise: Promise<CompatIndexGame[] | null> | null = null;
  * only tested games with their precomputed statuses — the client never parses
  * report markdown.
  */
-export function loadCompatIndex(): Promise<CompatIndexGame[] | null> {
-  if (!compatIndexPromise) {
-    compatIndexPromise = import("../data/compat-index.json")
-      .then((m) => (m.default as CompatIndexGame[]) ?? null)
-      .catch(() => null)
-      .then(async (seed) => {
-        try {
-          const res = await fetch(`${import.meta.env.BASE_URL}data/compat-index.json`);
-          if (res.ok) {
-            const payload = (await res.json()) as { games?: CompatIndexGame[] };
-            if (payload?.games?.length) return payload.games;
-          }
-        } catch {
-          /* keep the seed */
-        }
-        return seed;
-      });
-  }
-  return compatIndexPromise;
+function loadCompatIndex(): Promise<CompatIndexGame[] | null> {
+  promise ??= (async () => {
+    try {
+      const res = await fetch(`${import.meta.env.BASE_URL}data/compat-index.json`);
+      if (res.ok) {
+        const payload = (await res.json()) as { games?: CompatIndexGame[] };
+        if (payload?.games?.length) return (cache = payload.games);
+      }
+    } catch {
+      /* fall back to the committed seed below */
+    }
+    return (cache = ((await import("../data/compat-index.json")).default as CompatIndexGame[]) ?? null);
+  })();
+  return promise;
 }
 
 /**
- * Slim compatibility index for the current page: the committed seed renders
- * immediately as a first-paint snapshot, then the deployed data/compat-index.json
- * refreshes it (a report merged through a content-only deploy goes live without
- * a rebuild). Falls back to the seed when the fetch fails.
+ * Slim compatibility index for the current page: loaded from the deployed
+ * data/compat-index.json (a report merged through a content-only deploy goes
+ * live without a rebuild), falling back to the committed seed when the fetch
+ * fails. The first mount kicks off the load; later mounts read the module cache
+ * synchronously — no loading flash, no refetch.
  */
 export function useCompatIndex(): CompatIndexState {
-  const [state, setState] = React.useState<CompatIndexState>({ games: null, loading: true });
+  const [games, setGames] = React.useState(cache);
 
   React.useEffect(() => {
+    if (cache) return; // already resolved — nothing to do
     let alive = true;
-    // Seed first — instant first paint, no network wait.
-    import("../data/compat-index.json")
-      .then((m) => {
-        if (alive) setState({ games: (m.default as CompatIndexGame[]) ?? null, loading: true });
-      })
-      .catch(() => {});
-    // Then refresh from the deployed JSON (module-cached, fetched once).
-    loadCompatIndex().then((games) => {
-      if (alive) setState({ games, loading: false });
+    loadCompatIndex().then((resolved) => {
+      if (alive) setGames(resolved);
     });
     return () => {
       alive = false;
     };
   }, []);
 
-  return state;
+  return { games, loading: games === null };
 }
