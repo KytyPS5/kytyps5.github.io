@@ -1,6 +1,6 @@
 import * as React from "react";
 import { Link, useParams } from "react-router-dom";
-import { ArrowLeft, Camera, CheckCircle2, ExternalLink, FileQuestion } from "lucide-react";
+import { ArrowLeft, CheckCircle2, ExternalLink, FileQuestion } from "lucide-react";
 import { Seo } from "@/lib/seo";
 import {
   OSES,
@@ -59,13 +59,6 @@ function ReportBlock({
         </p>
         <StatusBadge status={report.status} className="shrink-0" />
       </div>
-
-      {report.screenshotVerified && (
-        <p className="mt-4 flex items-center gap-1.5 text-xs text-text-muted">
-          <Camera className="size-3.5" aria-hidden="true" />
-          Screenshot attached to this report — the status above comes from the community report, not the image.
-        </p>
-      )}
 
       {report.testedVersion !== currentVersion && (
         <p className="mt-4 rounded-xl border border-amber-400/30 bg-amber-400/10 px-4 py-2.5 text-sm text-amber-200">
@@ -336,6 +329,39 @@ export function GamePage() {
             </div>
           </section>
         </Reveal>
+
+        {/* Screenshots from the latest accepted report — copied from the
+            source issue at conversion time and hotlinked, never downloaded. */}
+        {latest.screenshots && latest.screenshots.length > 0 && (
+          <Reveal from="up" className="mt-12">
+            <section aria-labelledby="screenshots-heading">
+              <h2
+                id="screenshots-heading"
+                className="font-display text-xl font-bold tracking-tight text-text-primary"
+              >
+                Screenshots
+              </h2>
+              <p className="mt-2 max-w-xl text-sm leading-relaxed text-text-secondary">
+                From the latest accepted report
+                {latest.os ? ` (${latest.os})` : ""} — attached by the reporter as evidence,
+                not a status indicator.
+              </p>
+              <div className="mt-5 grid gap-4 sm:grid-cols-2 lg:grid-cols-3">
+                {latest.screenshots.map((src, i) => (
+                  <img
+                    key={src}
+                    src={src}
+                    alt={`${title} screenshot ${i + 1}`}
+                    loading="lazy"
+                    decoding="async"
+                    referrerPolicy="no-referrer"
+                    className="w-full rounded-card border border-border bg-elevated object-cover"
+                  />
+                ))}
+              </div>
+            </section>
+          </Reveal>
+        )}
 
         {/* Reports */}
         <Reveal from="right" className="mt-16 pb-24">
