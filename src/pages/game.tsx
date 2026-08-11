@@ -193,6 +193,12 @@ export function GamePage() {
   const aggregate = displayStatus(reports);
   const perOs = perOsStatuses(reports);
   const latest = reports[0];
+  // One set of screenshots per game, from the NEWEST report that carries any:
+  // the latest report's images win, and when the latest report has none the
+  // newest older report's screenshots stand in (clearly noted as older). A
+  // newer report with screenshots replaces them automatically.
+  const screenshotReport = reports.find((r) => r.screenshots && r.screenshots.length > 0);
+  const screenshotsFromLatest = screenshotReport === reports[0];
 
   const jsonLd = {
     "@context": "https://schema.org",
@@ -330,9 +336,9 @@ export function GamePage() {
           </section>
         </Reveal>
 
-        {/* Screenshots from the latest accepted report — copied from the
-            source issue at conversion time and hotlinked, never downloaded. */}
-        {latest.screenshots && latest.screenshots.length > 0 && (
+        {/* Screenshots from the newest report that has them — copied from the
+            source issue at conversion time, hotlinked, never downloaded. */}
+        {screenshotReport && (
           <Reveal from="up" className="mt-12">
             <section aria-labelledby="screenshots-heading">
               <h2
@@ -342,12 +348,23 @@ export function GamePage() {
                 Screenshots
               </h2>
               <p className="mt-2 max-w-xl text-sm leading-relaxed text-text-secondary">
-                From the latest accepted report
-                {latest.os ? ` (${latest.os})` : ""} — attached by the reporter as evidence,
-                not a status indicator.
+                {screenshotsFromLatest ? (
+                  <>
+                    From the latest accepted report
+                    {screenshotReport.os ? ` (${screenshotReport.os})` : ""} — attached by the
+                    reporter as evidence, not a status indicator.
+                  </>
+                ) : (
+                  <>
+                    From an older report{screenshotReport.os ? ` (${screenshotReport.os})` : ""} —
+                    accepted {formatDate(screenshotReport.testedDate)}. The latest accepted report
+                    ({formatDate(latest.testedDate)}) has no screenshots, so these stay until a
+                    newer report with screenshots is accepted.
+                  </>
+                )}
               </p>
               <div className="mt-5 grid gap-4 sm:grid-cols-2 lg:grid-cols-3">
-                {latest.screenshots.map((src, i) => (
+                {screenshotReport.screenshots!.map((src, i) => (
                   <img
                     key={src}
                     src={src}
