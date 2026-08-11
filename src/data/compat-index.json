@@ -140,6 +140,20 @@
     "latestTested": "2026-07-18"
   },
   {
+    "key": "PPSA06799",
+    "title": "ANIMAL WELL",
+    "titleId": "PPSA06799",
+    "cover": "https://image.api.playstation.com/vulcan/ap/rnd/202403/2716/7ade0cea0b1da6368e20afda0223c92af2f5cbfeba440c6b.png",
+    "overall": "in-game",
+    "os": {
+      "windows": "in-game"
+    },
+    "reportCounts": {
+      "windows": 1
+    },
+    "latestTested": "2026-08-11"
+  },
+  {
     "key": "PPSA04716",
     "title": "Anno 1800™ Console Edition",
     "titleId": "PPSA04716",
@@ -364,6 +378,19 @@
     "latestTested": "2026-08-07"
   },
   {
+    "key": "PPSA15552",
+    "title": "Dead Cells",
+    "titleId": "PPSA15552",
+    "overall": "in-game",
+    "os": {
+      "windows": "in-game"
+    },
+    "reportCounts": {
+      "windows": 1
+    },
+    "latestTested": "2026-08-11"
+  },
+  {
     "key": "PPSA03845",
     "title": "Dead Space",
     "titleId": "PPSA03845",
@@ -415,9 +442,9 @@
       "windows": "logo"
     },
     "reportCounts": {
-      "windows": 1
+      "windows": 2
     },
-    "latestTested": "2026-07-19"
+    "latestTested": "2026-08-10"
   },
   {
     "key": "PPSA09077",
@@ -488,6 +515,20 @@
       "windows": 1
     },
     "latestTested": "2026-07-18"
+  },
+  {
+    "key": "PPSA01797",
+    "title": "Five Nights at Freddy's: Security Breach",
+    "titleId": "PPSA01797",
+    "cover": "https://image.api.playstation.com/vulcan/img/rnd/202112/0804/PAw2w50vib1r42swjSZrxaCd.png",
+    "overall": "logo",
+    "os": {
+      "windows": "logo"
+    },
+    "reportCounts": {
+      "windows": 1
+    },
+    "latestTested": "2026-08-10"
   },
   {
     "key": "PPSA08547",
@@ -569,9 +610,9 @@
       "windows": "main-menu"
     },
     "reportCounts": {
-      "windows": 1
+      "windows": 2
     },
-    "latestTested": "2026-08-07"
+    "latestTested": "2026-08-10"
   },
   {
     "key": "PPSA03420",
@@ -585,7 +626,7 @@
     "reportCounts": {
       "windows": 1
     },
-    "latestTested": "2026-08-04"
+    "latestTested": "2026-08-10"
   },
   {
     "key": "PPSA03524",
@@ -826,6 +867,19 @@
     "latestTested": "2026-08-05"
   },
   {
+    "key": "PPSA10067",
+    "title": "Prince of Persia: The Lost Crown",
+    "titleId": "PPSA10067",
+    "overall": "in-game",
+    "os": {
+      "windows": "in-game"
+    },
+    "reportCounts": {
+      "windows": 1
+    },
+    "latestTested": "2026-08-09"
+  },
+  {
     "key": "PPSA04334",
     "title": "PROJECT ZERO: MAIDEN OF BLACK WATER",
     "titleId": "PPSA04334",
@@ -838,6 +892,20 @@
       "windows": 1
     },
     "latestTested": "2026-07-19"
+  },
+  {
+    "key": "PPSA01937",
+    "title": "Puyo Puyo™ Tetris® 2",
+    "titleId": "PPSA01937",
+    "cover": "https://image.api.playstation.com/vulcan/ap/rnd/202011/1017/aYqyiFpI2697pZyzokbMaidD.png",
+    "overall": "doesnt-boot",
+    "os": {
+      "windows": "doesnt-boot"
+    },
+    "reportCounts": {
+      "windows": 1
+    },
+    "latestTested": "2026-08-09"
   },
   {
     "key": "PPSA08394",
@@ -1036,6 +1104,20 @@
     "latestTested": "2026-08-08"
   },
   {
+    "key": "PPSA04877",
+    "title": "SILENT HILL: The Short Message",
+    "titleId": "PPSA04877",
+    "cover": "https://image.api.playstation.com/vulcan/ap/rnd/202209/1505/jDGjXgHk1xK19Zizip1VdDfw.png",
+    "overall": "main-menu",
+    "os": {
+      "windows": "main-menu"
+    },
+    "reportCounts": {
+      "windows": 1
+    },
+    "latestTested": "2026-08-10"
+  },
+  {
     "key": "PPSA02198",
     "title": "STAR WARS Jedi: Fallen Order™",
     "titleId": "PPSA02198",
@@ -1050,6 +1132,20 @@
     "latestTested": "2026-07-19"
   },
   {
+    "key": "PPSA02100",
+    "title": "Stray",
+    "titleId": "PPSA02100",
+    "cover": "https://image.api.playstation.com/vulcan/ap/rnd/202206/0300/UogbMjgPOJrYBn5QvUmuR7G9.jpg",
+    "overall": "main-menu",
+    "os": {
+      "windows": "main-menu"
+    },
+    "reportCounts": {
+      "windows": 1
+    },
+    "latestTested": "2026-08-09"
+  },
+  {
     "key": "PPSA15246",
     "title": "Teardown",
     "titleId": "PPSA15246",
@@ -1061,7 +1157,7 @@
     "reportCounts": {
       "windows": 1
     },
-    "latestTested": "2026-07-29"
+    "latestTested": "2026-08-10"
   },
   {
     "key": "PPSA17245",
@@ -1092,6 +1188,33 @@
     "latestTested": "2026-07-20"
   },
   {
+    "key": "PPSA25872",
+    "title": "Terminator 2D: NO FATE",
+    "titleId": "PPSA25872",
+    "overall": "in-game",
+    "os": {
+      "windows": "in-game"
+    },
+    "reportCounts": {
+      "windows": 1
+    },
+    "latestTested": "2026-08-09"
+  },
+  {
+    "key": "PPSA02474",
+    "title": "Terminator: Resistance Enhanced",
+    "titleId": "PPSA02474",
+    "cover": "https://image.api.playstation.com/vulcan/ap/rnd/202102/0814/yqnBj8fLElHHcKE91DfXVkx9.jpg",
+    "overall": "logo",
+    "os": {
+      "windows": "logo"
+    },
+    "reportCounts": {
+      "windows": 1
+    },
+    "latestTested": "2026-08-09"
+  },
+  {
     "key": "PPSA03351",
     "title": "The Callisto Protocol",
     "titleId": "PPSA03351",
@@ -1120,6 +1243,20 @@
     "latestTested": "2026-08-06"
   },
   {
+    "key": "PPSA04649",
+    "title": "THE HOUSE OF THE DEAD: Remake",
+    "titleId": "PPSA04649",
+    "cover": "https://image.api.playstation.com/vulcan/ap/rnd/202204/0509/OmN3ugJEWYModuSFPx4KDxx7.jpg",
+    "overall": "main-menu",
+    "os": {
+      "windows": "main-menu"
+    },
+    "reportCounts": {
+      "windows": 1
+    },
+    "latestTested": "2026-08-09"
+  },
+  {
     "key": "PPSA24381",
     "title": "The Thing: Remastered",
     "titleId": "PPSA24381",
@@ -1146,6 +1283,19 @@
       "windows": 1
     },
     "latestTested": "2026-08-04"
+  },
+  {
+    "key": "PPSA18154",
+    "title": "Tomb Raider IV-VI Remastered",
+    "titleId": "PPSA18154",
+    "overall": "in-game",
+    "os": {
+      "windows": "in-game"
+    },
+    "reportCounts": {
+      "windows": 1
+    },
+    "latestTested": "2026-08-10"
   },
   {
     "key": "PPSA24558",
