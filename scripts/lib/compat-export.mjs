@@ -200,6 +200,15 @@ function parseReportFrontmatter(raw) {
     if (value === "true") value = true;
     else if (value === "false") value = false;
     else if (/^\d+$/.test(String(value))) value = Number(value);
+    else if (/^\[.*\]$/.test(value)) {
+      // Flow-style array frontmatter: screenshots: ["url", …]. URLs never
+      // contain commas or quotes, so a simple split is safe.
+      value = value
+        .slice(1, -1)
+        .split(",")
+        .map((v) => v.trim().replace(/^["']|["']$/g, ""))
+        .filter(Boolean);
+    }
     data[key] = value;
   }
   return { data, body: match[2].trim() };
@@ -247,6 +256,7 @@ export function parseReport(raw, slug) {
   const screenshot =
     typeof fm.screenshot === "string" && fm.screenshot.trim() ? fm.screenshot : undefined;
   const screenshotVerified = typeof fm.screenshotVerified === "boolean" ? fm.screenshotVerified : undefined;
+  const screenshots = Array.isArray(fm.screenshots) ? fm.screenshots.filter((s) => typeof s === "string") : undefined;
 
   if (!title) errors.push("missing required frontmatter field: title");
   if (!titleId) errors.push("missing required frontmatter field: titleId");
@@ -281,6 +291,7 @@ export function parseReport(raw, slug) {
     gameVersion,
     screenshot,
     screenshotVerified,
+    screenshots,
     notes: body,
     source,
   };

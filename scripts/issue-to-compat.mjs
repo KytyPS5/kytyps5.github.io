@@ -1,7 +1,8 @@
 #!/usr/bin/env node
 /**
  * Convert a structured game-status issue into a Markdown report under
- * src/content/compat/. Invoked by .github/workflows/compat-report.yml.
+ * src/content/compat/. Invoked by .github/workflows/compat-convert.yml (the
+ * `/compat` comment command on a compat mirror issue).
  *
  * Issues now live on the KytyPS5 repo (Game Emulation Status Report template,
  * .github/ISSUE_TEMPLATE/kytyps5-game-emulation.yaml) and are fetched from
@@ -28,6 +29,7 @@
 import { mkdir, readFile, writeFile } from "node:fs/promises";
 import { fileURLToPath } from "node:url";
 import path from "node:path";
+import { cleanField, normalizeOs, parseIssueBody } from "./lib/issue-form.mjs";
 
 const ROOT = path.resolve(path.dirname(fileURLToPath(import.meta.url)), "..");
 const DIR = path.join(ROOT, "src", "content", "compat");
@@ -73,53 +75,6 @@ function normalizeStatus(status) {
     .toLowerCase();
   if (STATUSES.includes(v)) return v; // canonical slug passed directly
   return TEMPLATE_STATUS[v] ?? LEGACY_4_TIER[v] ?? LEGACY_6_TIER[v] ?? undefined;
-}
-
-/** The new template's OS field is free text — fold it into windows/linux/macos. */
-const OS_ALIASES = [
-  [/win(?:dows)?(?: ?10| ?11| server)?|microsoft|^ms/i, "windows"],
-  [/mac|os ?x|osx|darwin|apple/i, "macos"],
-  [/linux|ubuntu|debian|arch|fedora|linux mint|mint|pop.?os|manjaro|opensuse|steamos|steam ?deck/i, "linux"],
-];
-
-function normalizeOs(os) {
-  const v = String(os ?? "").trim().toLowerCase();
-  for (const [re, canonical] of OS_ALIASES) if (re.test(v)) return canonical;
-  return undefined;
-}
-
-/**
- * Parse a GitHub-issue-form body into its `### Section label` → value pairs.
- * The form renders each answer under its heading (with a blank line), so
- * multi-line textarea answers are captured whole. `## ` lines are the
- * template's group separators ("## Game and build", "## Test result", …) —
- * they close the current field without opening a new one, so "## Evidence"
- * doesn't leak into the RAM/VRAM answer.
- */
-function parseIssueBody(body) {
-  const sections = {};
-  const lines = String(body ?? "").split(/\r?\n/);
-  let current = null;
-  for (const line of lines) {
-    const field = line.match(/^###\s+(.+?)\s*$/);
-    if (field) {
-      current = field[1].trim();
-      sections[current] = "";
-      continue;
-    }
-    if (/^##\s+/.test(line)) {
-      current = null; // group separator — end the current field
-      continue;
-    }
-    if (current !== null) sections[current] += line + "\n";
-  }
-  return sections;
-}
-
-/** Unanswered optional form fields render as "_No response_" — treat as absent. */
-function cleanField(sections, label) {
-  const v = sections[label] ?? "";
-  return v.replace(/_No response_/g, "").replace(/_Unknown_/g, "").trim();
 }
 
 /**
@@ -238,6 +193,30 @@ const status = normalizeStatus(statusRaw);
 const version = intake.version;
 const date = intake.date;
 const os = intake.os;
+
+/**
+ * Extract screenshot URLs from the raw issue body. GitHub's editor stores
+ * pasted images as `<img src="…">` tags (user-attachments / user-images
+ * CDN); legacy issues may use markdown `![…](url)`. Only those two shapes
+ * count — bare URLs in the body are usually uploaded LOG files, and we no
+ * longer download anything to tell them apart. URLs stay hotlinked on the
+ * site, so no image is copied into the repo (see validate-compat's rule).
+ */
+function extractScreenshotUrls(body) {
+  const urls = [];
+  const seen = new Set();
+  const add = (u) => {
+    const clean = String(u ?? "").trim();
+    if (/^https?:\/\//i.test(clean) && !seen.has(clean)) {
+      seen.add(clean);
+      urls.push(clean);
+    }
+  };
+  for (const m of String(body ?? "").matchAll(/<img\b[^>]*\bsrc=["']([^"']+)["']/gi)) add(m[1]);
+  for (const m of String(body ?? "").matchAll(/!\[[^\]]*\]\(([^)\s]+)\)/g)) add(m[1]);
+  return urls.slice(0, 10); // keep reports sane; an issue rarely has more
+}
+const screenshots = extractScreenshotUrls(issueBody);
 const hardware = intake.hardware;
 const notes = intake.notes || "See the original issue for details.";
 const steps = intake.steps;
@@ -297,6 +276,7 @@ const frontmatter = [
   `os: "${os}"`,
   hardware ? `hardware: "${hardware}"` : null,
   gameVersion ? `gameVersion: "${gameVersion}"` : null,
+  screenshots.length ? `screenshots: ${JSON.stringify(screenshots)}` : null,
   "---",
   "",
   reportBody,

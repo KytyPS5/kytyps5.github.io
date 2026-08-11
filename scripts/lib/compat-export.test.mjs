@@ -403,6 +403,16 @@ Boots and reaches gameplay.
     expect(report.screenshotVerified).toBe(true);
   });
 
+  it("parses the flow-style screenshots array", () => {
+    const withShots = VALID.replace(
+      'hardware: "Ryzen 9 / RTX 5090"',
+      'hardware: "Ryzen 9 / RTX 5090"\nscreenshots: ["https://example.com/a.png", "https://example.com/b.png"]',
+    );
+    const report = parseReport(withShots, "test-game");
+    expect(report.screenshots).toEqual(["https://example.com/a.png", "https://example.com/b.png"]);
+    expect(parseReport(VALID, "test-game").screenshots).toBeUndefined();
+  });
+
   it("extracts the LAST source line (a quote inside the notes isn't the provenance)", () => {
     const withSource = `${VALID.trim()}
 
