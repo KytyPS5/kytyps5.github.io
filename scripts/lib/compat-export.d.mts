@@ -18,6 +18,7 @@ export interface ParsedReport {
   gameVersion?: string;
   screenshot?: string;
   screenshotVerified?: boolean;
+  screenshots?: string[];
   notes: string;
   source?: { label: string; url?: string };
 }

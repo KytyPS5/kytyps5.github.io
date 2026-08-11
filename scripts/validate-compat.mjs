@@ -28,6 +28,14 @@ function parseFrontmatter(raw) {
     if (value === "true") value = true;
     else if (value === "false") value = false;
     else if (/^\d+$/.test(String(value))) value = Number(value);
+    else if (/^\[.*\]$/.test(value)) {
+      // Flow-style array frontmatter (screenshots: ["url", …]).
+      value = value
+        .slice(1, -1)
+        .split(",")
+        .map((v) => v.trim().replace(/^["']|["']$/g, ""))
+        .filter(Boolean);
+    }
     data[key] = value;
   }
   return { data, body: match[2].trim() };
@@ -75,13 +83,13 @@ for (const file of await readdir(DIR)) {
   // status by themselves. The 6 "inferred from the upstream screenshot gallery"
   // reports were removed because they invented statuses; this guard makes that
   // impossible going forward: a screenshot requires screenshotVerified: true
-  // (set by the /getss workflow, which only runs on an existing report) AND a
-  // linked community source. Plain-text sources like "repository screenshots"
-  // are rejected — they were the old inferred-report pattern.
+  // (a maintainer attached it to an existing report) AND a linked community
+  // source. Plain-text sources like "repository screenshots" are rejected —
+  // they were the old inferred-report pattern.
   if (data.screenshot) {
     if (data.screenshotVerified !== true) {
       errors.push(
-        '`screenshot` requires `screenshotVerified: true` — screenshots never imply a status; attach via /getss to a community report',
+        '`screenshot` requires `screenshotVerified: true` — screenshots never imply a status; only attach them to a verified community report',
       );
     }
     const sourceLink = raw.match(/^> Source: \[[^\]]+\]\(https?:\/\/[^)]+\)/m);
@@ -106,15 +114,36 @@ for (const file of await readdir(DIR)) {
     }
   }
 
+  // `screenshots` (array) — image URLs copied from the source issue at
+  // conversion time and hotlinked on the game page (nothing is downloaded
+  // into the repo). Same spirit as `screenshot`: they are the report's own
+  // evidence, never a status by themselves, so each must be an http(s) URL
+  // and the report must link its community source.
+  if (data.screenshots) {
+    if (!Array.isArray(data.screenshots) || data.screenshots.length === 0) {
+      errors.push("`screenshots` must be a non-empty array of http(s) URLs (e.g. [\"https://…\"]) — add it as `screenshots: [\"url1\", …]`");
+    } else {
+      for (const shot of data.screenshots) {
+        if (typeof shot !== "string" || !/^https?:\/\//i.test(shot)) {
+          errors.push(`screenshots entries must be http(s) URLs — got \"${String(shot)}\"`);
+        }
+      }
+    }
+    const sourceLink = raw.match(/^> Source: \[[^\]]+\]\(https?:\/\/[^)]+\)/m);
+    if (!sourceLink) {
+      errors.push(
+        '`screenshots` require a linked community source (`> Source: [label](https://…)`) — they belong to the issue they were taken from',
+      );
+    }
+  }
+
   // Same guarantee for image embeds in the report body (game pages render
   // them). Only local references under screenshots/ are checked — remote
-  // embeds warn, other local paths are out of scope.
+  // embeds are fine (the screenshots array is the hotlink policy; body embeds
+  // are left alone), other local paths are out of scope.
   for (const m of raw.matchAll(/!\[[^\]]*\]\(([^)]+)\)/g)) {
     const src = m[1].trim();
-    if (/^https?:\/\//i.test(src)) {
-      console.warn(`[compat] ⚠ ${slug}: body image \"${src}\" is a remote URL — prefer hosting it in public/screenshots/.`);
-      continue;
-    }
+    if (/^https?:\/\//i.test(src)) continue; // hotlinked embeds are allowed
     if (/^data:/i.test(src) || !/^screenshots\//.test(src)) continue;
     const file = localAssetPath(src);
     if (file === null) errors.push(`body image path must stay inside public/: \"${src}\"`);

@@ -56,13 +56,20 @@ export interface CompatFrontmatter {
       public/screenshots/ (e.g. "screenshots/ps5-01.png") or an absolute URL. */
   screenshot?: string;
   /**
-   * True when a maintainer attached the screenshot via /getss to a report
-   * that already carries a community status. A screenshot NEVER implies a
-   * status by itself — the validator requires this flag (plus a linked
-   * community source) on any report with a screenshot, so the old
-   * "inferred from screenshots" reports can't come back.
+   * True when a maintainer attached the screenshot to a report that already
+   * carries a community status. A screenshot NEVER implies a status by itself
+   * — the validator requires this flag (plus a linked community source) on
+   * any report with a screenshot, so the old "inferred from screenshots"
+   * reports can't come back.
    */
   screenshotVerified?: boolean;
+  /**
+   * Screenshot URLs copied from the source issue at conversion time — they
+   * stay affiliated with their report (and its OS) and are hotlinked on the
+   * game page, never downloaded into the repo. The validator requires each to
+   * be an http(s) URL and the report to link its community source.
+   */
+  screenshots?: string[];
 }
 
 /** Provenance of a report — issue link when community-filed. */
@@ -323,6 +330,15 @@ function parseFrontmatter(raw: string): { data: Record<string, unknown>; body: s
     if (value === "true") value = true;
     else if (value === "false") value = false;
     else if (/^\d+$/.test(String(value))) value = Number(value);
+    else if (/^\[.*\]$/.test(String(value))) {
+      // Flow-style array frontmatter (screenshots: ["url", …]) — URLs never
+      // contain commas or quotes, so a simple split is safe.
+      value = String(value)
+        .slice(1, -1)
+        .split(",")
+        .map((v) => v.trim().replace(/^["']|["']$/g, ""))
+        .filter(Boolean);
+    }
     data[key] = value;
   }
   return { data, body: match[2].trim() };
@@ -371,6 +387,9 @@ export function parseCompatReport(raw: string, slug: string): CompatReport {
     typeof data.screenshot === "string" && data.screenshot.trim() ? data.screenshot : undefined;
   const screenshotVerified =
     typeof data.screenshotVerified === "boolean" ? data.screenshotVerified : undefined;
+  const screenshots = Array.isArray(data.screenshots)
+    ? data.screenshots.filter((s): s is string => typeof s === "string")
+    : undefined;
 
   if (!title) errors.push("missing required frontmatter field: title");
   if (!titleId) errors.push("missing required frontmatter field: titleId");
@@ -404,6 +423,7 @@ export function parseCompatReport(raw: string, slug: string): CompatReport {
     gameVersion,
     screenshot,
     screenshotVerified,
+    screenshots,
     notes: body,
     source,
   };

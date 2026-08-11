@@ -1,0 +1,114 @@
+name: Convert compat issue to report PR
+
+# `/compat` comment command on a compat mirror issue (created by the "Mirror
+# game-status issues" poller): converts the mirror's upstream game-status
+# report into src/content/compat/<game>-<os>.md and opens ONE PR for that game
+# (branch compat/<game>-<os>). One game per PR keeps reviews separate — the
+# old flow dumped every converted game into a single standing report PR.
+#
+# The mirror body's `## Source` footer records the upstream KytyPS5 issue
+# number / URL / creation date (see scripts/lib/status-issues.mjs); the rest
+# of the body is the upstream issue form, parsed by scripts/issue-to-compat.mjs.
+# Re-running `/compat` (e.g. after the upstream issue was fixed) overwrites
+# that game's report and updates the same PR in place. On success the comment
+# gets a 👀 reaction and the mirror issue is closed — closed mirror = converted.
+#
+# `/compat` on anything else (no `## Source` footer) fails with a readable
+# error; the issue is left untouched.
+on:
+  issue_comment:
+    types: [created]
+
+permissions:
+  contents: write
+  pull-requests: write
+  issues: write # reaction + close the mirror issue
+
+# Serialize /compat runs per issue so two quick comments can't race on the
+# same branch.
+concurrency:
+  group: compat-convert-${{ github.event.issue.number }}
+  cancel-in-progress: true
+
+jobs:
+  convert:
+    if: github.event.issue.pull_request == null && startsWith(github.event.comment.body, '/compat')
+    runs-on: ubuntu-latest
+    steps:
+      - uses: actions/checkout@v4
+      - uses: actions/setup-node@v4
+        with:
+          node-version: 22
+          cache: npm
+      - run: npm ci
+
+      - name: Read the mirror body and extract its upstream source
+        id: source
+        env:
+          BODY: ${{ github.event.issue.body }}
+        run: |
+          node - <<'NODE'
+          (async () => {
+            const fs = require("node:fs");
+            const { mirrorSource } = await import("./scripts/lib/status-issues.mjs");
+            const body = process.env.BODY ?? "";
+            fs.writeFileSync("/tmp/mirror-issue-body.txt", body);
+            const src = mirrorSource(body);
+            if (!src) {
+              console.error(
+                "::error::This issue is not a compat mirror — its body has no `## Source` footer " +
+                  "linking a KytyPS5 issue. /compat converts issues mirrored by the " +
+                  "\"Mirror game-status issues\" workflow.",
+              );
+              process.exit(1);
+            }
+            console.log(`number=${src.number}`);
+            console.log(`url=${src.url}`);
+            console.log(`created=${src.created}`);
+          })();
+          NODE
+
+      - name: Convert the issue to a report
+        id: convert
+        run: |
+          CONVERT_OUT="$(node scripts/issue-to-compat.mjs \
+            --issue-body-file /tmp/mirror-issue-body.txt \
+            --date "${{ steps.source.outputs.created }}" \
+            --source "KytyPS5 issue #${{ steps.source.outputs.number }}" \
+            --source-url "${{ steps.source.outputs.url }}")"
+          SLUG="$(printf '%s\n' "$CONVERT_OUT" | sed -n 's#^\[issue-to-compat\] wrote src/content/compat/\([^/]*\)\.md$#\1#p' | head -1)"
+          [ -n "$SLUG" ] || { echo "::error::The converter did not report a written report file."; exit 1; }
+          TITLE="$(sed -n 's/^title: "\(.*\)"$/\1/p' "src/content/compat/$SLUG.md" | head -1)"
+          OS="$(sed -n 's/^os: "\(.*\)"$/\1/p' "src/content/compat/$SLUG.md" | head -1)"
+          echo "slug=$SLUG" >> "$GITHUB_OUTPUT"
+          echo "pr_title=compat: $TITLE ($OS)" >> "$GITHUB_OUTPUT"
+          # The site index seed must travel with the PR, exactly like the old
+          # poller's PR did — the deployed site refreshes it at runtime anyway,
+          # this keeps dev / first paint current.
+          node scripts/export-site-compat-json.mjs
+          node scripts/validate-compat.mjs
+
+      - name: Open or update the report PR
+        id: cpr
+        uses: peter-evans/create-pull-request@v6
+        with:
+          token: ${{ secrets.GITHUB_TOKEN }}
+          commit-message: "${{ steps.convert.outputs.pr_title }}"
+          branch: compat/${{ steps.convert.outputs.slug }}
+          title: ${{ steps.convert.outputs.pr_title }}
+          body: |
+            Auto-converted from ${{ github.event.issue.html_url }} via `/compat`.
+
+            ${{ steps.source.outputs.url }}
+          delete-branch: true
+
+      - name: Acknowledge and close the mirror
+        if: steps.cpr.outcome == 'success' && steps.convert.outputs.slug != ''
+        env:
+          GH_TOKEN: ${{ secrets.GITHUB_TOKEN }}
+        run: |
+          gh api --method POST \
+            repos/${{ github.repository }}/issues/comments/${{ github.event.comment.id }}/reactions \
+            -f content=eyes
+          gh issue close ${{ github.event.issue.number }} \
+            --comment "Converted — report PR: ${{ steps.convert.outputs.pr_title }}"

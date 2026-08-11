@@ -1,0 +1,71 @@
+name: Mirror game-status issues
+
+# Game-status issues live on the KytyPS5 repo (Game Emulation Status Report
+# template, kytyps5-game-emulation.yaml). GitHub Actions can't react to another
+# repo's events, so this workflow POLLS the KytyPS5 issues API and mirrors each
+# unconverted "[GAME STATUS]" issue as an issue HERE (label `compat`) — one
+# mirror per (game, OS). Converting happens on demand: a maintainer comments
+# `/compat` on a mirror and compat-convert.yml turns it into ONE report PR for
+# that game, so games stay separate instead of piling into a single standing
+# report PR.
+#
+# Skips are tracked without extra state:
+#   - a closed mirror means the issue was already converted via /compat (the
+#     per-game PR is updated in place on re-runs), and
+#   - a merged report links its source (`> Source: …issues/<N>`), so issues
+#     converted before the mirror flow aren't re-mirrored.
+# Scheduled runs also refresh OPEN mirrors whose upstream body changed — fixing
+# an upstream issue (e.g. filling in the PPSA-XXXXX) is picked up by the next
+# poll, no manual cleanup.
+#
+# Manual runs: Actions → "Mirror game-status issues" → Run workflow → type a
+# KytyPS5 issue number. The mirror is created (or reopened + refreshed if it
+# exists), then run /compat on it to convert — use this after you verified an
+# issue and the report should reflect its current status.
+on:
+  schedule:
+    - cron: "*/30 * * * *" # every 30 minutes (may be delayed under load)
+  workflow_dispatch:
+    inputs:
+      issue_number:
+        description: Mirror (or reopen + refresh) a specific KytyPS5 issue
+        required: false
+        type: string
+
+# Only issues are touched — no code, no PRs.
+permissions:
+  contents: read
+  issues: write
+
+concurrency:
+  group: compat-issues
+  cancel-in-progress: true
+
+jobs:
+  mirror:
+    runs-on: ubuntu-latest
+    steps:
+      - uses: actions/checkout@v4
+      - uses: actions/setup-node@v4
+        with:
+          node-version: 22
+          cache: npm
+      - run: npm ci
+
+      - name: Ensure the compat label exists
+        env:
+          GH_TOKEN: ${{ secrets.GITHUB_TOKEN }}
+        run: |
+          gh label create compat \
+            --description "Game-status mirror of a KytyPS5 issue — comment /compat to convert it into a report PR" \
+            --force
+
+      - name: Mirror unconverted issues
+        env:
+          GH_TOKEN: ${{ secrets.GITHUB_TOKEN }}
+        run: |
+          ARGS=()
+          if [ -n "${{ inputs.issue_number }}" ]; then
+            ARGS+=(--issue-number "${{ inputs.issue_number }}")
+          fi
+          node scripts/sync-status-issues.mjs "${ARGS[@]}"

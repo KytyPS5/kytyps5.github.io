@@ -143,7 +143,16 @@ describe("parseCompatReport", () => {
     expect(report.screenshotVerified).toBeUndefined();
   });
 
-  it("parses the screenshotVerified flag (set by /getss)", () => {
+  it("parses the screenshots array (issue screenshots, hotlinked)", () => {
+    const withShots = VALID.replace(
+      'hardware: "Ryzen 9 / RTX 5090"',
+      'hardware: "Ryzen 9 / RTX 5090"\nscreenshots: ["https://example.com/a.png", "https://example.com/b.png"]',
+    );
+    const report = parseCompatReport(withShots, "test-game");
+    expect(report.screenshots).toEqual(["https://example.com/a.png", "https://example.com/b.png"]);
+  });
+
+  it("parses the screenshotVerified flag (set on verified reports)", () => {
     const withFlag = VALID.replace(
       'hardware: "Ryzen 9 / RTX 5090"',
       'hardware: "Ryzen 9 / RTX 5090"\nscreenshot: "screenshots/deathloop-windows-1.png"\nscreenshotVerified: true',
@@ -162,12 +171,16 @@ describe("JS parser parity (scripts/lib/compat-export.mjs vs src/lib/compat.ts)"
   it("agrees on score/boolean coercion, screenshots and source extraction", () => {
     const full = VALID.replace(
       'hardware: "Ryzen 9 / RTX 5090"',
-      'hardware: "Ryzen 9 / RTX 5090"\ngameVersion: "1.004"\nscore: 5\nscreenshot: "screenshots/x.png"\nscreenshotVerified: true',
+      'hardware: "Ryzen 9 / RTX 5090"\ngameVersion: "1.004"\nscore: 5\nscreenshot: "screenshots/x.png"\nscreenshotVerified: true\nscreenshots: ["https://example.com/a.png", "https://example.com/b.png"]',
     ).replace(
       "Boots and reaches gameplay.",
       "Boots and reaches gameplay.\n\n> Source: [KytyPS5 issue #12](https://github.com/KytyPS5/KytyPS5/issues/12)",
     );
-    expect(jsParseReport(full, "x")).toEqual(parseCompatReport(full, "x"));
+    const js = jsParseReport(full, "x");
+    const ts = parseCompatReport(full, "x");
+    expect(js.screenshots).toEqual(["https://example.com/a.png", "https://example.com/b.png"]);
+    expect(ts.screenshots).toEqual(js.screenshots);
+    expect(js).toEqual(ts);
   });
 
   it("throws the same validation error message", () => {

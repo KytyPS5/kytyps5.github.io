@@ -28,6 +28,16 @@ fresh checkout builds cleanly. Set `GITHUB_TOKEN` when building to avoid anonymo
 - `public/data/*` — derived JSON served statically (regenerated at build time).
 - `scripts/` — data generators, the compat sync/conversion tooling and validators.
 
+## Compatibility reports
+
+Game-status reports come from [KytyPS5](https://github.com/KytyPS5/KytyPS5)'s Game Emulation
+Status Report issues. Every 30 minutes the **Mirror game-status issues** workflow mirrors each
+unconverted issue here as an issue labeled `compat` — one per (game, OS). To convert one into a
+report, comment `/compat` on it: the **Convert compat issue to report PR** workflow writes
+`src/content/compat/<game>-<os>.md` and opens a single PR for that game (re-running `/compat`
+updates the same PR). One report file per (game, OS) keeps the games separate — a Linux report
+never overwrites a Windows one, and the site shows each OS's own status.
+
 ## License
 
 Site code is licensed under GPL-2.0 (see `LICENSE`). The KytyPS5 name, screenshots and all
