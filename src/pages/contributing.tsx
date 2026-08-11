@@ -7,7 +7,26 @@ import { Section } from "@/components/layout/section";
 import { CodeBlock } from "@/components/ui/code-block";
 import { ContributorsGrid } from "@/components/github/contributors-grid";
 import { Button } from "@/components/ui/button";
-import { REPO_URL } from "@/lib/github";
+import { REPO_URL, SITE_REPO_URL } from "@/lib/github";
+
+const COMPAT_FLOW = [
+  {
+    step: "01",
+    text: "Testers file a Game Emulation Status Report issue on the KytyPS5 repo — game, title ID, build, status, OS and hardware.",
+  },
+  {
+    step: "02",
+    text: "Every 30 minutes the Mirror game-status issues workflow mirrors each unconverted issue into this repository as an issue labeled compat — one per (game, OS).",
+  },
+  {
+    step: "03",
+    text: "Comment /compat on the mirror: the report is written and a pull request opens for that game alone, keeping every game's review separate.",
+  },
+  {
+    step: "04",
+    text: "Reports keep one file per (game, OS), so a Linux report never overwrites a Windows one — each OS keeps its own status on the site.",
+  },
+] as const;
 
 const stagger: Variants = {
   hidden: {},
@@ -94,6 +113,47 @@ export function ContributingPage() {
               Expect crashes, graphical glitches, low compatibility and poor performance. Behavior
               changes significantly between builds — a game that worked yesterday may not boot
               today, and that's part of the process.
+            </p>
+          </div>
+        </div>
+      </Section>
+
+      <Section
+        eyebrow="Compatibility reports"
+        title="From game-status issue to site report"
+        description="The compatibility statuses on this site start as verified game-status issues and are published one game at a time — never in bulk."
+        className="bg-surface/40"
+      >
+        <div className="grid gap-6 lg:grid-cols-2 lg:items-center">
+          <ol className="space-y-5">
+            {COMPAT_FLOW.map((step) => (
+              <li key={step.step} className="flex items-start gap-4">
+                <span className="grid size-9 shrink-0 place-items-center rounded-control border border-border bg-elevated font-mono text-xs font-semibold text-accent">
+                  {step.step}
+                </span>
+                <p className="text-sm leading-relaxed text-text-secondary sm:text-base">
+                  {step.text}
+                </p>
+              </li>
+            ))}
+          </ol>
+          <div className="space-y-3">
+            <CodeBlock
+              code={["# Comment this on the mirror issue:", "/compat"]}
+              title="Convert a game-status report"
+            />
+            <p className="text-xs leading-relaxed text-text-muted">
+              Re-running <code className="rounded bg-elevated px-1.5 py-0.5 font-mono text-[12px] text-accent">/compat</code> updates the same PR,
+              and success closes the mirror issue.{" "}
+              <a
+                href={`${SITE_REPO_URL}/issues?q=label%3Acompat`}
+                target="_blank"
+                rel="noreferrer noopener"
+                className="rounded-sm text-accent hover:text-accent-2"
+              >
+                See the open mirrors
+              </a>
+              .
             </p>
           </div>
         </div>

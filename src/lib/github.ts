@@ -3,6 +3,8 @@
 
 export const REPO_URL = "https://github.com/KytyPS5/KytyPS5";
 export const REPO = "KytyPS5/KytyPS5";
+/** This website's own repository — compat mirror issues live here. */
+export const SITE_REPO_URL = "https://github.com/KytyPS5/kytyps5.github.io";
 const API = "https://api.github.com/repos/" + REPO;
 
 /* ---------- Types (subset of the GitHub API) ---------- */
