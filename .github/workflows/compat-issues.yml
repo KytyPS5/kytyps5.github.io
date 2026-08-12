@@ -12,8 +12,12 @@ name: Mirror game-status issues
 # Skips are tracked without extra state:
 #   - a closed mirror means the issue was already converted via /compat (the
 #     per-game PR is updated in place on re-runs), and
-#   - a merged report links its source (`> Source: …issues/<N>`), so issues
-#     converted before the mirror flow aren't re-mirrored.
+#   - a report already exists for the same (game, OS) whose testedDate is as
+#     new or newer than the upstream issue's creation date (dates, not issue
+#     numbers: a report records ONE source, and converting a newer issue for
+#     the same game would overwrite the older one's marker). The one exception
+#     is a run that finds two or more issues for the same (game, OS) — that's
+#     a fresh batch, all of them get mirrored.
 # Scheduled runs also refresh OPEN mirrors whose upstream body changed — fixing
 # an upstream issue (e.g. filling in the PPSA-XXXXX) is picked up by the next
 # poll, no manual cleanup.

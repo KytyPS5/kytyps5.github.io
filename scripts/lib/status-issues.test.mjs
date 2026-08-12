@@ -1,6 +1,15 @@
 import { describe, expect, it } from "vitest";
 import { parseIssueBody } from "./issue-form.mjs";
-import { buildMirrorBody, MIRROR_LABEL, mirrorSource, mirrorTitle } from "./status-issues.mjs";
+import {
+  buildMirrorBody,
+  MIRROR_LABEL,
+  mirrorSlug,
+  mirrorSource,
+  mirrorTitle,
+  reportSourceNumber,
+  reportTestedDate,
+  shouldCreateMirror,
+} from "./status-issues.mjs";
 
 const UPSTREAM_BODY = `### Game title
 Stray
@@ -112,6 +121,87 @@ describe("issue-form interplay (the footer never leaks into the parsed answers)"
     expect(sections["Game title"].trim()).toBe("Stray");
     expect(sections["Result details"]).not.toContain("Source");
     expect(sections["Result details"]).not.toContain("KytyPS5 issue");
+  });
+});
+
+describe("mirrorSlug", () => {
+  it("builds the <game>-<os> report slug from the form fields", () => {
+    expect(mirrorSlug(UPSTREAM_BODY, "[GAME STATUS] something")).toBe("stray-windows");
+  });
+
+  it("normalizes the OS onto the canonical value", () => {
+    const linux = UPSTREAM_BODY.replace("Windows 11", "Arch Linux");
+    expect(mirrorSlug(linux, "x")).toBe("stray-linux");
+  });
+
+  it("drops the [GAME STATUS] prefix from a fallback title", () => {
+    expect(mirrorSlug("", "[GAME STATUS]: Stray")).toBe("stray");
+  });
+
+  it("omits the OS suffix when the body has no OS answer", () => {
+    const noOs = UPSTREAM_BODY.replace(/### OS\n[\s\S]*?\n\n/, "");
+    expect(mirrorSlug(noOs, "x")).toBe("stray");
+  });
+
+  it("returns undefined when no title can be derived", () => {
+    expect(mirrorSlug("", "")).toBeUndefined();
+  });
+});
+
+describe("reportTestedDate / reportSourceNumber", () => {
+  const md =
+    '---\ntitle: "Stray"\ntestedDate: "2026-08-09"\nos: "windows"\n---\n\nnotes\n\n' +
+    "> Source: [KytyPS5 issue #222](https://github.com/KytyPS5/KytyPS5/issues/222)\n";
+
+  it("reads testedDate and the source issue number from a report", () => {
+    expect(reportTestedDate(md)).toBe("2026-08-09");
+    expect(reportSourceNumber(md)).toBe(222);
+  });
+
+  it("returns undefined when absent", () => {
+    expect(reportTestedDate("no frontmatter")).toBeUndefined();
+    expect(reportSourceNumber("no source")).toBeUndefined();
+  });
+});
+
+describe("shouldCreateMirror", () => {
+  const report = { sourceNumber: 222, testedDate: "2026-08-09" };
+
+  it("mirrors when no report exists for the (game, OS)", () => {
+    expect(shouldCreateMirror({ number: 227, created: "2026-08-10" }, { report: undefined, batchSize: 1 })).toEqual({
+      create: true,
+    });
+  });
+
+  it("mirrors an issue NEWER than the existing report", () => {
+    expect(shouldCreateMirror({ number: 227, created: "2026-08-10" }, { report, batchSize: 1 })).toEqual({
+      create: true,
+    });
+  });
+
+  it("skips an issue OLDER than the existing report (the clobbered-marker case)", () => {
+    // Report converted from #227 (tested 2026-08-10); older #222 must not be re-mirrored.
+    const reportFrom227 = { sourceNumber: 227, testedDate: "2026-08-10" };
+    expect(shouldCreateMirror({ number: 222, created: "2026-08-09" }, { report: reportFrom227, batchSize: 1 })).toEqual({
+      create: false,
+      reason: "existing 2026-08-10 report is as new or newer",
+    });
+  });
+
+  it("skips the exact issue the report was converted from, regardless of date", () => {
+    const older = { sourceNumber: 222, testedDate: "2026-08-05" };
+    expect(shouldCreateMirror({ number: 222, created: "2026-08-09" }, { report: older, batchSize: 1 })).toEqual({
+      create: false,
+      reason: "already converted",
+    });
+  });
+
+  it("mirrors ALL same-game issues found in the same run (the batch exception)", () => {
+    const reportFrom227 = { sourceNumber: 227, testedDate: "2026-08-10" };
+    expect(shouldCreateMirror({ number: 222, created: "2026-08-09" }, { report: reportFrom227, batchSize: 2 })).toEqual({
+      create: true,
+      reason: "same-run batch",
+    });
   });
 });
 
