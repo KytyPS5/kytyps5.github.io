@@ -11,7 +11,12 @@
  * A KytyPS5 issue is skipped when it is already handled:
  *   - a mirror issue exists for it (open = pending conversion, closed = was
  *     converted via /compat), or
- *   - a merged report on main already links it (`> Source: …issues/<N>`).
+ *   - a report on main for the same (game, OS) is already as new or newer
+ *     than the issue. Reports are per (game, OS) and record ONE source issue
+ *     + its date, so converting a newer issue for the same game overwrites
+ *     the older one's marker — dates are compared, not issue numbers. The one
+ *     exception: a run that finds TWO OR MORE issues for the same (game, OS)
+ *     is a fresh batch and mirrors all of them.
  *
  * Scheduled runs create new mirrors and refresh OPEN mirrors whose upstream
  * body changed (so fixing the upstream issue is picked up). Manual runs
@@ -28,7 +33,16 @@
 import { readdir, readFile } from "node:fs/promises";
 import { fileURLToPath } from "node:url";
 import path from "node:path";
-import { buildMirrorBody, MIRROR_LABEL, mirrorSource, mirrorTitle } from "./lib/status-issues.mjs";
+import {
+  buildMirrorBody,
+  MIRROR_LABEL,
+  mirrorSlug,
+  mirrorSource,
+  mirrorTitle,
+  reportSourceNumber,
+  reportTestedDate,
+  shouldCreateMirror,
+} from "./lib/status-issues.mjs";
 
 const ROOT = path.resolve(path.dirname(fileURLToPath(import.meta.url)), "..");
 const COMPAT_DIR = path.join(ROOT, "src", "content", "compat");
@@ -75,15 +89,18 @@ async function fetchCandidates() {
   return all.filter((issue) => !issue.pull_request && /^\[GAME STATUS\]/i.test(issue.title ?? ""));
 }
 
-/** Source issue numbers already linked from reports on this checkout (main). */
-async function reportLinkedNumbers() {
-  const nums = new Set();
+/** Reports on this checkout (main): report slug → { sourceNumber, testedDate }. */
+async function reportIndex() {
+  const reports = new Map();
   for (const file of await readdir(COMPAT_DIR)) {
     if (!file.endsWith(".md")) continue;
     const raw = await readFile(path.join(COMPAT_DIR, file), "utf8");
-    for (const m of raw.matchAll(/Source:.*?issues\/(\d+)/g)) nums.add(Number(m[1]));
+    reports.set(file.slice(0, -3), {
+      sourceNumber: reportSourceNumber(raw),
+      testedDate: reportTestedDate(raw),
+    });
   }
-  return nums;
+  return reports;
 }
 
 /** Existing mirrors in this repo: KytyPS5 issue number → { state, body }. */
@@ -122,7 +139,14 @@ async function createIssue(title, body) {
 }
 
 const candidates = await fetchCandidates();
-const reportLinked = await reportLinkedNumbers();
+const reports = await reportIndex();
+// How many candidates this run map to each report slug — a run that finds two
+// or more issues for one (game, OS) mirrors all of them (see shouldCreateMirror).
+const slugCounts = new Map();
+for (const issue of candidates) {
+  const slug = mirrorSlug(issue.body, issue.title);
+  if (slug) slugCounts.set(slug, (slugCounts.get(slug) ?? 0) + 1);
+}
 const mirrors = await fetchMirrors();
 
 let created = 0;
@@ -132,10 +156,11 @@ let skipped = 0;
 for (const issue of candidates) {
   const number = issue.number;
   const mirror = mirrors.get(number);
+  const createdDate = String(issue.created_at).slice(0, 10);
   const newBody = buildMirrorBody(issue.body, {
     number,
     url: issue.html_url,
-    created: String(issue.created_at).slice(0, 10),
+    created: createdDate,
   });
   const newTitle = mirrorTitle(issue.body, issue.title);
 
@@ -158,10 +183,24 @@ for (const issue of candidates) {
     continue;
   }
 
-  if (reportLinked.has(number) && !issueNumber) {
-    // A merged report already links this issue — no mirror needed.
-    skipped++;
-    continue;
+  if (!issueNumber) {
+    // Scheduled run: only mirror when no report for this (game, OS) is
+    // already as new or newer. Manual runs always mirror the issue.
+    const slug = mirrorSlug(issue.body, issue.title);
+    const decision = shouldCreateMirror(
+      { number, created: createdDate },
+      {
+        report: slug ? reports.get(slug) : undefined,
+        batchSize: slug ? (slugCounts.get(slug) ?? 1) : 1,
+      },
+    );
+    if (!decision.create) {
+      skipped++;
+      console.log(
+        `[sync-status-issues] skipped KytyPS5 issue #${number} (${newTitle}): ${decision.reason}`,
+      );
+      continue;
+    }
   }
 
   await createIssue(newTitle, newBody);
