@@ -15,6 +15,14 @@
  * scripts/lib/issue-form.mjs ignores it, while mirrorSource() (used by the
  * /compat workflow) reads it back. Everything here is pure — no I/O — so it
  * is unit-testable.
+ *
+ * Dedup: a report on the site is per (game, OS) and records ONE source issue
+ * + its date, so two upstream issues for the same game would clobber each
+ * other's marker when converted. shouldCreateMirror() therefore compares
+ * DATES instead of issue numbers — an upstream issue is only mirrored when no
+ * report for its (game, OS) is already as new or newer — with one exception:
+ * a run that finds two or more issues for the same (game, OS) is a fresh
+ * batch and mirrors all of them.
  */
 
 import { cleanField, normalizeOs, parseIssueBody } from "./issue-form.mjs";
@@ -80,4 +88,69 @@ export function mirrorSource(body) {
   const created = tail.match(/created (\d{4}-\d{2}-\d{2})/)?.[1];
   if (!number || !url || !created) return null;
   return { number: Number(number), url, created };
+}
+
+/**
+ * Report slug for an upstream issue: `<game-title>-<os>`, the exact filename
+ * (minus `.md`) the /compat conversion writes under src/content/compat/.
+ * Uses the same normalized title + OS as issue-to-compat.mjs, so a candidate
+ * can be matched against the report that already exists for its (game, OS).
+ * A leading `[GAME STATUS]` prefix is stripped (report slugs never carry it);
+ * returns undefined when nothing usable can be derived.
+ */
+export function mirrorSlug(upstreamBody, fallbackTitle) {
+  const sections = parseIssueBody(upstreamBody);
+  const title = String(cleanField(sections, "Game title") || fallbackTitle || "")
+    .replace(/^\[GAME STATUS\][:\s-]*/i, "")
+    .trim();
+  const base = title.toLowerCase().replace(/[^a-z0-9]+/g, "-").replace(/^-|-$/g, "");
+  if (!base) return undefined;
+  const os = normalizeOs(cleanField(sections, "OS"));
+  return os ? `${base}-${os}` : base;
+}
+
+/** The `testedDate` frontmatter of a report (the source issue's creation date). */
+export function reportTestedDate(md) {
+  const m = String(md ?? "").match(/^testedDate:\s*"?(\d{4}-\d{2}-\d{2})"?\s*$/m);
+  return m ? m[1] : undefined;
+}
+
+/** The `> Source:` footer's KytyPS5 issue number, if the report is a conversion. */
+export function reportSourceNumber(md) {
+  const m = String(md ?? "").match(/Source:.*?issues\/(\d+)/);
+  return m ? Number(m[1]) : undefined;
+}
+
+/**
+ * Scheduled-run gate: should an upstream issue get a mirror?
+ *
+ * A report is per (game, OS) and records ONE source issue + its date, so two
+ * upstream issues for the same game clobber each other's marker when
+ * converted. Instead of tracking per issue number, compare dates: skip when a
+ * report for the same (game, OS) is already as new or newer than the
+ * candidate. Exception: when TWO OR MORE candidates for the same (game, OS)
+ * arrive in the same run they're a fresh batch — all of them are mirrored.
+ * Manual runs never call this (workflow_dispatch always mirrors the issue).
+ *
+ * `candidate` is { number, created } with created = YYYY-MM-DD; `report` is
+ * the existing report for the candidate's slug ({ sourceNumber, testedDate })
+ * or undefined; `batchSize` is how many candidates this run found for that
+ * slug. Returns { create, reason? }.
+ */
+export function shouldCreateMirror(candidate, { report, batchSize }) {
+  if (report) {
+    if (report.sourceNumber === candidate.number) {
+      return { create: false, reason: "already converted" };
+    }
+    if (batchSize > 1) {
+      return { create: true, reason: "same-run batch" };
+    }
+    if (report.testedDate && !(candidate.created > report.testedDate)) {
+      return {
+        create: false,
+        reason: `existing ${report.testedDate} report is as new or newer`,
+      };
+    }
+  }
+  return { create: true };
 }
