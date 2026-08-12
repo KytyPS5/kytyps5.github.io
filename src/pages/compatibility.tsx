@@ -14,6 +14,7 @@ import {
   type Os,
 } from "@/lib/compat";
 import { useCompatIndex } from "@/hooks/use-compat-index";
+import { useIsMobile } from "@/hooks/use-media-query";
 import { PageHeader } from "@/components/layout/page-header";
 import { Section } from "@/components/layout/section";
 import { StatusBadge } from "@/components/compat/status-badge";
@@ -46,6 +47,9 @@ export function CompatibilityPage() {
     () => index.filter((e) => osStatus(e, osFilter) !== "untested"),
     [index, osFilter],
   );
+
+  // No sideways slide on mobile — the stats strip fades in instead.
+  const isMobile = useIsMobile();
 
   // Stats and filtering are evaluated inside the active OS scope: with an OS
   // selected, a game's status is scoped to THAT OS's reports only, so status +
@@ -89,10 +93,10 @@ export function CompatibilityPage() {
         </Section>
       ) : (
         <>
-          {/* Stats strip */}
+          {/* Stats strip — no sideways slide on mobile, it fades in instead */}
           <Section className="!pt-4">
         <motion.div
-          initial={{ opacity: 0, x: -56 }}
+          initial={{ opacity: 0, x: isMobile ? 0 : -56 }}
           whileInView={{ opacity: 1, x: 0 }}
           viewport={{ once: false, amount: 0.3 }}
           transition={{ duration: 0.5, ease: [0.16, 1, 0.3, 1] }}

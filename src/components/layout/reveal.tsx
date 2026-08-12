@@ -1,5 +1,6 @@
 import * as React from "react";
 import { motion, useReducedMotion, type Variants } from "framer-motion";
+import { useIsMobile } from "@/hooks/use-media-query";
 import { cn } from "@/lib/utils";
 
 export type RevealDirection = "left" | "right" | "up" | "down";
@@ -49,7 +50,13 @@ export function Reveal({
   amount = 0.2,
 }: RevealProps) {
   const reduced = useReducedMotion();
-  const offset = DIRECTION_OFFSET[from];
+  // Sideways (left/right) scroll-reveals look glitchy on narrow viewports —
+  // content slides in from off-screen horizontally. On mobile they fall back
+  // to the same gentle upward reveal used everywhere else.
+  const isMobile = useIsMobile();
+  const direction: RevealDirection =
+    isMobile && (from === "left" || from === "right") ? "up" : from;
+  const offset = DIRECTION_OFFSET[direction];
   const x = xOverride ?? offset.x;
   const y = yOverride ?? offset.y;
   const s = from === "up" || from === "down" ? scale : 1;
