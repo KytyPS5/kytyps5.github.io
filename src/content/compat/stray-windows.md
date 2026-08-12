@@ -1,38 +1,36 @@
 ---
 title: "Stray"
 titleId: "PPSA02100"
-status: "main-menu"
-testedVersion: "v0.2.2 (source build 091e6b3-dirty)"
-testedDate: "2026-08-09"
+status: "in-game"
+testedVersion: "KytyPS5-2026-08-09-d7063d0"
+testedDate: "2026-08-10"
 os: "windows"
-hardware: "AMD Ryzen 5 5500 / NVIDIA GeForce RTX 5060 Ti / 24GB RAM DDR4 - 16GB VRAM"
+hardware: "Intel Core i3-12100F / AMD Radeon RX 6600 / 16 GB RAM"
 ---
 
-The game reaches the main menu but has a green background almost everywhere. Crashes when going in game with :
-```
---- Stack Trace ---
-[0] 00000001404a3a09
-[1] 000000014046cbbe
-[2] 00000001404a800f
-[3] 00007ffa67026896
-[4] 00007ffa67025c66
-[5] 00007ffa671440de
-[6] 0000000904a4fdcc
---- Error ---
-Access violation: Write [0000002102052c00]
- in C:\<path-to-source>\src\loader\runtimeLinker.cpp:1031
-```
+The game boots and reaches in-game state (~21 FPS, frame 1766, 590+ shaders compiled), but renders a black screen. Shortly after, it crashes with a memory tracker assertion error:
+
+Error: memory tracker re-entered from upload callback in memoryTracker.h:139
 
 ## Steps to reproduce
 
-1. Open KytyPS5
-2. Open the game
-3. Wait for the main menu
-4. Select Start Game
-5. Select a save
+1. Open KytyPS5.
+2. Boot Stray (PPSA02100).
+3. Wait through initial shader compilation (~590 shaders) and start a New Game.
+4. On the black screen, intuitively move around towards the interactive circles/prompts.
+5. Press the triangle button on the prompts to interact with the environment.
+6. Observe the crash in memoryTracker.h:139 shortly after interacting.
 
 ## Expected behavior
 
-The game should create the save and get into the game
+Graphics should render properly without a black screen, and the memory tracker should handle asynchronous texture/buffer uploads safely without re-entrancy crashes.
 
-> Source: [KytyPS5 issue #222](https://github.com/KytyPS5/KytyPS5/issues/222)
+## Last working build / first broken build
+
+Unknown
+
+## Extra notes
+
+Tested on official build KytyPS5-2026-08-09-d7063d0. App version: 01.002.000.
+
+> Source: [KytyPS5 issue #227](https://github.com/KytyPS5/KytyPS5/issues/227)
