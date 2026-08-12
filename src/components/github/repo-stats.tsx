@@ -4,6 +4,7 @@ import { CircleDot, GitFork, Star, Users } from "lucide-react";
 import { githubApi, REPO_URL } from "@/lib/github";
 import { useGithubData } from "@/hooks/use-github-data";
 import { useCountUp } from "@/hooks/use-count-up";
+import { useIsMobile } from "@/hooks/use-media-query";
 import { Skeleton } from "@/components/ui/skeleton";
 import { Tooltip, TooltipContent, TooltipTrigger } from "@/components/ui/tooltip";
 
@@ -52,6 +53,8 @@ export function RepoStats() {
   const repo = useGithubData(githubApi.repo, "repo");
   const contributors = useGithubData(() => githubApi.contributors(14), "contributors");
   const loading = repo.loading || contributors.loading;
+  // No sideways slide on mobile — the stats strip fades in instead.
+  const isMobile = useIsMobile();
 
   const stars = repo.data?.stargazers_count ?? null;
   const forks = repo.data?.forks_count ?? null;
@@ -60,7 +63,7 @@ export function RepoStats() {
 
   return (
     <motion.div
-      initial={{ opacity: 0, x: -56 }}
+      initial={{ opacity: 0, x: isMobile ? 0 : -56 }}
       whileInView={{ opacity: 1, x: 0 }}
       viewport={{ once: false, amount: 0.3 }}
       transition={{ duration: 0.5, ease: [0.16, 1, 0.3, 1] }}
