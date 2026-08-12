@@ -1136,14 +1136,14 @@
     "title": "Stray",
     "titleId": "PPSA02100",
     "cover": "https://image.api.playstation.com/vulcan/ap/rnd/202206/0300/UogbMjgPOJrYBn5QvUmuR7G9.jpg",
-    "overall": "main-menu",
+    "overall": "in-game",
     "os": {
-      "windows": "main-menu"
+      "windows": "in-game"
     },
     "reportCounts": {
       "windows": 1
     },
-    "latestTested": "2026-08-09"
+    "latestTested": "2026-08-10"
   },
   {
     "key": "PPSA15246",
