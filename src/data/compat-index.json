@@ -252,6 +252,20 @@
     "latestTested": "2026-07-19"
   },
   {
+    "key": "PPSA03468",
+    "title": "Blackwind",
+    "titleId": "PPSA03468",
+    "cover": "https://image.api.playstation.com/vulcan/ap/rnd/202106/3023/kUcM52MVn7XvHfLPv2029waB.png",
+    "overall": "in-game",
+    "os": {
+      "windows": "in-game"
+    },
+    "reportCounts": {
+      "windows": 1
+    },
+    "latestTested": "2026-08-15"
+  },
+  {
     "key": "PPSA13580",
     "title": "Blasphemous 2",
     "titleId": "PPSA13580",
