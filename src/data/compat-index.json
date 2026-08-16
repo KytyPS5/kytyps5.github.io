@@ -1257,6 +1257,19 @@
     "latestTested": "2026-08-09"
   },
   {
+    "key": "PPSA09347",
+    "title": "The Last Faith",
+    "titleId": "PPSA09347",
+    "overall": "main-menu",
+    "os": {
+      "windows": "main-menu"
+    },
+    "reportCounts": {
+      "windows": 1
+    },
+    "latestTested": "2026-08-15"
+  },
+  {
     "key": "PPSA24381",
     "title": "The Thing: Remastered",
     "titleId": "PPSA24381",
