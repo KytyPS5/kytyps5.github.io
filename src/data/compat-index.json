@@ -1076,6 +1076,20 @@
     "latestTested": "2026-08-06"
   },
   {
+    "key": "PPSA07632",
+    "title": "SAROS",
+    "titleId": "PPSA07632",
+    "cover": "https://image.api.playstation.com/vulcan/ap/rnd/202509/2318/ca19e7b6909c03a0d64a84981109c0cdaa98e7fdb8820e36.png",
+    "overall": "doesnt-boot",
+    "os": {
+      "windows": "doesnt-boot"
+    },
+    "reportCounts": {
+      "windows": 1
+    },
+    "latestTested": "2026-08-15"
+  },
+  {
     "key": "PPSA07817",
     "title": "Shadow Warrior 3",
     "titleId": "PPSA07817",
