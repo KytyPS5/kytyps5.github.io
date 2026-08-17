@@ -238,6 +238,15 @@ describe("issue-form interplay (the footer never leaks into the parsed answers)"
     expect(sections["Result details"]).not.toContain("Source");
     expect(sections["Result details"]).not.toContain("KytyPS5 issue");
   });
+
+  it("preserves arbitrary user markdown headings inside textarea fields", () => {
+    const body =
+      "### Game title\nStray\n\n### Result details\nBoots up fine.\n\n## Logs\nShader compilation failed.\n\n## Source\nKytyPS5 issue #42";
+    const sections = parseIssueBody(body);
+    expect(sections["Result details"]).toContain("## Logs");
+    expect(sections["Result details"]).toContain("Shader compilation failed.");
+    expect(sections["Result details"]).not.toContain("## Source");
+  });
 });
 
 describe("mirrorSlug", () => {

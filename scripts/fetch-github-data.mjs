@@ -57,6 +57,20 @@ if (latestRelease && Array.isArray(latestRelease.assets)) {
   for (const asset of latestRelease.assets) delete asset.download_count;
 }
 
+async function getContributorCount() {
+  try {
+    const res = await fetch(`${API}/contributors?per_page=1&anon=true`, { headers });
+    if (!res.ok) return null;
+    const link = res.headers.get("link") || "";
+    const match = link.match(/[?&]page=(\d+)[^>]*>;\s*rel="last"/);
+    if (match) return Number(match[1]);
+    const data = await res.json();
+    return Array.isArray(data) ? data.length : null;
+  } catch {
+    return null;
+  }
+}
+
 const SNAPSHOT = {
   generatedAt: new Date().toISOString(),
   repo,
@@ -64,6 +78,7 @@ const SNAPSHOT = {
   // re-fetching — same shape, one fewer API call per run.
   latestRelease,
   contributors: await get(`${API}/contributors?per_page=14`, null),
+  contributorsCount: await getContributorCount(),
   commits: await get(`${API}/commits?per_page=6`, null),
 };
 

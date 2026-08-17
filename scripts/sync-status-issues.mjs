@@ -86,14 +86,16 @@ async function api(url, options) {
 
 /** One KytyPS5 issue, or every open issue (paginated, [GAME STATUS] titles). */
 async function fetchCandidates() {
+  const headers = token ? { authorization: `Bearer ${token}` } : {};
   if (issueNumber) {
-    const issue = await api(`https://api.github.com/repos/${upstreamRepo}/issues/${issueNumber}`);
+    const issue = await api(`https://api.github.com/repos/${upstreamRepo}/issues/${issueNumber}`, { headers });
     return [issue];
   }
   const all = [];
   for (let page = 1; page <= 5; page++) {
     const batch = await api(
       `https://api.github.com/repos/${upstreamRepo}/issues?state=open&per_page=100&page=${page}`,
+      { headers },
     );
     all.push(...batch);
     if (batch.length < 100) break;

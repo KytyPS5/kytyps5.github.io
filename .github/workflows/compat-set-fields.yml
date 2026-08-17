@@ -36,7 +36,10 @@ concurrency:
 
 jobs:
   set:
-    if: github.event.issue.pull_request == null && startsWith(github.event.comment.body, '/set')
+    if: >
+      github.event.issue.pull_request == null &&
+      startsWith(github.event.comment.body, '/set') &&
+      contains(fromJSON('["OWNER", "MEMBER", "COLLABORATOR"]'), github.event.comment.author_association)
     runs-on: ubuntu-latest
     steps:
       - uses: actions/checkout@v4

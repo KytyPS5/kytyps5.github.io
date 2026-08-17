@@ -51,7 +51,7 @@ function Stat({
 
 export function RepoStats() {
   const repo = useGithubData(githubApi.repo, "repo");
-  const contributors = useGithubData(() => githubApi.contributors(14), "contributors");
+  const contributors = useGithubData(githubApi.contributorCount, "contributorsCount");
   const loading = repo.loading || contributors.loading;
   // No sideways slide on mobile — the stats strip fades in instead.
   const isMobile = useIsMobile();
@@ -59,7 +59,7 @@ export function RepoStats() {
   const stars = repo.data?.stargazers_count ?? null;
   const forks = repo.data?.forks_count ?? null;
   const issues = repo.data?.open_issues_count ?? null;
-  const contributorsCount = contributors.data?.length ?? null;
+  const contributorsCount = contributors.data ?? null;
 
   return (
     <motion.div

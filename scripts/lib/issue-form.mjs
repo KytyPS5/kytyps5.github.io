@@ -11,14 +11,30 @@
  * (node builtins only) so the workflows can import it anywhere.
  */
 
+const GROUP_HEADINGS = new Set([
+  "game and build",
+  "test result",
+  "hardware",
+  "evidence",
+  "system information",
+  "environment",
+  "source",
+  "overrides",
+]);
+
+function isGroupHeading(line) {
+  const m = line.match(/^##\s+(.+?)\s*$/);
+  if (!m) return false;
+  return GROUP_HEADINGS.has(m[1].trim().toLowerCase());
+}
+
 /**
  * Parse a GitHub-issue-form body into its `### Section label` → value pairs.
  * The form renders each answer under its heading (with a blank line), so
- * multi-line textarea answers are captured whole. `## ` lines are the
- * template's group separators ("## Game and build", "## Test result", …) —
- * they close the current field without opening a new one, so "## Evidence"
- * doesn't leak into the RAM/VRAM answer. Everything after a `## ` group
- * heading (e.g. a mirror issue's own "## Source" footer) is ignored.
+ * multi-line textarea answers are captured whole. Known `## ` group headings
+ * ("## Game and build", "## Test result", mirror "## Source" footer, …) close
+ * the current field without opening a new one. Arbitrary user headings inside
+ * textareas (e.g. `## Logs`) are preserved in the field value.
  */
 export function parseIssueBody(body) {
   const sections = {};
@@ -31,7 +47,7 @@ export function parseIssueBody(body) {
       sections[current] = "";
       continue;
     }
-    if (/^##\s+/.test(line)) {
+    if (isGroupHeading(line)) {
       current = null; // group separator — end the current field
       continue;
     }

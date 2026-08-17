@@ -132,11 +132,39 @@ async function fetchJson<T>(url: string): Promise<T> {
   }
 }
 
+async function fetchContributorCount(): Promise<number | null> {
+  const url = `${API}/contributors?per_page=1&anon=true`;
+  const stored = storageGet<number>(url);
+  if (stored != null) return stored;
+
+  try {
+    const res = await fetch(url, {
+      headers: { Accept: "application/vnd.github+json", "X-GitHub-Api-Version": "2022-11-28" },
+      cache: "no-store",
+    });
+    if (!res.ok) return null;
+    const link = res.headers.get("link") || "";
+    const match = link.match(/[?&]page=(\d+)[^>]*>;\s*rel="last"/);
+    let count: number | null = null;
+    if (match) {
+      count = Number(match[1]);
+    } else {
+      const data = await res.json();
+      count = Array.isArray(data) ? data.length : null;
+    }
+    if (count != null) storageSet(url, count);
+    return count;
+  } catch {
+    return null;
+  }
+}
+
 export const githubApi = {
   repo: () => fetchJson<GitHubRepo>(API),
   latestRelease: () => fetchJson<GitHubRelease>(`${API}/releases/latest`),
   contributors: (perPage = 14) =>
     fetchJson<GitHubContributor[]>(`${API}/contributors?per_page=${perPage}`),
+  contributorCount: () => fetchContributorCount(),
   recentCommits: (perPage = 6) => fetchJson<GitHubCommit[]>(`${API}/commits?per_page=${perPage}`),
 };
 
@@ -148,6 +176,7 @@ export interface GithubSnapshot {
   repo: GitHubRepo | null;
   latestRelease: GitHubRelease | null;
   contributors: GitHubContributor[] | null;
+  contributorsCount?: number | null;
   commits: GitHubCommit[] | null;
 }
 
