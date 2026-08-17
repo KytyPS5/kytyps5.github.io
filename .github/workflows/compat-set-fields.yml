@@ -1,0 +1,49 @@
+name: Set compat report fields
+
+# `/setos`, `/setid` and `/settitle` comment commands on a compat mirror issue
+# (label `compat`, created by the "Mirror game-status issues" poller): record a
+# manual field correction on the mirror so a later `/compat` conversion uses it.
+# Reach for them when the upstream issue can't express a field correctly —
+# e.g. the OS text doesn't generalize to windows/linux/macos, the PPSA-XXXXX is
+# missing or "Unknown", or the game title needs a human fix:
+#
+#   /setos windows          # OS that can't be normalized (stored canonically)
+#   /setid PPSA01234        # missing / "Unknown" serial
+#   /settitle Astro Bot     # wrong or missing game title
+#
+# Each command appends (or updates) the mirror body's `## Overrides` section
+# (scripts/set-compat-override.mjs), recomputes the mirror title, and
+# acknowledges the comment with a 👀 reaction. The /compat conversion
+# (issue-to-compat.mjs) then reads the section — overrides win over the values
+# parsed from the issue body — so comment `/compat` again after setting fields.
+#
+# Only mirror issues (body carries a `## Source` footer) are accepted; anything
+# else fails with a readable error and the issue is left untouched. Failures
+# post the reason back on the issue (`❌ /<command> failed. …`) — the run still
+# goes red, but the maintainer sees why without opening the workflow log.
+on:
+  issue_comment:
+    types: [created]
+
+permissions:
+  issues: write # edit the mirror body + title, react to the command comment
+
+# Serialize set commands per issue WITHOUT cancelling: a queued /setid run must
+# see the body an earlier /setos run wrote, or the os override would be lost.
+concurrency:
+  group: compat-set-${{ github.event.issue.number }}
+  cancel-in-progress: false
+
+jobs:
+  set:
+    if: github.event.issue.pull_request == null && startsWith(github.event.comment.body, '/set')
+    runs-on: ubuntu-latest
+    steps:
+      - uses: actions/checkout@v4
+      - uses: actions/setup-node@v4
+        with:
+          node-version: 22
+      - name: Record the override
+        env:
+          GH_TOKEN: ${{ secrets.GITHUB_TOKEN }}
+        run: node scripts/set-compat-override.mjs
