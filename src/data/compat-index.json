@@ -769,6 +769,19 @@
     "latestTested": "2026-07-19"
   },
   {
+    "key": "PPSA14632",
+    "title": "LEGO® ホライゾン アドベンチャー",
+    "titleId": "PPSA14632",
+    "overall": "logo",
+    "os": {
+      "windows": "logo"
+    },
+    "reportCounts": {
+      "windows": 1
+    },
+    "latestTested": "2026-08-17"
+  },
+  {
     "key": "PPSA10261",
     "title": "Lies of P",
     "titleId": "PPSA10261",
