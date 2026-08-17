@@ -699,6 +699,20 @@
     "latestTested": "2026-08-07"
   },
   {
+    "key": "PPSA04181",
+    "title": "Hoa",
+    "titleId": "PPSA04181",
+    "cover": "https://image.api.playstation.com/vulcan/img/rnd/202108/2521/VhcE0KuAY2E9HVpKQHT3Wr6r.png",
+    "overall": "in-game",
+    "os": {
+      "windows": "in-game"
+    },
+    "reportCounts": {
+      "windows": 1
+    },
+    "latestTested": "2026-08-16"
+  },
+  {
     "key": "PPSA01593",
     "title": "Hogwarts Legacy",
     "titleId": "PPSA01593",
