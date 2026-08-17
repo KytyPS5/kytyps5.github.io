@@ -236,18 +236,18 @@ describe("status ladder", () => {
 describe("aggregateStatus", () => {
   const r = (status: (typeof STATUSES)[number]) => ({ status });
 
-  it("returns the majority vote", () => {
-    expect(aggregateStatus([r("main-menu"), r("main-menu"), r("logo")])).toBe("main-menu");
-    expect(aggregateStatus([r("in-game"), r("in-game"), r("main-menu")])).toBe("in-game");
-  });
-
-  it("breaks ties toward the better status", () => {
-    expect(aggregateStatus([r("main-menu"), r("in-game")])).toBe("in-game");
-    expect(aggregateStatus([r("doesnt-boot"), r("logo")])).toBe("logo");
-  });
-
-  it("handles a single report", () => {
+  it("returns the single verified report's status", () => {
     expect(aggregateStatus([r("logo")])).toBe("logo");
+    expect(aggregateStatus([r("in-game")])).toBe("in-game");
+  });
+
+  it("defaults to doesnt-boot for an empty group", () => {
+    expect(aggregateStatus([])).toBe("doesnt-boot");
+  });
+
+  it("throws when multiple reports share one OS — duplicates are a pipeline error", () => {
+    expect(() => aggregateStatus([r("doesnt-boot"), r("logo")])).toThrow(/one verified report/i);
+    expect(() => aggregateStatus([r("main-menu"), r("main-menu")])).toThrow(/one verified report/i);
   });
 });
 
@@ -280,10 +280,9 @@ describe("displayStatus / displayStatusForOs / perOsStatuses (game page aggregat
     expect(displayStatusForOs(reports, "linux")).toBe("untested");
   });
 
-  it("majority-votes within an OS before comparing across OSes", () => {
-    // Windows: playable twice; Linux: perfect once → Any = perfect (best), not
-    // the cross-platform majority (playable).
-    const reports = [r("main-menu", "windows"), r("main-menu", "windows"), r("in-game", "linux")];
+  it("shows the best result across per-OS tests (one report per OS)", () => {
+    // Windows main-menu, Linux in-game → Any = in-game (best of any test done).
+    const reports = [r("main-menu", "windows"), r("in-game", "linux")];
     expect(displayStatusForOs(reports, "windows")).toBe("main-menu");
     expect(displayStatus(reports)).toBe("in-game");
   });
