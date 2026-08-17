@@ -238,6 +238,20 @@
     "latestTested": "2026-08-04"
   },
   {
+    "key": "PPSA02057",
+    "title": "BALAN WONDERWORLD",
+    "titleId": "PPSA02057",
+    "cover": "https://image.api.playstation.com/vulcan/ap/rnd/202010/1518/Cq8mgbDI163BirwDtbBx3NDQ.png",
+    "overall": "logo",
+    "os": {
+      "windows": "logo"
+    },
+    "reportCounts": {
+      "windows": 1
+    },
+    "latestTested": "2026-08-16"
+  },
+  {
     "key": "PPSA03980",
     "title": "Beyond a Steel Sky",
     "titleId": "PPSA03980",
