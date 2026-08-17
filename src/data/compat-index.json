@@ -84,6 +84,20 @@
     "latestTested": "2026-07-18"
   },
   {
+    "key": "PPSA04248",
+    "title": "Aeterna Noctis",
+    "titleId": "PPSA04248",
+    "cover": "https://image.api.playstation.com/vulcan/ap/rnd/202304/2711/87b7d57abe32fb9dae6a7403e5b15b5fa9091c61c4365cb5.jpg",
+    "overall": "in-game",
+    "os": {
+      "linux": "in-game"
+    },
+    "reportCounts": {
+      "linux": 1
+    },
+    "latestTested": "2026-08-17"
+  },
+  {
     "key": "PPSA14052",
     "title": "Afterimage",
     "titleId": "PPSA14052",
