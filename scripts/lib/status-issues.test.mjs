@@ -1,11 +1,14 @@
 import { describe, expect, it } from "vitest";
 import { parseIssueBody } from "./issue-form.mjs";
 import {
+  appendOverrides,
   buildMirrorBody,
   MIRROR_LABEL,
   mirrorSlug,
   mirrorSource,
   mirrorTitle,
+  mirrorUpstreamBody,
+  readOverrides,
   reportSourceNumber,
   reportTestedDate,
   shouldCreateMirror,
@@ -52,6 +55,17 @@ describe("mirrorTitle", () => {
 
   it("falls back to the upstream issue title", () => {
     expect(mirrorTitle("", "[GAME STATUS] Stray")).toBe("[GAME STATUS] Stray");
+  });
+
+  it("applies an os override when the body has no OS answer", () => {
+    const noOs = UPSTREAM_BODY.replace(/### OS\n[\s\S]*?\n\n/, "");
+    expect(mirrorTitle(noOs, "x", { os: "windows" })).toBe("[GAME STATUS] Stray (windows)");
+  });
+
+  it("lets a title override beat the parsed Game title", () => {
+    expect(mirrorTitle(UPSTREAM_BODY, "x", { title: "Stray: Director's Cut" })).toBe(
+      "[GAME STATUS] Stray: Director's Cut (windows)",
+    );
   });
 });
 
@@ -107,6 +121,80 @@ describe("mirrorSource", () => {
       "## Source\n\n" +
       `Mirrors [KytyPS5 issue #${src.number}](${src.url}) — created ${src.created}.`;
     expect(mirrorSource(body)).toEqual(src);
+  });
+
+  it("stops at the `## Overrides` section after the footer", () => {
+    const body = appendOverrides(buildMirrorBody(UPSTREAM_BODY, src), {
+      os: "windows",
+      title: "KytyPS5 issue #99 created 2020-01-01",
+    });
+    // Even an override value that looks like provenance must not leak into the source.
+    expect(mirrorSource(body)).toEqual(src);
+  });
+});
+
+describe("readOverrides", () => {
+  const src = { number: 42, url: "https://github.com/KytyPS5/KytyPS5/issues/42", created: "2026-08-10" };
+  const withOverrides = appendOverrides(buildMirrorBody(UPSTREAM_BODY, src), {
+    os: "linux",
+    titleId: "PPSA09999",
+    title: "Stray: Director's Cut",
+  });
+
+  it("reads the values from the `## Overrides` section", () => {
+    expect(readOverrides(withOverrides)).toEqual({
+      os: "linux",
+      titleId: "PPSA09999",
+      title: "Stray: Director's Cut",
+    });
+  });
+
+  it("returns {} when there is no Overrides section", () => {
+    expect(readOverrides(buildMirrorBody(UPSTREAM_BODY, src))).toEqual({});
+    expect(readOverrides("")).toEqual({});
+  });
+
+  it("ignores unknown keys and stops at the next `## ` heading", () => {
+    const b = withOverrides + "\n## Something else\n- os: macos\n- os: windows\n";
+    expect(readOverrides(b)).toEqual({
+      os: "linux",
+      titleId: "PPSA09999",
+      title: "Stray: Director's Cut",
+    });
+  });
+});
+
+describe("appendOverrides", () => {
+  const src = { number: 42, url: "https://github.com/KytyPS5/KytyPS5/issues/42", created: "2026-08-10" };
+
+  it("appends the section after the footer without breaking provenance", () => {
+    const body = appendOverrides(buildMirrorBody(UPSTREAM_BODY, src), { os: "windows" });
+    expect(body.endsWith("## Overrides\n- os: windows\n")).toBe(true);
+    expect(mirrorSource(body)).toEqual(src);
+  });
+
+  it("replaces the section but keeps other overrides", () => {
+    const base = appendOverrides(buildMirrorBody(UPSTREAM_BODY, src), {
+      os: "linux",
+      titleId: "PPSA09999",
+    });
+    const out = appendOverrides(base, { os: "macos", titleId: "PPSA09999" });
+    expect(readOverrides(out)).toEqual({ os: "macos", titleId: "PPSA09999" });
+    expect(out.match(/## Overrides/g)).toHaveLength(1);
+  });
+
+  it("returns the body unchanged when there are no overrides", () => {
+    const base = buildMirrorBody(UPSTREAM_BODY, src);
+    expect(appendOverrides(base, {})).toBe(base);
+  });
+});
+
+describe("mirrorUpstreamBody", () => {
+  const src = { number: 42, url: "https://github.com/KytyPS5/KytyPS5/issues/42", created: "2026-08-10" };
+
+  it("returns the upstream body without the footer and overrides", () => {
+    const body = appendOverrides(buildMirrorBody(UPSTREAM_BODY, src), { os: "linux" });
+    expect(mirrorUpstreamBody(body)).toBe(UPSTREAM_BODY.trim());
   });
 });
 

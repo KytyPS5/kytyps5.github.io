@@ -25,7 +25,10 @@ name: Mirror game-status issues
 # Manual runs: Actions → "Mirror game-status issues" → Run workflow → type a
 # KytyPS5 issue number. The mirror is created (or reopened + refreshed if it
 # exists), then run /compat on it to convert — use this after you verified an
-# issue and the report should reflect its current status.
+# issue and the report should reflect its current status. When the mirror's
+# fields need a human fix first (OS that doesn't generalize, missing
+# PPSA-XXXXX, wrong title), comment /setos /setid /settitle on it — the
+# overrides survive refreshes and the /compat conversion applies them.
 on:
   schedule:
     - cron: "*/30 * * * *" # every 30 minutes (may be delayed under load)
@@ -61,7 +64,7 @@ jobs:
           GH_TOKEN: ${{ secrets.GITHUB_TOKEN }}
         run: |
           gh label create compat \
-            --description "Game-status mirror of a KytyPS5 issue — comment /compat to convert it into a report PR" \
+            --description "Mirror of a KytyPS5 issue — fix fields with /setos /setid /settitle, then /compat" \
             --force
 
       - name: Mirror unconverted issues

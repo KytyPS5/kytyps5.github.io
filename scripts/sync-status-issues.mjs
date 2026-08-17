@@ -23,6 +23,11 @@
  * (--issue-number, workflow_dispatch) also reopen a CLOSED mirror, so a
  * verified / corrected issue can be converted again via /compat.
  *
+ * A refresh rebuilds the upstream snapshot but PRESERVES the `## Overrides`
+ * section — manual /setos /setid /settitle corrections (see
+ * scripts/set-compat-override.mjs) survive even when the upstream issue
+ * changes.
+ *
  * Usage:
  *   GITHUB_TOKEN=… node scripts/sync-status-issues.mjs \
  *     [--repo KytyPS5/KytyPS5] [--this-repo owner/repo] [--issue-number 42]
@@ -34,11 +39,13 @@ import { readdir, readFile } from "node:fs/promises";
 import { fileURLToPath } from "node:url";
 import path from "node:path";
 import {
+  appendOverrides,
   buildMirrorBody,
   MIRROR_LABEL,
   mirrorSlug,
   mirrorSource,
   mirrorTitle,
+  readOverrides,
   reportSourceNumber,
   reportTestedDate,
   shouldCreateMirror,
@@ -157,11 +164,15 @@ for (const issue of candidates) {
   const number = issue.number;
   const mirror = mirrors.get(number);
   const createdDate = String(issue.created_at).slice(0, 10);
-  const newBody = buildMirrorBody(issue.body, {
+  // Rebuild the upstream snapshot, then re-apply any /setos /setid /settitle
+  // overrides the maintainer recorded — a refresh must never drop them.
+  const overrides = readOverrides(mirror.body);
+  let newBody = buildMirrorBody(issue.body, {
     number,
     url: issue.html_url,
     created: createdDate,
   });
+  if (Object.keys(overrides).length) newBody = appendOverrides(newBody, overrides);
   const newTitle = mirrorTitle(issue.body, issue.title);
 
   if (mirror) {
