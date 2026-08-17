@@ -158,6 +158,30 @@ for (const file of await readdir(DIR)) {
   }
 }
 
+// One verified report per (game, OS) — the site's aggregation IS the single
+// report's status, so two reports for the same game+OS are a pipeline error,
+// not a silent vote. Report both slugs so the maintainer can retire the
+// stale one.
+const seen = new Map();
+for (const file of await readdir(DIR)) {
+  if (!file.endsWith(".md")) continue;
+  const raw = await readFile(path.join(DIR, file), "utf8");
+  const { data } = parseFrontmatter(raw);
+  if (!data.titleId || !data.os) continue; // missing fields reported above
+  const key = `${String(data.titleId).replace(/-/g, "").toUpperCase()}|${String(data.os).toLowerCase()}`;
+  const slug = file.replace(/\.md$/, "");
+  const prev = seen.get(key);
+  if (prev) {
+    failed = true;
+    console.error(
+      `[compat] ✗ ${slug} duplicates ${prev} for (game, OS) ${data.titleId} / ${data.os} — ` +
+        "keep one verified report per (game, OS); retire the stale one.",
+    );
+  } else {
+    seen.set(key, slug);
+  }
+}
+
 if (failed) {
   console.error("[compat] invalid reports — fix src/content/compat/*.md before building.");
   process.exit(1);

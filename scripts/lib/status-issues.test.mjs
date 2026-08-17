@@ -3,15 +3,22 @@ import { parseIssueBody } from "./issue-form.mjs";
 import {
   appendOverrides,
   buildMirrorBody,
+  gameKeyFor,
+  issueOs,
+  issueTitleId,
   MIRROR_LABEL,
   mirrorSlug,
   mirrorSource,
   mirrorTitle,
   mirrorUpstreamBody,
   readOverrides,
+  refreshMirrorBody,
+  reportOs,
   reportSourceNumber,
   reportTestedDate,
+  reportTitleId,
   shouldCreateMirror,
+  titleIdKey,
 } from "./status-issues.mjs";
 
 const UPSTREAM_BODY = `### Game title
@@ -189,6 +196,27 @@ describe("appendOverrides", () => {
   });
 });
 
+describe("refreshMirrorBody", () => {
+  const src = { number: 42, url: "https://github.com/KytyPS5/KytyPS5/issues/42", created: "2026-08-10" };
+  const withOverrides = appendOverrides(buildMirrorBody(UPSTREAM_BODY, src), { os: "linux" });
+
+  it("returns the plain rebuilt body for a candidate with no mirror", () => {
+    // Regression: the poller crashed reading overrides off an undefined mirror.
+    expect(refreshMirrorBody(UPSTREAM_BODY, undefined, src)).toBe(buildMirrorBody(UPSTREAM_BODY, src));
+  });
+
+  it("preserves overrides from the existing mirror across a refresh", () => {
+    const body = refreshMirrorBody(UPSTREAM_BODY, withOverrides, src);
+    expect(body.endsWith("## Overrides\n- os: linux\n")).toBe(true);
+    expect(mirrorSource(body)).toEqual(src);
+  });
+
+  it("returns the plain body when the existing mirror has no overrides", () => {
+    const plain = buildMirrorBody(UPSTREAM_BODY, src);
+    expect(refreshMirrorBody(UPSTREAM_BODY, plain, src)).toBe(plain);
+  });
+});
+
 describe("mirrorUpstreamBody", () => {
   const src = { number: 42, url: "https://github.com/KytyPS5/KytyPS5/issues/42", created: "2026-08-10" };
 
@@ -290,6 +318,58 @@ describe("shouldCreateMirror", () => {
       create: true,
       reason: "same-run batch",
     });
+  });
+});
+
+describe("dedup keys (titleId-based (game, OS) matching)", () => {
+  it("titleIdKey normalizes dashes and case", () => {
+    expect(titleIdKey("ppsa-01670")).toBe("PPSA01670");
+    expect(titleIdKey("PPSA01342")).toBe("PPSA01342");
+    expect(titleIdKey("")).toBe("");
+  });
+
+  it("issueTitleId reads the new template's serial field", () => {
+    expect(issueTitleId(UPSTREAM_BODY)).toBe("PPSA01670");
+  });
+
+  it("issueTitleId reads the legacy Title ID field", () => {
+    const legacy = UPSTREAM_BODY.replace("### Game ID / serial\nPPSA01670", "### Title ID\nPPSA01670");
+    expect(issueTitleId(legacy)).toBe("PPSA01670");
+  });
+
+  it("issueTitleId returns undefined for Unknown or missing serials", () => {
+    expect(issueTitleId(UPSTREAM_BODY.replace("PPSA01670", "Unknown"))).toBeUndefined();
+    expect(issueTitleId("no form fields here")).toBeUndefined();
+  });
+
+  it("issueOs normalizes the new and legacy OS fields", () => {
+    expect(issueOs(UPSTREAM_BODY)).toBe("windows");
+    const legacy = UPSTREAM_BODY.replace("### OS\nWindows 11", "### Operating system\nWindows 11");
+    expect(issueOs(legacy)).toBe("windows");
+    // An OS that doesn't normalize yields no key — the slug fallback applies.
+    expect(issueOs(UPSTREAM_BODY.replace("Windows 11", "CachyOS"))).toBeUndefined();
+  });
+
+  it("gameKeyFor resolves region variants to the game's canonical key", () => {
+    const games = [
+      { titleId: "PPSA03527", allTitleIds: ["PPSA03527", "PPSA03528", "PPSA03529"] },
+      { titleId: "PPSA00001", allTitleIds: ["PPSA00001"] },
+    ];
+    expect(gameKeyFor("PPSA03528", games)).toBe("PPSA03527");
+    expect(gameKeyFor("ppsa03529", games)).toBe("PPSA03527");
+    expect(gameKeyFor("PPSA00001", games)).toBe("PPSA00001");
+  });
+
+  it("gameKeyFor falls back to the title ID itself when not in the store", () => {
+    expect(gameKeyFor("PPSA09999", [])).toBe("PPSA09999");
+  });
+
+  it("reportTitleId / reportOs read a report's frontmatter", () => {
+    const md = `---\ntitleId: "PPSA-01342"\ntitle: "Demon's Souls"\nstatus: "doesnt-boot"\ntestedDate: "2026-08-10"\nos: "windows"\n---\n`;
+    expect(reportTitleId(md)).toBe("PPSA01342");
+    expect(reportOs(md)).toBe("windows");
+    expect(reportTitleId("no frontmatter")).toBeUndefined();
+    expect(reportOs("no frontmatter")).toBeUndefined();
   });
 });
 

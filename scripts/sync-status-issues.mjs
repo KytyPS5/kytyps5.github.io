@@ -39,16 +39,21 @@ import { readdir, readFile } from "node:fs/promises";
 import { fileURLToPath } from "node:url";
 import path from "node:path";
 import {
-  appendOverrides,
   buildMirrorBody,
+  gameKeyFor,
+  issueOs,
+  issueTitleId,
   MIRROR_LABEL,
   mirrorSlug,
   mirrorSource,
   mirrorTitle,
-  readOverrides,
+  refreshMirrorBody,
+  reportOs,
   reportSourceNumber,
   reportTestedDate,
+  reportTitleId,
   shouldCreateMirror,
+  titleIdKey,
 } from "./lib/status-issues.mjs";
 
 const ROOT = path.resolve(path.dirname(fileURLToPath(import.meta.url)), "..");
@@ -96,13 +101,15 @@ async function fetchCandidates() {
   return all.filter((issue) => !issue.pull_request && /^\[GAME STATUS\]/i.test(issue.title ?? ""));
 }
 
-/** Reports on this checkout (main): report slug → { sourceNumber, testedDate }. */
+/** Reports on this checkout (main): report slug → { titleId, os, sourceNumber, testedDate }. */
 async function reportIndex() {
   const reports = new Map();
   for (const file of await readdir(COMPAT_DIR)) {
     if (!file.endsWith(".md")) continue;
     const raw = await readFile(path.join(COMPAT_DIR, file), "utf8");
     reports.set(file.slice(0, -3), {
+      titleId: reportTitleId(raw),
+      os: reportOs(raw),
       sourceNumber: reportSourceNumber(raw),
       testedDate: reportTestedDate(raw),
     });
@@ -146,13 +153,32 @@ async function createIssue(title, body) {
 }
 
 const candidates = await fetchCandidates();
+const games = JSON.parse(await readFile(path.join(ROOT, "src", "data", "games.json"), "utf8"));
 const reports = await reportIndex();
-// How many candidates this run map to each report slug — a run that finds two
+// Reports keyed by (game, OS) — every region variant of a game resolves to
+// the same game key, so punctuation-differing titles and region-variant
+// serials dedup against the SAME report (not the title+OS slug).
+const byGameOs = new Map();
+for (const report of reports.values()) {
+  if (!report.titleId || !report.os) continue;
+  const gameKey = gameKeyFor(report.titleId, games);
+  byGameOs.set(`${gameKey}|${report.os}`, report);
+  byGameOs.set(`${report.titleId}|${report.os}`, report);
+}
+// How many candidates this run map to each (game, OS) — a run that finds two
 // or more issues for one (game, OS) mirrors all of them (see shouldCreateMirror).
-const slugCounts = new Map();
+const candidateKey = (issue) => {
+  const body = issue.body ?? "";
+  const titleId = issueTitleId(body);
+  const os = issueOs(body);
+  if (titleId && os) return `${gameKeyFor(titleId, games)}|${os}`;
+  const slug = mirrorSlug(body, issue.title);
+  return slug ? `slug:${slug}` : undefined;
+};
+const batchCounts = new Map();
 for (const issue of candidates) {
-  const slug = mirrorSlug(issue.body, issue.title);
-  if (slug) slugCounts.set(slug, (slugCounts.get(slug) ?? 0) + 1);
+  const key = candidateKey(issue);
+  if (key) batchCounts.set(key, (batchCounts.get(key) ?? 0) + 1);
 }
 const mirrors = await fetchMirrors();
 
@@ -164,15 +190,14 @@ for (const issue of candidates) {
   const number = issue.number;
   const mirror = mirrors.get(number);
   const createdDate = String(issue.created_at).slice(0, 10);
-  // Rebuild the upstream snapshot, then re-apply any /setos /setid /settitle
-  // overrides the maintainer recorded — a refresh must never drop them.
-  const overrides = readOverrides(mirror.body);
-  let newBody = buildMirrorBody(issue.body, {
+  // Rebuild the upstream snapshot, re-applying any /setos /setid /settitle
+  // overrides the EXISTING mirror recorded — a refresh must never drop them.
+  // New candidates (no mirror yet) just get the plain rebuilt body.
+  const newBody = refreshMirrorBody(issue.body, mirror?.body, {
     number,
     url: issue.html_url,
     created: createdDate,
   });
-  if (Object.keys(overrides).length) newBody = appendOverrides(newBody, overrides);
   const newTitle = mirrorTitle(issue.body, issue.title);
 
   if (mirror) {
@@ -197,12 +222,20 @@ for (const issue of candidates) {
   if (!issueNumber) {
     // Scheduled run: only mirror when no report for this (game, OS) is
     // already as new or newer. Manual runs always mirror the issue.
-    const slug = mirrorSlug(issue.body, issue.title);
+    // The report is matched by (game, OS) — titleId-resolved through
+    // games.json — with the title+OS slug as a fallback when the issue
+    // carries no parsable serial.
+    const key = candidateKey(issue);
+    const report = key
+      ? key.startsWith("slug:")
+        ? reports.get(key.slice(5))
+        : (byGameOs.get(key) ?? undefined)
+      : undefined;
     const decision = shouldCreateMirror(
       { number, created: createdDate },
       {
-        report: slug ? reports.get(slug) : undefined,
-        batchSize: slug ? (slugCounts.get(slug) ?? 1) : 1,
+        report,
+        batchSize: key ? (batchCounts.get(key) ?? 1) : 1,
       },
     );
     if (!decision.create) {

@@ -479,12 +479,12 @@
     "title": "Demon's Souls",
     "titleId": "PPSA01342",
     "cover": "https://image.api.playstation.com/vulcan/img/rnd/202011/1717/brIXKBE5BqYgBSrsDn6Wo18O.png",
-    "overall": "logo",
+    "overall": "doesnt-boot",
     "os": {
-      "windows": "logo"
+      "windows": "doesnt-boot"
     },
     "reportCounts": {
-      "windows": 2
+      "windows": 1
     },
     "latestTested": "2026-08-10"
   },
@@ -647,12 +647,12 @@
     "title": "Grand Theft Auto III – The Definitive Edition",
     "titleId": "PPSA03527",
     "cover": "https://image.api.playstation.com/vulcan/ap/rnd/202110/2914/LRd5LiIFOgY8oi9GdaGC8dmC.jpg",
-    "overall": "main-menu",
+    "overall": "doesnt-boot",
     "os": {
-      "windows": "main-menu"
+      "windows": "doesnt-boot"
     },
     "reportCounts": {
-      "windows": 2
+      "windows": 1
     },
     "latestTested": "2026-08-10"
   },

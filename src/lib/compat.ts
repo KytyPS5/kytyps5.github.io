@@ -291,29 +291,21 @@ export function computeIndexStats(entries: readonly CompatIndexGame[]): {
 }
 
 /**
- * Aggregate a game's reports within one OS scope — the majority vote, with
- * ties broken toward the better status (higher on the ladder). The intake
- * pipeline keeps one verified report per (game, OS), so in practice this is
- * simply the verified report's status; the majority rule is a safe fallback
- * if multiple reports ever coexist.
+ * Aggregate a game's reports within one OS scope. The verified-report
+ * pipeline keeps EXACTLY ONE report per (game, OS), so its status IS the OS
+ * status — there is no voting. Multiple reports for the same OS are a
+ * pipeline error and throw loudly instead of being silently voted on
+ * (scripts/validate-compat.mjs also fails the build on them).
  */
 export function aggregateStatus(reports: readonly Pick<CompatReport, "status">[]): Status {
   if (reports.length === 0) return STATUSES[0];
-  const counts = new Map<Status, number>();
-  for (const r of reports) counts.set(r.status, (counts.get(r.status) ?? 0) + 1);
-  let best: Status = reports[0].status;
-  let bestCount = 0;
-  let bestRank = -1;
-  for (const [status, count] of counts) {
-    const rank = STATUSES.indexOf(status);
-    // More votes wins; on a tie the better status wins.
-    if (count > bestCount || (count === bestCount && rank > bestRank)) {
-      best = status;
-      bestCount = count;
-      bestRank = rank;
-    }
+  if (reports.length > 1) {
+    throw new Error(
+      `expected one verified report per (game, OS) but found ${reports.length} — ` +
+        "duplicate reports must be resolved (see scripts/validate-compat.mjs)",
+    );
   }
-  return best;
+  return reports[0].status;
 }
 
 /* ---------- Tiny frontmatter parser (no runtime deps, build-time only) ---------- */

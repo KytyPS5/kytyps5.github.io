@@ -128,14 +128,15 @@ describe("status mapping (site ladder → GUI enum)", () => {
   });
 });
 
-describe("aggregateStatuses (majority vote, ties → better)", () => {
-  it("returns the majority status", () => {
-    expect(aggregateStatuses(["main-menu", "main-menu", "logo"])).toBe("main-menu");
+describe("aggregateStatuses (one verified report per OS)", () => {
+  it("returns the single report's status", () => {
+    expect(aggregateStatuses(["main-menu"])).toBe("main-menu");
+    expect(aggregateStatuses(["logo"])).toBe("logo");
   });
 
-  it("breaks ties toward the better status", () => {
-    expect(aggregateStatuses(["logo", "main-menu"])).toBe("main-menu");
-    expect(aggregateStatuses(["main-menu", "in-game"])).toBe("in-game");
+  it("throws when multiple reports share one OS — duplicates are a pipeline error", () => {
+    expect(() => aggregateStatuses(["logo", "main-menu"])).toThrow(/one verified report/i);
+    expect(() => aggregateStatuses(["in-game", "in-game"])).toThrow(/one verified report/i);
   });
 
   it("defaults to nothing for an empty group", () => {
@@ -223,12 +224,14 @@ describe("buildCompatibilityDb → GUI parse round-trip", () => {
     {
       titleId: "PPSA06228",
       status: "main-menu",
+      os: "windows",
       testedVersion: "KytyPS5-2026-08-07-7907a50",
       testedDate: "2026-08-01",
     },
     {
       titleId: "PPSA06228",
       status: "in-game",
+      os: "linux",
       testedVersion: "KytyPS5-2026-08-07-7907a50",
       testedDate: "2026-08-05",
     },
@@ -240,10 +243,10 @@ describe("buildCompatibilityDb → GUI parse round-trip", () => {
     },
   ];
 
-  it("groups by title ID and aggregates by majority", () => {
+  it("groups by title ID and aggregates per OS", () => {
     const db = buildCompatibilityDb(reports);
     expect(Object.keys(db)).toEqual(["PPSA04877", "PPSA06228"]);
-    expect(db.PPSA06228.status).toBe("InGame"); // tie → better (perfect)
+    expect(db.PPSA06228.status).toBe("InGame"); // best across the two OS reports
     expect(db.PPSA04877.status).toBe("Logo");
   });
 
@@ -281,49 +284,44 @@ describe("buildCompatibilityDb → GUI parse round-trip", () => {
 describe("per-OS status policy (Nmzik's cross-platform caveat)", () => {
   const reports = [
     { titleId: "PPSA06228", status: "main-menu", os: "windows", testedVersion: "b1", testedDate: "2026-08-01" },
-    { titleId: "PPSA06228", status: "in-game", os: "windows", testedVersion: "b2", testedDate: "2026-08-03" },
     { titleId: "PPSA06228", status: "logo", os: "linux", testedVersion: "b1", testedDate: "2026-08-02" },
-    { titleId: "PPSA06228", status: "doesnt-boot", os: "linux", testedVersion: "b1", testedDate: "2026-08-01" },
     // No `os` — counts toward the cross-platform status only.
     { titleId: "PPSA06228", status: "doesnt-boot", testedVersion: "b1", testedDate: "2026-08-01" },
   ];
 
-  it("keeps the top-level status as the best across per-OS majorities", () => {
+  it("keeps the top-level status as the best across per-OS reports", () => {
     const db = buildCompatibilityDb(reports);
-    // windows → perfect, linux → boots, unknown-OS group → nothing.
-    // Best of those = perfect.
-    expect(db.PPSA06228.status).toBe("InGame");
-    expect(db.PPSA06228.reports).toBe(5);
+    // windows → main menu, linux → logo, unknown-OS group → nothing.
+    // Best of those = main menu.
+    expect(db.PPSA06228.status).toBe("MainMenu");
+    expect(db.PPSA06228.reports).toBe(3);
   });
 
-  it("top-level best-of-OS can beat a cross-platform majority", () => {
+  it("top-level best-of-OS beats the cross-platform mix", () => {
     const db = buildCompatibilityDb([
       { titleId: "PPSA06228", status: "main-menu", os: "windows", testedVersion: "b1", testedDate: "2026-08-01" },
-      { titleId: "PPSA06228", status: "main-menu", os: "windows", testedVersion: "b2", testedDate: "2026-08-02" },
-      // Windows majority says main-menu, but Linux says in-game → Any = in-game.
+      // Linux says in-game → Any = in-game, the best of any test done.
       { titleId: "PPSA06228", status: "in-game", os: "linux", testedVersion: "b1", testedDate: "2026-08-03" },
     ]);
-    expect(db.PPSA06228.platforms.windows.status).toBe("MainMenu"); // majority of the OS
+    expect(db.PPSA06228.platforms.windows.status).toBe("MainMenu");
     expect(db.PPSA06228.platforms.linux.status).toBe("InGame");
     expect(db.PPSA06228.status).toBe("InGame"); // best = in-game → InGame
     expect(db.PPSA06228.comment).toContain("in-game");
   });
 
-  it("aggregates per OS with its own majority", () => {
+  it("per-OS status comes from that OS's single verified report", () => {
     const db = buildCompatibilityDb(reports);
-    // windows: playable + perfect → tie → perfect → InGame
-    expect(db.PPSA06228.platforms.windows.status).toBe("InGame");
-    expect(db.PPSA06228.platforms.windows.reports).toBe(2);
-    // linux: boots + nothing → tie → boots → Logo
+    expect(db.PPSA06228.platforms.windows.status).toBe("MainMenu");
+    expect(db.PPSA06228.platforms.windows.reports).toBe(1);
     expect(db.PPSA06228.platforms.linux.status).toBe("Logo");
-    expect(db.PPSA06228.platforms.linux.reports).toBe(2);
+    expect(db.PPSA06228.platforms.linux.reports).toBe(1);
   });
 
   it("excludes OS-less reports from every platform but keeps them in the overall", () => {
     const db = buildCompatibilityDb(reports);
     const totalPlatform = Object.values(db.PPSA06228.platforms).reduce((n, p) => n + p.reports, 0);
-    expect(totalPlatform).toBe(4); // 2 windows + 2 linux
-    expect(db.PPSA06228.reports).toBe(5); // overall includes the OS-less one
+    expect(totalPlatform).toBe(2); // 1 windows + 1 linux
+    expect(db.PPSA06228.reports).toBe(3); // overall includes the OS-less one
     expect(db.PPSA06228.platforms.macos).toBeUndefined(); // absent ≠ Unknown
   });
 
@@ -336,10 +334,11 @@ describe("per-OS status policy (Nmzik's cross-platform caveat)", () => {
     expect(db.PPSA06228.platforms.windows.status).toBe("MainMenu");
   });
 
-  it("orders platform keys windows → linux → macos and carries the latest build", () => {
+  it("orders platform keys windows → linux → macos and carries each OS's report build", () => {
     const db = buildCompatibilityDb(reports);
     expect(Object.keys(db.PPSA06228.platforms)).toEqual(["windows", "linux"]);
-    expect(db.PPSA06228.platforms.windows.version).toBe("b2"); // newest by test date
+    expect(db.PPSA06228.platforms.windows.version).toBe("b1");
+    expect(db.PPSA06228.platforms.linux.version).toBe("b1");
   });
 
   it("omits the platforms block entirely when no report has an OS", () => {
@@ -361,13 +360,13 @@ describe("per-OS status policy (Nmzik's cross-platform caveat)", () => {
     expect(db.PPSA05555.platforms.steamos).toBeUndefined();
   });
 
-  it("prefers the newest dated report's build even when another lacks a date", () => {
+  it("prefers the newest dated report's build even when another OS lacks a date", () => {
     const db = buildCompatibilityDb([
       { titleId: "PPSA06666", status: "main-menu", os: "windows", testedVersion: "old", testedDate: "2026-08-01" },
-      { titleId: "PPSA06666", status: "main-menu", os: "windows", testedVersion: "new" },
+      { titleId: "PPSA06666", status: "main-menu", os: "linux", testedVersion: "new" },
     ]);
     // The undated report must not win "latest" over the dated one.
-    expect(db.PPSA06666.platforms.windows.version).toBe("old");
+    expect(db.PPSA06666.comment).toContain("old");
   });
 
   it("is backward compatible: the launcher's Parse ignores platforms/reports", () => {
@@ -375,7 +374,7 @@ describe("per-OS status policy (Nmzik's cross-platform caveat)", () => {
     const parsed = guiParse(serializeLikeCli(db));
     // guiParse mirrors compatibilityDatabase.cpp: it only reads status/comment,
     // so current GUI builds render the same as before the policy shipped.
-    expect(parsed.PPSA06228.status).toBe("InGame");
+    expect(parsed.PPSA06228.status).toBe("MainMenu");
     expect(typeof parsed.PPSA06228.comment).toBe("string");
     expect(parsed.PPSA06228.platforms).toBeUndefined();
   });
@@ -497,21 +496,31 @@ Notes.
     expect(entry.key).toBe("PPSA00001");
     expect(entry.title).toBe("Alpha Game");
     expect(entry.cover).toBe("https://c/a.png");
-    expect(entry.overall).toBe("main-menu"); // best across per-OS majorities
+    expect(entry.overall).toBe("main-menu"); // best across per-OS reports
     expect(entry.os).toEqual({ windows: "main-menu", linux: "logo" });
     expect(entry.reportCounts).toEqual({ windows: 1, linux: 1 });
     expect(entry.latestTested).toBe("2026-08-01"); // newest across both reports
     expect(entry.reports).toHaveLength(2);
   });
 
-  it("precomputes per-OS statuses via majority, ties to the better status", () => {
+  it("precomputes per-OS statuses from each OS's single report", () => {
     const index = buildSiteIndex(games, [
       report("PPSA00001", "main-menu", "windows", "Alpha Game"),
-      report("PPSA00001", "in-game", "windows", "Alpha Game"),
+      report("PPSA00001", "in-game", "linux", "Alpha Game"),
     ]);
-    expect(index[0].os.windows).toBe("in-game");
+    expect(index[0].os.windows).toBe("main-menu");
+    expect(index[0].os.linux).toBe("in-game");
     expect(index[0].overall).toBe("in-game");
-    expect(index[0].reportCounts.windows).toBe(2);
+    expect(index[0].reportCounts).toEqual({ windows: 1, linux: 1 });
+  });
+
+  it("throws when two reports share one OS (duplicate (game, OS))", () => {
+    expect(() =>
+      buildSiteIndex(games, [
+        report("PPSA00001", "main-menu", "windows", "Alpha Game"),
+        report("PPSA00001", "in-game", "windows", "Alpha Game"),
+      ]),
+    ).toThrow(/one verified report/i);
   });
 
   it("matches a report whose title ID is a region variant of the game", () => {
