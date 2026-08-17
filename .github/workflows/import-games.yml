@@ -5,10 +5,9 @@ name: Refresh games database
 # tune the enrich count.
 #
 # Changes open a PR (data/games-refresh) instead of pushing to main directly:
-# CI gates the diff, a bad import can't break main, and auto-merge merges the
-# PR once CI passes. Re-runs update the standing PR in place, so there is at
-# most one open refresh PR at any time. Auto-merge requires branch protection
-# on main with CI / test as a required status check (see README → Automation).
+# CI gates the diff and a bad import can't break main — the PR is merged
+# manually once it looks good. Re-runs update the standing PR in place, so
+# there is at most one open refresh PR at any time.
 on:
   schedule:
     - cron: "0 4 * * 1" # Mondays 04:00 UTC
@@ -20,7 +19,7 @@ on:
 
 permissions:
   contents: write # push the PR branch
-  pull-requests: write # open the PR + enable auto-merge
+  pull-requests: write # open the PR
 
 jobs:
   import:
@@ -48,15 +47,4 @@ jobs:
           commit-message: "data: refresh games database"
           branch: data/games-refresh
           title: "data: refresh games database"
-          delete-branch: true
-
-      - name: Enable auto-merge
-        # No PR when the database didn't change (create-pull-request exits
-        # cleanly without output) — nothing to merge in that case.
-        if: steps.cpr.outputs.pull-request-number != ''
-        uses: peter-evans/enable-pull-request-automerge@v2
-        with:
-          token: ${{ secrets.GITHUB_TOKEN }}
-          pull-request-number: ${{ steps.cpr.outputs.pull-request-number }}
-          merge-method: squash
           delete-branch: true
