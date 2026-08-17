@@ -111,8 +111,8 @@ jobs:
             printf 'The converter did not report a written report file.' > /tmp/compat-failure.txt
             exit 1
           }
-          TITLE="$(sed -n 's/^title: "\(.*\)"$/\\1/p' "src/content/compat/$SLUG.md" | head -1)"
-          OS="$(sed -n 's/^os: "\(.*\)"$/\\1/p' "src/content/compat/$SLUG.md" | head -1)"
+          TITLE="$(sed -n 's/^title: "\(.*\)"$/\1/p' "src/content/compat/$SLUG.md" | head -1)"
+          OS="$(sed -n 's/^os: "\(.*\)"$/\1/p' "src/content/compat/$SLUG.md" | head -1)"
           echo "slug=$SLUG" >> "$GITHUB_OUTPUT"
           echo "pr_title=compat: $TITLE ($OS)" >> "$GITHUB_OUTPUT"
           # The site index seed must travel with the PR, exactly like the old
