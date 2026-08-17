@@ -1326,6 +1326,20 @@
     "latestTested": "2026-08-15"
   },
   {
+    "key": "PPSA03396",
+    "title": "The Last of Us™ Part I",
+    "titleId": "PPSA03396",
+    "cover": "https://image.api.playstation.com/vulcan/ap/rnd/202206/0720/JKqkaz5Sy6AvH2fZAVdjTxR8.png",
+    "overall": "doesnt-boot",
+    "os": {
+      "windows": "doesnt-boot"
+    },
+    "reportCounts": {
+      "windows": 1
+    },
+    "latestTested": "2026-08-17"
+  },
+  {
     "key": "PPSA24381",
     "title": "The Thing: Remastered",
     "titleId": "PPSA24381",
