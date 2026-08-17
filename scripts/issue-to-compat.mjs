@@ -37,6 +37,26 @@ const DIR = path.join(ROOT, "src", "content", "compat");
 const STATUSES = ["doesnt-boot", "logo", "main-menu", "in-game"];
 const OSES = ["windows", "linux", "macos"];
 const TITLE_ID_REGEX = /^PPSA-?\d{5}$/i;
+const TITLE_ID_LIST_REGEX = /PPSA-?\d{5}/gi;
+
+/**
+ * Some submitters list several serials for one game (region variants of the
+ * same title — the games DB tracks them all as allTitleIds). The report
+ * stores a single titleId, so pick the first valid PPSA code; "Unknown" and
+ * garbage still fall through to the existing validation errors.
+ */
+function pickTitleId(raw) {
+  const v = String(raw ?? "").trim();
+  if (!v || /^unknown$/i.test(v)) return v || undefined;
+  const codes = v.match(TITLE_ID_LIST_REGEX);
+  if (codes && codes.length > 1) {
+    console.warn(
+      `[issue-to-compat] ⚠ "Game ID / serial" lists ${codes.length} serials (${codes.join(", ")}) — ` +
+        `using ${codes[0]} as the report's titleId (the games DB keeps every region variant)`,
+    );
+  }
+  return codes?.[0] ?? v;
+}
 
 /**
  * Canonical status ladder = the Game Emulation Status Report template options:
@@ -226,7 +246,7 @@ const extra = intake.extra;
 const source = intake.source ?? flags.source;
 const sourceUrl = intake.sourceUrl ?? flags.sourceUrl;
 const gameVersion = intake.gameVersion;
-const titleId = intake.titleId;
+const titleId = pickTitleId(intake.titleId);
 // One report per (game, OS): the default slug appends the OS so a Windows and
 // a Linux report for the same game live in separate files, and re-running a
 // conversion for the same game + OS overwrites that OS's status in place.
