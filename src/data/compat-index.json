@@ -1094,14 +1094,14 @@
     "title": "Sackboy: A Big Adventure",
     "titleId": "PPSA01289",
     "cover": "https://image.api.playstation.com/vulcan/img/rnd/202010/1614/e3XoU7P20Mvu3RJy7LGv5Q2p.png",
-    "overall": "doesnt-boot",
+    "overall": "logo",
     "os": {
-      "windows": "doesnt-boot"
+      "windows": "logo"
     },
     "reportCounts": {
       "windows": 1
     },
-    "latestTested": "2026-07-19"
+    "latestTested": "2026-08-17"
   },
   {
     "key": "PPSA02813",
