@@ -17,7 +17,7 @@ import { githubApi } from "@/lib/github";
 import { useGithubData } from "@/hooks/use-github-data";
 import { useCompatGame } from "@/hooks/use-compat-game";
 import { SITE, SITE_URL } from "@/config";
-import { Markdown } from "@/lib/markdown.tsx";
+import { Markdown } from "@/lib/markdown-view";
 import { StatusBadge } from "@/components/compat/status-badge";
 import { Container } from "@/components/layout/container";
 import { Reveal } from "@/components/layout/reveal";
