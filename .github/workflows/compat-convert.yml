@@ -13,8 +13,18 @@ name: Convert compat issue to report PR
 # that game's report and updates the same PR in place. On success the comment
 # gets a 👀 reaction and the mirror issue is closed — closed mirror = converted.
 #
-# `/compat` on anything else (no `## Source` footer) fails with a readable
-# error; the issue is left untouched.
+# Fields the issue can't express correctly can be fixed first with the /setos /
+# /setid /settitle commands (compat-set-fields.yml): they append a
+# `## Overrides` section to the mirror body which issue-to-compat.mjs reads
+# here — overrides win over the values parsed from the issue (e.g. an OS that
+# doesn't generalize, or a missing PPSA-XXXXX). Comment `/compat` again after
+# setting fields.
+#
+# Failures (not a mirror, unparseable fields, PR-step hiccup) post the reason
+# back on the issue as a comment — `❌ /compat failed. <reason>` — so the
+# maintainer sees it without digging through the workflow log; the run still
+# goes red. The failing step writes /tmp/compat-failure.txt and the final
+# "Post the failure as a comment" step (if: failure()) reads it.
 on:
   issue_comment:
     types: [created]
@@ -22,7 +32,7 @@ on:
 permissions:
   contents: write
   pull-requests: write
-  issues: write # reaction + close the mirror issue
+  issues: write # reaction + close the mirror issue + failure comments
 
 # Serialize /compat runs per issue so two quick comments can't race on the
 # same branch.
@@ -55,11 +65,12 @@ jobs:
             fs.writeFileSync("/tmp/mirror-issue-body.txt", body);
             const src = mirrorSource(body);
             if (!src) {
-              console.error(
-                "::error::This issue is not a compat mirror — its body has no `## Source` footer " +
-                  "linking a KytyPS5 issue. /compat converts issues mirrored by the " +
-                  "\"Mirror game-status issues\" workflow.",
-              );
+              const msg =
+                "This issue is not a compat mirror — its body has no `## Source` footer " +
+                "linking a KytyPS5 issue. /compat converts issues mirrored by the " +
+                "\"Mirror game-status issues\" workflow.";
+              fs.writeFileSync("/tmp/compat-failure.txt", msg);
+              console.error("::error::" + msg);
               process.exit(1);
             }
             // Step outputs must go to $GITHUB_OUTPUT — plain stdout lines are
@@ -82,26 +93,47 @@ jobs:
       - name: Convert the issue to a report
         id: convert
         run: |
-          CONVERT_OUT="$(node scripts/issue-to-compat.mjs \
+          # Capture the converter's output so a failure can be posted back as
+          # a readable comment (the final step reads /tmp/compat-failure.txt).
+          if ! CONVERT_OUT="$(node scripts/issue-to-compat.mjs \
             --issue-body-file /tmp/mirror-issue-body.txt \
             --date "${{ steps.source.outputs.created }}" \
             --source "KytyPS5 issue #${{ steps.source.outputs.number }}" \
-            --source-url "${{ steps.source.outputs.url }}")"
+            --source-url "${{ steps.source.outputs.url }}" 2>&1)"; then
+            MSG="$(printf '%s' "$CONVERT_OUT" | sed -n 's/^\[issue-to-compat\] //p' | tail -1)"
+            [ -n "$MSG" ] || MSG="$(printf '%s' "$CONVERT_OUT" | tail -3 | tr '\n' ' ')"
+            printf '%s' "$MSG" > /tmp/compat-failure.txt
+            exit 1
+          fi
           SLUG="$(printf '%s\n' "$CONVERT_OUT" | sed -n 's#^\[issue-to-compat\] wrote src/content/compat/\([^/]*\)\.md$#\1#p' | head -1)"
-          [ -n "$SLUG" ] || { echo "::error::The converter did not report a written report file."; exit 1; }
-          TITLE="$(sed -n 's/^title: "\(.*\)"$/\1/p' "src/content/compat/$SLUG.md" | head -1)"
-          OS="$(sed -n 's/^os: "\(.*\)"$/\1/p' "src/content/compat/$SLUG.md" | head -1)"
+          [ -n "$SLUG" ] || {
+            echo "::error::The converter did not report a written report file."
+            printf 'The converter did not report a written report file.' > /tmp/compat-failure.txt
+            exit 1
+          }
+          TITLE="$(sed -n 's/^title: "\(.*\)"$/\\1/p' "src/content/compat/$SLUG.md" | head -1)"
+          OS="$(sed -n 's/^os: "\(.*\)"$/\\1/p' "src/content/compat/$SLUG.md" | head -1)"
           echo "slug=$SLUG" >> "$GITHUB_OUTPUT"
           echo "pr_title=compat: $TITLE ($OS)" >> "$GITHUB_OUTPUT"
           # The site index seed must travel with the PR, exactly like the old
           # poller's PR did — the deployed site refreshes it at runtime anyway,
           # this keeps dev / first paint current.
-          node scripts/export-site-compat-json.mjs
-          node scripts/validate-compat.mjs
+          if ! node scripts/export-site-compat-json.mjs >/dev/null 2>&1; then
+            printf 'Failed to refresh the site compat index (export-site-compat-json.mjs) — see the workflow log.' > /tmp/compat-failure.txt
+            exit 1
+          fi
+          if ! node scripts/validate-compat.mjs >/tmp/compat-validate.log 2>&1; then
+            printf 'The generated report is invalid — %s' "$(tail -1 /tmp/compat-validate.log)" > /tmp/compat-failure.txt
+            exit 1
+          fi
 
       - name: Open or update the report PR
         id: cpr
         uses: peter-evans/create-pull-request@v6
+        # The PR step failing (e.g. the compat/<slug> branch already exists
+        # without a PR) must not silently skip the failure comment — its
+        # outcome is checked by the next step instead.
+        continue-on-error: true
         with:
           token: ${{ secrets.GITHUB_TOKEN }}
           commit-message: "${{ steps.convert.outputs.pr_title }}"
@@ -113,6 +145,12 @@ jobs:
             ${{ steps.source.outputs.url }}
           delete-branch: true
 
+      - name: Fail the job if the report PR could not be opened
+        if: steps.cpr.outcome == 'failure'
+        run: |
+          printf 'Failed to open or update the report PR (branch compat/%s) — the branch may already exist without a PR. See the workflow log for the create-pull-request error.' "${{ steps.convert.outputs.slug }}" > /tmp/compat-failure.txt
+          exit 1
+
       - name: Acknowledge and close the mirror
         if: steps.cpr.outcome == 'success' && steps.convert.outputs.slug != ''
         env:
@@ -123,3 +161,21 @@ jobs:
             -f content=eyes
           gh issue close ${{ github.event.issue.number }} \
             --comment "Converted — report PR: ${{ steps.convert.outputs.pr_title }}"
+
+      - name: Post the failure as a comment
+        if: failure()
+        env:
+          GH_TOKEN: ${{ secrets.GITHUB_TOKEN }}
+        run: |
+          # Post the reason captured by the failing step back on the issue.
+          # No file = an infra failure (checkout / npm ci / post-conversion
+          # housekeeping) — skip the comment rather than post a misleading
+          # "/compat failed" after the conversion actually succeeded.
+          if [ ! -f /tmp/compat-failure.txt ]; then
+            echo "no captured failure message — skipping comment"
+            exit 0
+          fi
+          MSG="$(cat /tmp/compat-failure.txt)"
+          gh api --method POST \
+            repos/${{ github.repository }}/issues/${{ github.event.issue.number }}/comments \
+            -f "body=❌ **/compat failed.** $MSG" || true

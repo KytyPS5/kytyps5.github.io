@@ -25,11 +25,19 @@
  *
  * Explicit flags ALWAYS override values parsed from --issue-body-file.
  * Writes (or overwrites) src/content/compat/<slug>.md with the report.
+ *
+ * Manual overrides: a mirror issue body may carry a `## Overrides` section
+ * (recorded by the /setos /setid /settitle comment commands, see
+ * scripts/set-compat-override.mjs) with human-corrected os / titleId / title
+ * values. They win over the values parsed from the issue body but lose to
+ * explicit CLI flags. This is how a mirror whose OS doesn't generalize — or
+ * whose PPSA-XXXXX / title still needs a human fix — still converts.
  */
 import { mkdir, readFile, writeFile } from "node:fs/promises";
 import { fileURLToPath } from "node:url";
 import path from "node:path";
 import { cleanField, normalizeOs, parseIssueBody } from "./lib/issue-form.mjs";
+import { readOverrides } from "./lib/status-issues.mjs";
 
 const ROOT = path.resolve(path.dirname(fileURLToPath(import.meta.url)), "..");
 const DIR = path.join(ROOT, "src", "content", "compat");
@@ -104,6 +112,10 @@ function normalizeStatus(status) {
  */
 function readIntake(body, flags) {
   const sections = parseIssueBody(body);
+  // Values set by the /setos /setid /settitle comment commands on the mirror
+  // issue. Precedence is flags > overrides > parsed, except the title where
+  // the parsed "Game title" field stays more reliable than a CLI --title.
+  const overrides = readOverrides(body);
 
   // New Game Emulation Status Report template headings.
   const title = cleanField(sections, "Game title") || undefined;
@@ -137,13 +149,15 @@ function readIntake(body, flags) {
   // "Game title" field is more reliable than the issue title) and the date
   // (a legacy "Test date" is the real test date, better than created_at).
   return {
-    title: title ?? flags.title,
-    titleId: flags.titleId ?? titleId ?? titleIdLegacy,
+    title: overrides.title ?? title ?? flags.title,
+    titleId: overrides.titleId ?? flags.titleId ?? titleId ?? titleIdLegacy,
     statusRaw: statusRaw ?? statusLegacy,
     version: flags.version ?? version ?? versionLegacy,
     date: legacyDate ?? flags.date, // new template has no date — workflow passes issue.created_at
-    os: flags.os ?? os ?? osLegacy,
-    osRaw: cleanField(sections, "OS") || cleanField(sections, "Operating system") || undefined,
+    os: overrides.os ?? flags.os ?? os ?? osLegacy,
+    osRaw:
+      overrides.os ??
+      (cleanField(sections, "OS") || cleanField(sections, "Operating system") || undefined),
     hardware:
       flags.hardware ??
       legacyHardware ??
@@ -255,9 +269,9 @@ const slug =
   title.toLowerCase().replace(/[^a-z0-9]+/g, "-").replace(/^-|-$/g, "") + (os ? `-${os}` : "");
 
 const errors = [];
-if (!title) errors.push("--title / \"Game title\" is required");
-if (!titleId) errors.push("--title-id / \"Game ID / serial\" is required");
-else if (/^unknown$/i.test(titleId)) errors.push("Game ID / serial is \"Unknown\" — fill in the PPSA-XXXXX before converting");
+if (!title) errors.push("--title / \"Game title\" is required (or set one with /settitle on the mirror issue)");
+if (!titleId) errors.push("--title-id / \"Game ID / serial\" is required (or set one with /setid on the mirror issue)");
+else if (/^unknown$/i.test(titleId)) errors.push("Game ID / serial is \"Unknown\" — fill in the PPSA-XXXXX on the mirror issue (/setid PPSA-XXXXX) before converting");
 else if (!TITLE_ID_REGEX.test(titleId)) errors.push(`title ID must look like PPSA-XXXXX, got \"${titleId}\"`);
 if (!status) errors.push(`--status / \"Compatibility status\" is required or unrecognized (got \"${String(statusRaw)}\") — expected one of: Doesn't boot | Logo | Main menu | In game`);
 else if (statusRaw !== undefined &&
@@ -267,7 +281,7 @@ else if (statusRaw !== undefined &&
 }
 if (!version) errors.push("--version / \"KytyPS5 version\" is required");
 if (!date || !/^\d{4}-\d{2}-\d{2}$/.test(date)) errors.push("--date must be YYYY-MM-DD (workflow passes the issue's creation date)");
-if (!os) errors.push(`--os / \"OS\" is required and must mention windows, linux or mac (got \"${String(intake.osRaw ?? intake.os)}\")`);
+if (!os) errors.push(`--os / \"OS\" is required and must mention windows, linux or mac (got \"${String(intake.osRaw ?? intake.os)}\") — or set it with /setos windows|linux|macos on the mirror issue`);
 else if (!OSES.includes(os)) errors.push(`--os must be ${OSES.join(" | ")}`);
 if (errors.length) {
   console.error("[issue-to-compat] " + errors.join("; "));
