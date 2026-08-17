@@ -38,6 +38,14 @@ report, comment `/compat` on it: the **Convert compat issue to report PR** workf
 updates the same PR). One report file per (game, OS) keeps the games separate — a Linux report
 never overwrites a Windows one, and the site shows each OS's own status.
 
+Issues whose fields don't parse cleanly can be fixed before converting: comment `/setos`
+`<windows|linux|macos>` when the OS text doesn't generalize, `/setid` `<PPSA-XXXXX>` when the
+serial is missing or unknown, or `/settitle` `<title>` to correct the game title. Each records
+the value in a `## Overrides` section of the mirror's body (and updates the mirror title); the
+`/compat` conversion then uses those values, which win over the ones parsed from the issue. Run
+`/compat` afterwards to convert. When a command fails (e.g. `/compat` on a non-mirror, or an
+unrecognized value), the workflow posts the reason back on the issue as a comment.
+
 ## License
 
 Site code is licensed under GPL-2.0 (see `LICENSE`). The KytyPS5 name, screenshots and all

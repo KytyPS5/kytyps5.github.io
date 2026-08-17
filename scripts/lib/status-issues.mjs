@@ -23,6 +23,23 @@
  * report for its (game, OS) is already as new or newer — with one exception:
  * a run that finds two or more issues for the same (game, OS) is a fresh
  * batch and mirrors all of them.
+ *
+ * Manual field corrections: a maintainer can comment /setos, /setid or
+ * /settitle on a mirror issue (scripts/set-compat-override.mjs) to record a
+ * human override when the upstream issue can't express a field correctly
+ * (e.g. an OS that doesn't normalize). The command appends a `## Overrides`
+ * section after the `## Source` footer:
+ *
+ *   ## Overrides
+ *   - os: windows
+ *   - titleId: PPSA01234
+ *   - title: Astro Bot
+ *
+ * readOverrides()/appendOverrides() manage that section; the /compat
+ * conversion (issue-to-compat.mjs) reads it and the overrides win over the
+ * values parsed from the issue body. Poller refreshes preserve the section
+ * (see sync-status-issues.mjs), and mirrorSource() stops at it so override
+ * values can never be mistaken for provenance.
  */
 
 import { cleanField, normalizeOs, parseIssueBody } from "./issue-form.mjs";
@@ -39,14 +56,19 @@ const BODY_CAP = 60_000;
  * Falls back to the upstream issue's own title when the body has no parsable
  * "Game title" / "OS" fields (the mirror is still created; the /compat
  * conversion will fail loudly with the real reason).
+ *
+ * `overrides` ({ os?, title? }) — read from the mirror's `## Overrides`
+ * section (see readOverrides) — win over the parsed fields, so a /setos or
+ * /settitle command is reflected in the title (e.g. an OS that can't be
+ * normalized still gets its `(<os>)` suffix).
  */
-export function mirrorTitle(upstreamBody, fallbackTitle) {
+export function mirrorTitle(upstreamBody, fallbackTitle, overrides = {}) {
   const sections = parseIssueBody(upstreamBody);
-  const title = cleanField(sections, "Game title") || fallbackTitle || "Unknown game";
+  const title = overrides.title ?? (cleanField(sections, "Game title") || fallbackTitle || "Unknown game");
   // The upstream issue title already starts with the [GAME STATUS] prefix;
   // don't double it when the body has no parsable "Game title" field.
   const prefix = /^\[GAME STATUS\]/i.test(title) ? "" : "[GAME STATUS] ";
-  const os = normalizeOs(cleanField(sections, "OS"));
+  const os = overrides.os ?? normalizeOs(cleanField(sections, "OS"));
   return os ? `${prefix}${title} (${os})` : `${prefix}${title}`;
 }
 
@@ -72,14 +94,26 @@ export function buildMirrorBody(upstreamBody, { number, url, created }) {
  * Read the upstream source back out of a mirror issue body.
  * Returns { number, url, created } or null when the body is not a compat
  * mirror (no `## Source` footer). Only the text after the LAST `## Source`
- * group heading is scanned, so a "KytyPS5 issue #N" mention typed inside the
- * upstream answers is never mistaken for the provenance.
+ * group heading is scanned — and collection stops at the next `## ` heading
+ * (the `## Overrides` section appended by /setos /setid /settitle) — so a
+ * "KytyPS5 issue #N" mention typed inside the upstream answers or an override
+ * value is never mistaken for the provenance.
  */
 export function mirrorSource(body) {
   const lines = String(body ?? "").split(/\r?\n/);
   let tail = "";
-  for (let i = 0; i < lines.length; i++) {
-    if (/^##\s+Source\s*$/.test(lines[i].trim())) tail = lines.slice(i + 1).join("\n");
+  let collecting = false;
+  for (const line of lines) {
+    if (/^##\s+Source\s*$/.test(line.trim())) {
+      collecting = true;
+      tail = "";
+      continue;
+    }
+    if (collecting && /^##\s+/.test(line)) {
+      collecting = false; // e.g. the `## Overrides` section after the footer
+      continue;
+    }
+    if (collecting) tail += line + "\n";
   }
   if (!tail.trim()) return null;
 
@@ -88,6 +122,79 @@ export function mirrorSource(body) {
   const created = tail.match(/created (\d{4}-\d{2}-\d{2})/)?.[1];
   if (!number || !url || !created) return null;
   return { number: Number(number), url, created };
+}
+
+/**
+ * The upstream issue body inside a mirror: everything before the mirror's own
+ * `## Source` footer (the `## Overrides` section appended after it is excluded
+ * too). Used to recompute the mirror title after a /setos or /settitle
+ * override (see scripts/set-compat-override.mjs).
+ */
+export function mirrorUpstreamBody(body) {
+  const lines = String(body ?? "").split(/\r?\n/);
+  let cut = lines.length;
+  for (let i = 0; i < lines.length; i++) {
+    if (/^##\s+Source\s*$/.test(lines[i].trim())) cut = i;
+  }
+  return lines.slice(0, cut).join("\n").trimEnd();
+}
+
+/**
+ * Read the `## Overrides` section from a mirror issue body — the manual field
+ * corrections recorded by the /setos, /setid and /settitle comment commands
+ * (scripts/set-compat-override.mjs). Format, appended after the `## Source`
+ * footer:
+ *
+ *   ## Overrides
+ *   - os: windows
+ *   - titleId: PPSA01234
+ *   - title: Astro Bot
+ *
+ * Returns { os?, titleId?, title? } with only the keys present (values stored
+ * exactly as the command recorded them), or {} when the body has no Overrides
+ * section. Parsing stops at the next `## ` heading. Bullet entries — not
+ * `### ` form headings — so parseIssueBody() never mistakes an override for a
+ * template answer.
+ */
+export function readOverrides(body) {
+  const lines = String(body ?? "").split(/\r?\n/);
+  let collecting = false;
+  const overrides = {};
+  for (const line of lines) {
+    if (/^##\s+Overrides\s*$/.test(line.trim())) {
+      collecting = true;
+      continue;
+    }
+    if (collecting && /^##\s+/.test(line)) break;
+    if (!collecting) continue;
+    const m = line.match(/^\s*-\s*([A-Za-z]+)\s*:\s*(.+?)\s*$/);
+    if (!m) continue;
+    const key = m[1].toLowerCase();
+    const value = m[2].trim();
+    if (key === "os") overrides.os = value;
+    else if (key === "titleid") overrides.titleId = value;
+    else if (key === "title") overrides.title = value;
+  }
+  return overrides;
+}
+
+/**
+ * Append (or replace) the `## Overrides` section on a mirror body, keeping any
+ * other existing overrides. Used by scripts/set-compat-override.mjs to record
+ * a /setos /setid /settitle value and by sync-status-issues.mjs to carry the
+ * existing overrides across a mirror refresh. Returns the body unchanged when
+ * `overrides` is empty.
+ */
+export function appendOverrides(body, overrides = {}) {
+  const raw = String(body ?? "");
+  const idx = raw.search(/^##\s+Overrides\s*$/m);
+  const base = (idx > -1 ? raw.slice(0, idx) : raw).trimEnd();
+  const entries = [];
+  if (overrides.os) entries.push(`- os: ${overrides.os}`);
+  if (overrides.titleId) entries.push(`- titleId: ${overrides.titleId}`);
+  if (overrides.title) entries.push(`- title: ${overrides.title}`);
+  if (!entries.length) return base;
+  return `${base}\n\n## Overrides\n${entries.join("\n")}\n`;
 }
 
 /**
