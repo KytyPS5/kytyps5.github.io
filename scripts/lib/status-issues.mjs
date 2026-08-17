@@ -24,6 +24,12 @@
  * a run that finds two or more issues for the same (game, OS) is a fresh
  * batch and mirrors all of them.
  *
+ * The (game, OS) match is keyed by TITLE ID, not the title+OS slug: two
+ * issues that spell a title differently ("Demon Souls" vs "Demon's Souls")
+ * or use a region-variant serial (PPSA03528 vs PPSA03527) must still dedup
+ * against the same report. issueTitleId() / gameKeyFor() provide the keys;
+ * the slug is only a fallback when an issue carries no parsable serial.
+ *
  * Manual field corrections: a maintainer can comment /setos, /setid or
  * /settitle on a mirror issue (scripts/set-compat-override.mjs) to record a
  * human override when the upstream issue can't express a field correctly
@@ -179,6 +185,20 @@ export function readOverrides(body) {
 }
 
 /**
+ * The body a refreshed mirror should have: the rebuilt upstream snapshot plus
+ * any `## Overrides` preserved from the existing mirror. `mirrorBody` is
+ * optional — a candidate with no mirror yet (undefined) must simply get the
+ * plain rebuilt body; callers must never read overrides off an undefined
+ * mirror.
+ */
+export function refreshMirrorBody(issueBody, mirrorBody, { number, url, created }) {
+  let body = buildMirrorBody(issueBody, { number, url, created });
+  const overrides = readOverrides(mirrorBody);
+  if (Object.keys(overrides).length) body = appendOverrides(body, overrides);
+  return body;
+}
+
+/**
  * Append (or replace) the `## Overrides` section on a mirror body, keeping any
  * other existing overrides. Used by scripts/set-compat-override.mjs to record
  * a /setos /setid /settitle value and by sync-status-issues.mjs to carry the
@@ -222,10 +242,56 @@ export function reportTestedDate(md) {
   return m ? m[1] : undefined;
 }
 
+/** The `titleId` frontmatter of a report (normalized bare uppercase). */
+export function reportTitleId(md) {
+  const m = String(md ?? "").match(/^titleId:\s*"?([^"\n]+)"?/m);
+  return m ? titleIdKey(m[1]) : undefined;
+}
+
+/** The `os` frontmatter of a report (canonical lowercase OS). */
+export function reportOs(md) {
+  const m = String(md ?? "").match(/^os:\s*"?([^"\n]+)"?/m);
+  return m ? String(m[1]).trim().toLowerCase() : undefined;
+}
+
 /** The `> Source:` footer's KytyPS5 issue number, if the report is a conversion. */
 export function reportSourceNumber(md) {
   const m = String(md ?? "").match(/Source:.*?issues\/(\d+)/);
   return m ? Number(m[1]) : undefined;
+}
+
+/** Normalized bare uppercase title ID — the dedup key for games (PPSA-XXXXX → PPSAXXXXX). */
+export function titleIdKey(titleId) {
+  return String(titleId ?? "").replace(/-/g, "").toUpperCase();
+}
+
+/** The PPSA-XXXXX in an upstream issue body (new "Game ID / serial" or legacy "Title ID"). */
+export function issueTitleId(body) {
+  const sections = parseIssueBody(body);
+  const raw = cleanField(sections, "Game ID / serial") || cleanField(sections, "Title ID");
+  const m = String(raw ?? "").match(/PPSA-?\d{5}/i);
+  return m ? titleIdKey(m[0]) : undefined;
+}
+
+/** The OS an upstream issue was tested on (new "OS" or legacy "Operating system"). */
+export function issueOs(body) {
+  const sections = parseIssueBody(body);
+  return normalizeOs(cleanField(sections, "OS") || cleanField(sections, "Operating system"));
+}
+
+/**
+ * The canonical game key for a title ID: every region variant of a game
+ * (games.json `allTitleIds`) resolves to the game's own title ID, so a
+ * PPSA03528 report dedups against a PPSA03527 report of the same game.
+ * Returns the normalized title ID itself when it's not in the store.
+ */
+export function gameKeyFor(titleId, games) {
+  const key = titleIdKey(titleId);
+  if (!key) return undefined;
+  for (const g of games ?? []) {
+    if ((g.allTitleIds ?? []).some((id) => titleIdKey(id) === key)) return titleIdKey(g.titleId);
+  }
+  return key;
 }
 
 /**
@@ -240,9 +306,9 @@ export function reportSourceNumber(md) {
  * Manual runs never call this (workflow_dispatch always mirrors the issue).
  *
  * `candidate` is { number, created } with created = YYYY-MM-DD; `report` is
- * the existing report for the candidate's slug ({ sourceNumber, testedDate })
- * or undefined; `batchSize` is how many candidates this run found for that
- * slug. Returns { create, reason? }.
+ * the existing report for the candidate's (game, OS) ({ sourceNumber,
+ * testedDate }) or undefined; `batchSize` is how many candidates this run
+ * found for that (game, OS). Returns { create, reason? }.
  */
 export function shouldCreateMirror(candidate, { report, batchSize }) {
   if (report) {

@@ -33,14 +33,15 @@
  * explicit CLI flags. This is how a mirror whose OS doesn't generalize — or
  * whose PPSA-XXXXX / title still needs a human fix — still converts.
  */
-import { mkdir, readFile, writeFile } from "node:fs/promises";
+import { mkdir, readdir, readFile, unlink, writeFile } from "node:fs/promises";
 import { fileURLToPath } from "node:url";
 import path from "node:path";
 import { cleanField, normalizeOs, parseIssueBody } from "./lib/issue-form.mjs";
-import { readOverrides } from "./lib/status-issues.mjs";
+import { gameKeyFor, readOverrides, reportOs, reportTitleId } from "./lib/status-issues.mjs";
 
 const ROOT = path.resolve(path.dirname(fileURLToPath(import.meta.url)), "..");
 const DIR = path.join(ROOT, "src", "content", "compat");
+const GAMES_FILE = path.join(ROOT, "src", "data", "games.json");
 
 const STATUSES = ["doesnt-boot", "logo", "main-menu", "in-game"];
 const OSES = ["windows", "linux", "macos"];
@@ -322,7 +323,26 @@ const frontmatter = [
       : "",
 ].filter((line) => line !== null);
 
+// One verified report per (game, OS): retire any existing report for the same
+// game + OS under a DIFFERENT slug, so a re-conversion with a differently
+// spelled title ("Demon Souls" vs "Demon's Souls") or a region-variant serial
+// replaces the old file — the report PR shows the delete — instead of leaving
+// a duplicate. Matched by game key (allTitleIds) + OS; the new report is
+// written over any same-slug file below.
 await mkdir(DIR, { recursive: true });
+const games = JSON.parse(await readFile(GAMES_FILE, "utf8"));
+const gameKey = gameKeyFor(titleId, games);
+for (const file of await readdir(DIR)) {
+  if (!file.endsWith(".md") || file === `${slug}.md`) continue;
+  const raw = await readFile(path.join(DIR, file), "utf8");
+  const otherKey = reportTitleId(raw);
+  const otherOs = reportOs(raw);
+  if (otherKey && otherOs === os && gameKeyFor(otherKey, games) === gameKey) {
+    await unlink(path.join(DIR, file));
+    console.log(`[issue-to-compat] retired ${file} — same (game, OS), replaced by ${slug}.md`);
+  }
+}
+
 const out = path.join(DIR, `${slug}.md`);
 await writeFile(out, frontmatter.join("\n") + "\n");
 console.log(`[issue-to-compat] wrote ${path.relative(ROOT, out)}`);

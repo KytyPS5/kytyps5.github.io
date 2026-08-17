@@ -20,7 +20,7 @@ const GUI_STATUS = {
   "in-game": "InGame",
 };
 
-/** Our ladder order — used for majority aggregation (ties to the better status). */
+/** Our ladder order — best-across-OS aggregation picks the highest. */
 export const STATUSES = ["doesnt-boot", "logo", "main-menu", "in-game"];
 
 /** Map a site status to the GUI's accepted status string. */
@@ -29,33 +29,29 @@ export function mapStatus(status) {
 }
 
 /**
- * Majority-vote aggregation matching the site's aggregateStatus(): the status
- * most reports submitted wins; ties break toward the better status.
+ * Statuses within one OS scope — matching the site's aggregateStatus(): the
+ * verified-report pipeline keeps EXACTLY ONE report per (game, OS), so its
+ * status IS the OS status. Multiple statuses for one OS are a pipeline error
+ * and throw loudly instead of being majority-voted (validate-compat.mjs
+ * rejects them at build time).
  */
 export function aggregateStatuses(statuses) {
   if (statuses.length === 0) return STATUSES[0];
-  const counts = new Map();
-  for (const s of statuses) counts.set(s, (counts.get(s) ?? 0) + 1);
-  let best = statuses[0];
-  let bestCount = 0;
-  let bestRank = -1;
-  for (const [status, count] of counts) {
-    const rank = STATUSES.indexOf(status);
-    if (count > bestCount || (count === bestCount && rank > bestRank)) {
-      best = status;
-      bestCount = count;
-      bestRank = rank;
-    }
+  if (statuses.length > 1) {
+    throw new Error(
+      `expected one verified report per (game, OS) but found ${statuses.length} statuses — ` +
+        "duplicate reports must be resolved (see scripts/validate-compat.mjs)",
+    );
   }
-  return best;
+  return statuses[0];
 }
 
 /**
  * Best-across-OS aggregation matching the site's displayStatus(): each OS's
- * reports majority-vote first, then the best (highest on the ladder) of those
- * OS results wins — "the best of any test done". Reports without an OS form
- * their own group. Mirrors the site so the GUI's top-level status means the
- * same thing as the site's "Any" filter.
+ * single report aggregates first, then the best (highest on the ladder) of
+ * those OS results wins — "the best of any test done". Reports without an OS
+ * form their own group. Mirrors the site so the GUI's top-level status means
+ * the same thing as the site's "Any" filter.
  */
 export function bestStatuses(reports) {
   const groups = new Map();
@@ -86,8 +82,8 @@ export function titleKey(titleId) {
 /** OSes a report may be tagged with (matches the site schema + validator). */
 const PLATFORMS = ["windows", "linux", "macos"];
 
-/** Majority-vote status of a report list (aggregates their status strings). */
-function majorityOf(list) {
+/** Status of a report list — the single verified report's status. */
+function singleStatus(list) {
   return aggregateStatuses(list.map((r) => r.status));
 }
 
@@ -97,7 +93,7 @@ function majorityOf(list) {
  * test date) it applies to. Undated reports sort last so `version` reflects
  * the newest dated test.
  */
-function summarize(list, statusFn = majorityOf) {
+function summarize(list, statusFn = singleStatus) {
   const status = statusFn(list);
   const latest = list
     .slice()
@@ -109,11 +105,12 @@ function summarize(list, statusFn = majorityOf) {
  * Build the GUI-shaped database from parsed reports. One entry per game
  * (reports grouped by title ID). Per the per-OS status policy:
  *
- * - `status`/`comment` are the **best result across the per-OS majorities**
+ * - `status`/`comment` are the **best result across the per-OS reports**
  *   (mirrors the site's "Any" filter — the best of any test done).
- * - `platforms.<os>` carries the **majority per OS** (windows | linux | macos),
- *   with the report count and latest tested build for that OS, so the GUI can
- *   show OS-specific results instead of assuming they're equivalent.
+ * - `platforms.<os>` carries the **per-OS report status** (one verified report
+ *   per OS — windows | linux | macos), with the report count and latest
+ *   tested build for that OS, so the GUI can show OS-specific results instead
+ *   of assuming they're equivalent.
  * - Reports **without an `os` field** form their own group in the top-level
  *   aggregation only — never a platform (their OS is unknown).
  * - A platform key is omitted when that OS has no reports (absence = untested),
