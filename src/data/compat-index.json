@@ -824,6 +824,19 @@
     "latestTested": "2026-07-19"
   },
   {
+    "key": "PPSA28099",
+    "title": "Life is Strange: Reunion",
+    "titleId": "PPSA28099",
+    "overall": "doesnt-boot",
+    "os": {
+      "windows": "doesnt-boot"
+    },
+    "reportCounts": {
+      "windows": 1
+    },
+    "latestTested": "2026-08-18"
+  },
+  {
     "key": "PPSA02200",
     "title": "Little Nightmares II",
     "titleId": "PPSA02200",
