@@ -4,7 +4,15 @@ import { Skeleton } from "@/components/ui/skeleton";
 import { Tooltip, TooltipContent, TooltipTrigger } from "@/components/ui/tooltip";
 
 export function ContributorsGrid({ limit = 14 }: { limit?: number }) {
-  const { data, loading } = useGithubData(() => githubApi.contributors(limit), "contributors");
+  const { data, loading: contributorsLoading } = useGithubData(
+    () => githubApi.contributors(limit),
+    "contributors",
+  );
+  const { data: totalContributors, loading: countLoading } = useGithubData(
+    githubApi.contributorCount,
+    "contributorsCount",
+  );
+  const loading = contributorsLoading || countLoading;
 
   if (loading) {
     return (
@@ -17,6 +25,10 @@ export function ContributorsGrid({ limit = 14 }: { limit?: number }) {
   }
 
   if (!data?.length) return null;
+
+  const total = totalContributors ?? null;
+  const remaining = total !== null ? Math.max(0, total - data.length) : null;
+  const overflowLabel = remaining !== null && remaining > 0 ? `+${remaining}` : "+";
 
   return (
     <div className="flex flex-wrap items-center gap-3">
@@ -55,7 +67,7 @@ export function ContributorsGrid({ limit = 14 }: { limit?: number }) {
             rel="noreferrer noopener"
             className="grid size-11 place-items-center rounded-full border border-dashed border-border-strong text-xs font-medium text-text-muted transition-colors duration-150 hover:border-accent/50 hover:text-accent focus-visible:outline-2 focus-visible:outline-accent"
           >
-            +{limit}
+            {overflowLabel}
           </a>
         </TooltipTrigger>
         <TooltipContent>And more on GitHub</TooltipContent>

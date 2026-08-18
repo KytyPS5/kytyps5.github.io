@@ -1,5 +1,5 @@
 import { describe, expect, it } from "vitest";
-import { markdownToText, parseInline, parseMarkdown } from "@/lib/markdown";
+import { parseInline, parseMarkdown } from "@/lib/markdown";
 
 describe("parseMarkdown", () => {
   it("parses paragraphs", () => {
@@ -98,24 +98,15 @@ describe("parseInline", () => {
     ]);
   });
 
-  it("escapes HTML", () => {
+  it("preserves HTML/special characters literally for safe React JSX rendering", () => {
     const [token] = parseInline("<script>alert(1)</script>");
-    expect(token).toEqual({ type: "text", value: "&lt;script&gt;alert(1)&lt;/script&gt;" });
+    expect(token).toEqual({ type: "text", value: "<script>alert(1)</script>" });
+
+    const ampToken = parseInline("Ryzen 9 & RTX 4090");
+    expect(ampToken).toEqual([{ type: "text", value: "Ryzen 9 & RTX 4090" }]);
   });
 
   it("parses inline code", () => {
     expect(parseInline("run `npm test` now")).toContainEqual({ type: "code", value: "npm test" });
-  });
-});
-
-describe("markdownToText", () => {
-  it("strips markdown to readable text", () => {
-    const src = "**Bold** game\n\n![Screen](https://example.com/a.png)\n\n> Quote line";
-    const text = markdownToText(src);
-    expect(text).toContain("Bold game");
-    expect(text).toContain("Screen");
-    expect(text).toContain("Quote line");
-    expect(text).not.toContain("**");
-    expect(text).not.toContain("[");
   });
 });

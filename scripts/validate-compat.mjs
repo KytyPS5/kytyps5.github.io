@@ -27,7 +27,7 @@ function parseFrontmatter(raw) {
     let value = line.slice(idx + 1).trim().replace(/^["']|["']$/g, "");
     if (value === "true") value = true;
     else if (value === "false") value = false;
-    else if (/^\d+$/.test(String(value))) value = Number(value);
+    else if (key === "score" && /^\d+$/.test(String(value))) value = Number(value);
     else if (/^\[.*\]$/.test(value)) {
       // Flow-style array frontmatter (screenshots: ["url", …]).
       value = value
