@@ -783,6 +783,20 @@
     "latestTested": "2026-07-19"
   },
   {
+    "key": "PPSA02342",
+    "title": "It Takes Two  PS4™ & PS5™",
+    "titleId": "PPSA02342",
+    "cover": "https://image.api.playstation.com/vulcan/ap/rnd/202012/0815/UkFiVyReEoiV28rXgyHYKhfS.png",
+    "overall": "logo",
+    "os": {
+      "windows": "logo"
+    },
+    "reportCounts": {
+      "windows": 1
+    },
+    "latestTested": "2026-08-18"
+  },
+  {
     "key": "PPSA19268",
     "title": "Juicy Realm",
     "titleId": "PPSA19268",
