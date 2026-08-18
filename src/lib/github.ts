@@ -75,6 +75,7 @@ const STORAGE_PREFIX = "kytyps5:gh:";
 const STORAGE_TTL_MS = 30 * 60 * 1000;
 
 function storageGet<T>(url: string): T | null {
+  if (typeof window === "undefined" || !window.localStorage) return null;
   try {
     const raw = window.localStorage.getItem(STORAGE_PREFIX + url);
     if (!raw) return null;
@@ -90,6 +91,7 @@ function storageGet<T>(url: string): T | null {
 }
 
 function storageSet(url: string, value: unknown) {
+  if (typeof window === "undefined" || !window.localStorage) return;
   try {
     window.localStorage.setItem(STORAGE_PREFIX + url, JSON.stringify({ ts: Date.now(), value }));
   } catch {
@@ -134,29 +136,49 @@ async function fetchJson<T>(url: string): Promise<T> {
 
 async function fetchContributorCount(): Promise<number | null> {
   const url = `${API}/contributors?per_page=1&anon=true`;
-  const stored = storageGet<number>(url);
-  if (stored != null) return stored;
-
-  try {
-    const res = await fetch(url, {
-      headers: { Accept: "application/vnd.github+json", "X-GitHub-Api-Version": "2022-11-28" },
-      cache: "no-store",
-    });
-    if (!res.ok) return null;
-    const link = res.headers.get("link") || "";
-    const match = link.match(/[?&]page=(\d+)[^>]*>;\s*rel="last"/);
-    let count: number | null = null;
-    if (match) {
-      count = Number(match[1]);
-    } else {
-      const data = await res.json();
-      count = Array.isArray(data) ? data.length : null;
-    }
-    if (count != null) storageSet(url, count);
-    return count;
-  } catch {
-    return null;
+  const entry = cache.get(url);
+  if (entry?.value !== undefined && Date.now() - entry.ts < CACHE_TTL_MS) {
+    return entry.value as number | null;
   }
+  if (entry?.promise) return entry.promise as Promise<number | null>;
+
+  const stored = storageGet<number>(url);
+  if (stored != null) {
+    cache.set(url, { value: stored, ts: Date.now() });
+    return stored;
+  }
+
+  const promise = (async () => {
+    try {
+      const res = await fetch(url, {
+        headers: { Accept: "application/vnd.github+json", "X-GitHub-Api-Version": "2022-11-28" },
+        cache: "no-store",
+      });
+      if (!res.ok) return null;
+      const link = res.headers.get("link") || "";
+      const match = link.match(/[?&]page=(\d+)[^>]*>;\s*rel="last"/);
+      let count: number | null = null;
+      if (match) {
+        count = Number(match[1]);
+      } else {
+        const data = await res.json();
+        count = Array.isArray(data) ? data.length : null;
+      }
+      if (count != null) {
+        cache.set(url, { value: count, ts: Date.now() });
+        storageSet(url, count);
+      }
+      pruneCache();
+      return count;
+    } catch {
+      cache.delete(url);
+      return null;
+    }
+  })();
+  cache.set(url, { promise, ts: Date.now() });
+  pruneCache();
+
+  return promise;
 }
 
 export const githubApi = {

@@ -36,10 +36,12 @@ const existing = JSON.parse(await readFile(OUT, "utf8").catch(() => "[]"));
 guardShrink(fresh.length, existing.length, force);
 const games = mergeExisting(fresh, existing);
 
-const pending = games.filter((g) => !g.enriched);
-const todo = only
-  ? pending.filter((g) => g.allTitleIds.some((t) => only.includes(t)))
-  : pending.slice(0, enrichCount);
+const unattempted = games.filter((g) => !g.enriched && !g.noStore);
+const retries = games.filter((g) => !g.enriched && g.noStore);
+const pending = only
+  ? games.filter((g) => !g.enriched && g.allTitleIds.some((t) => only.includes(t)))
+  : [...unattempted, ...retries];
+const todo = pending.slice(0, enrichCount);
 let done = 0;
 for (const game of todo) {
   try {
