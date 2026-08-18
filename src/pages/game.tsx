@@ -140,7 +140,7 @@ export function GamePage() {
       (game ? game.allTitleIds.some((id) => normalize(id) === rKey) : false)
     );
   });
-  const reports = (detail ?? seedReports).sort((a, b) => (a.testedDate < b.testedDate ? 1 : -1));
+  const reports = [...(detail ?? seedReports)].sort((a, b) => (a.testedDate < b.testedDate ? 1 : -1));
   const report = reports[0];
 
   // Wait for the games database and the runtime report refresh before

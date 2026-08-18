@@ -34,20 +34,3 @@ export function formatDate(iso: string): string {
     day: "numeric",
   }).format(new Date(iso));
 }
-
-/** Relative time ("2 days ago"). */
-export function timeAgo(iso: string): string {
-  const seconds = Math.floor((Date.now() - new Date(iso).getTime()) / 1000);
-  const units: [number, string][] = [
-    [31536000, "year"],
-    [2592000, "month"],
-    [86400, "day"],
-    [3600, "hour"],
-    [60, "minute"],
-  ];
-  for (const [div, label] of units) {
-    const value = Math.floor(seconds / div);
-    if (value >= 1) return `${value} ${label}${value === 1 ? "" : "s"} ago`;
-  }
-  return "just now";
-}
