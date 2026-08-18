@@ -22,9 +22,6 @@ export type Block =
   | { type: "code"; value: string }
   | { type: "hr" };
 
-const escapeHtml = (s: string) =>
-  s.replace(/&/g, "&amp;").replace(/</g, "&lt;").replace(/>/g, "&gt;").replace(/"/g, "&quot;");
-
 /**
  * Allow http(s) URLs, or — when `allowRelative` — any scheme-less path
  * (e.g. "screenshots/ps5-01.png"). Other schemes (javascript:, data:, …) are
@@ -136,13 +133,13 @@ export function parseInline(input: string): InlineToken[] {
     const next = rest.search(/[\\`!*[\n]/);
     if (next === 0) {
       // A lone special char that didn't match above — emit literally.
-      tokens.push({ type: "text", value: escapeHtml(rest[0]) });
+      tokens.push({ type: "text", value: rest[0] });
       rest = rest.slice(1);
     } else if (next === -1) {
-      tokens.push({ type: "text", value: escapeHtml(rest) });
+      tokens.push({ type: "text", value: rest });
       rest = "";
     } else {
-      tokens.push({ type: "text", value: escapeHtml(rest.slice(0, next)) });
+      tokens.push({ type: "text", value: rest.slice(0, next) });
       rest = rest.slice(next);
     }
   }
@@ -158,146 +155,128 @@ export function parseInline(input: string): InlineToken[] {
  * paragraph instead of becoming a bogus ordered list.
  */
 const isListMarker = (line: string) => /^(\s*)([-*]|\d{1,3}[.)])\s+/.test(line);
-const isBlockquote = (line: string) => /^>\s?/.test(line);
 
 /**
- * Parse a full markdown document into blocks. Blank lines separate paragraphs;
- * lists and blockquotes group consecutive matching lines.
+ * Fast, self-contained Markdown block parser for compat report bodies.
+ * Supports:
+ *   - Headings (# … ######)
+ *   - Bullet lists (- item, * item) and numbered lists (1. item)
+ *   - Fenced code blocks (``` … ```)
+ *   - Blockquotes (> …)
+ *   - Horizontal rules (---, ***, ___)
+ *   - Paragraphs with soft breaks joined by spaces
  */
 export function parseMarkdown(source: string): Block[] {
-  const lines = source.replace(/\r\n/g, "\n").split("\n");
   const blocks: Block[] = [];
+  const lines = source.replace(/\r\n/g, "\n").split("\n");
   let i = 0;
 
   while (i < lines.length) {
     const line = lines[i];
 
-    if (line.trim() === "") {
+    // Blank line — advance.
+    if (!line.trim()) {
       i++;
       continue;
     }
 
     // Fenced code block.
-    const fence = line.match(/^```(\w*)\s*$/);
-    if (fence) {
-      const value: string[] = [];
+    if (line.trim().startsWith("```")) {
+      const codeLines: string[] = [];
       i++;
-      while (i < lines.length && !/^```\s*$/.test(lines[i])) {
-        value.push(lines[i]);
+      while (i < lines.length && !lines[i].trim().startsWith("```")) {
+        codeLines.push(lines[i]);
         i++;
       }
-      i++; // closing fence
-      blocks.push({ type: "code", value: value.join("\n") });
+      if (i < lines.length) i++; // consume the closing ```
+      blocks.push({ type: "code", value: codeLines.join("\n") });
       continue;
     }
 
-    // Heading.
-    const heading = line.match(/^(#{1,6})\s+(.*)$/);
-    if (heading) {
-      blocks.push({ type: "heading", level: heading[1].length, children: parseInline(heading[2]) });
+    // Heading (# to ######).
+    const headingMatch = line.match(/^(#{1,6})\s+(.+)$/);
+    if (headingMatch) {
+      blocks.push({
+        type: "heading",
+        level: headingMatch[1].length,
+        children: parseInline(headingMatch[2]),
+      });
       i++;
       continue;
     }
 
-    // Horizontal rule.
-    if (/^(-{3,}|\*{3,})$/.test(line.trim())) {
+    // Horizontal rule: ---, ***, or ___ on its own line.
+    if (/^(\s*[-*_]\s*){3,}$/.test(line)) {
       blocks.push({ type: "hr" });
       i++;
       continue;
     }
 
-    // Blockquote: group consecutive `>` lines (including wrapped text).
-    if (isBlockquote(line)) {
-      const quoted: string[] = [];
-      while (i < lines.length && (isBlockquote(lines[i]) || lines[i].trim() === "")) {
-        if (lines[i].trim() === "") {
-          // Blank line inside quote: only continue if the next is also a quote.
-          if (i + 1 < lines.length && isBlockquote(lines[i + 1])) {
-            quoted.push("");
-            i++;
-            continue;
-          }
-          break;
-        }
-        quoted.push(lines[i].replace(/^>\s?/, ""));
+    // Blockquote (> …). Multi-line quotes gather while lines start with >.
+    if (line.trim().startsWith(">")) {
+      const quoteLines: string[] = [];
+      while (i < lines.length && lines[i].trim().startsWith(">")) {
+        quoteLines.push(lines[i].trim().replace(/^>\s?/, ""));
         i++;
       }
-      blocks.push({ type: "blockquote", children: parseInline(quoted.join("\n")) });
+      blocks.push({
+        type: "blockquote",
+        children: parseInline(quoteLines.join(" ")),
+      });
       continue;
     }
 
-    // List: group consecutive marker lines.
+    // List: bullet or numbered.
     if (isListMarker(line)) {
-      const ordered = /^\s*\d{1,3}[.)]/.test(line);
+      const isOrdered = /^\s*\d/.test(line);
       const items: InlineToken[][] = [];
+
       while (i < lines.length && isListMarker(lines[i])) {
-        const item = lines[i].replace(/^\s*([-*]|\d+[.)])\s+/, "");
-        items.push(parseInline(item));
+        const itemLine = lines[i].replace(/^(\s*)([-*]|\d{1,3}[.)])\s+/, "");
+        const itemLines = [itemLine];
         i++;
+        // Continuation lines (indented or non-empty non-markers).
+        while (
+          i < lines.length &&
+          lines[i].trim() &&
+          !isListMarker(lines[i]) &&
+          !lines[i].trim().startsWith("#") &&
+          !lines[i].trim().startsWith(">") &&
+          !lines[i].trim().startsWith("```") &&
+          !/^(\s*[-*_]\s*){3,}$/.test(lines[i])
+        ) {
+          itemLines.push(lines[i].trim());
+          i++;
+        }
+        items.push(parseInline(itemLines.join(" ")));
       }
-      blocks.push({ type: "list", ordered, items });
+
+      blocks.push({ type: "list", ordered: isOrdered, items });
       continue;
     }
 
-    // Paragraph: accumulate until a blank line or a new block start.
-    const para: string[] = [];
+    // Paragraph: consume lines until a blank line or a special block start.
+    const paraLines: string[] = [];
     while (
       i < lines.length &&
-      lines[i].trim() !== "" &&
-      !/^#{1,6}\s/.test(lines[i]) &&
+      lines[i].trim() &&
+      !lines[i].trim().startsWith("#") &&
+      !lines[i].trim().startsWith(">") &&
+      !lines[i].trim().startsWith("```") &&
       !isListMarker(lines[i]) &&
-      !isBlockquote(lines[i]) &&
-      !/^```/.test(lines[i])
+      !/^(\s*[-*_]\s*){3,}$/.test(lines[i])
     ) {
-      para.push(lines[i]);
+      paraLines.push(lines[i].trim());
       i++;
     }
-    blocks.push({ type: "paragraph", children: parseInline(para.join(" ")) });
+
+    if (paraLines.length) {
+      blocks.push({
+        type: "paragraph",
+        children: parseInline(paraLines.join(" ")),
+      });
+    }
   }
 
   return blocks;
-}
-
-/* --------------------------- Plain-text export --------------------------- */
-
-function inlineToText(tokens: InlineToken[]): string {
-  return tokens
-    .map((t) => {
-      switch (t.type) {
-        case "text":
-          return t.value;
-        case "code":
-          return t.value;
-        case "image":
-          return t.alt;
-        case "bold":
-        case "italic":
-        case "link":
-          return inlineToText(t.children);
-      }
-    })
-    .join("");
-}
-
-/** Strip markdown down to readable plain text (used for card previews). */
-export function markdownToText(source: string): string {
-  return parseMarkdown(source)
-    .map((b) => {
-      switch (b.type) {
-        case "heading":
-        case "paragraph":
-        case "blockquote":
-          return inlineToText(b.children);
-        case "list":
-          return b.items.map((item) => inlineToText(item)).join(" ");
-        case "code":
-          return b.value;
-        case "hr":
-          return "";
-      }
-    })
-    .filter(Boolean)
-    .join(" ")
-    .replace(/\s+/g, " ")
-    .trim();
 }

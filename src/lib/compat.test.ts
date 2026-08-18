@@ -152,6 +152,18 @@ describe("parseCompatReport", () => {
     expect(report.screenshots).toEqual(["https://example.com/a.png", "https://example.com/b.png"]);
   });
 
+  it("preserves numeric titles and versions as strings without numeric coercion", () => {
+    const numericTitle = VALID.replace('title: "Test Game"', 'title: "1942"').replace(
+      'testedVersion: "main"',
+      'testedVersion: "20260810"',
+    );
+    const report = parseCompatReport(numericTitle, "1942-windows");
+    expect(report.title).toBe("1942");
+    expect(typeof report.title).toBe("string");
+    expect(report.testedVersion).toBe("20260810");
+    expect(typeof report.testedVersion).toBe("string");
+  });
+
   it("parses the screenshotVerified flag (set on verified reports)", () => {
     const withFlag = VALID.replace(
       'hardware: "Ryzen 9 / RTX 5090"',

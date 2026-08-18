@@ -95,14 +95,18 @@ jobs:
 
       - name: Convert the issue to a report
         id: convert
+        env:
+          ISSUE_DATE: ${{ steps.source.outputs.created }}
+          ISSUE_NUM: ${{ steps.source.outputs.number }}
+          ISSUE_URL: ${{ steps.source.outputs.url }}
         run: |
           # Capture the converter's output so a failure can be posted back as
           # a readable comment (the final step reads /tmp/compat-failure.txt).
           if ! CONVERT_OUT="$(node scripts/issue-to-compat.mjs \
             --issue-body-file /tmp/mirror-issue-body.txt \
-            --date "${{ steps.source.outputs.created }}" \
-            --source "KytyPS5 issue #${{ steps.source.outputs.number }}" \
-            --source-url "${{ steps.source.outputs.url }}" 2>&1)"; then
+            --date "$ISSUE_DATE" \
+            --source "KytyPS5 issue #$ISSUE_NUM" \
+            --source-url "$ISSUE_URL" 2>&1)"; then
             MSG="$(printf '%s' "$CONVERT_OUT" | sed -n 's/^\[issue-to-compat\] //p' | tail -1)"
             [ -n "$MSG" ] || MSG="$(printf '%s' "$CONVERT_OUT" | tail -3 | tr '\n' ' ')"
             printf '%s' "$MSG" > /tmp/compat-failure.txt

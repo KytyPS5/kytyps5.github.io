@@ -29,21 +29,3 @@ export function loadGames(): Promise<Game[]> {
   }
   return gamesPromise;
 }
-
-function normalize(name: string) {
-  return name.toLowerCase().replace(/[^a-z0-9]+/g, "");
-}
-
-/** Find a game entry for a compat report — by title ID first, then by name. */
-export async function findGame(
-  title: string,
-  titleId?: string,
-): Promise<Game | undefined> {
-  const games = await loadGames();
-  if (titleId) {
-    const byId = games.find((g) => g.allTitleIds.includes(titleId));
-    if (byId) return byId;
-  }
-  const key = normalize(title);
-  return games.find((g) => normalize(g.name) === key);
-}
