@@ -1,5 +1,5 @@
 ---
-title: "Grand Theft Auto: Vice City - The Defintitive Edition"
+title: "Grand Theft Auto: Vice City - The Definitive Edition"
 titleId: "PPSA03531"
 status: "main-menu"
 testedVersion: "769edf4"

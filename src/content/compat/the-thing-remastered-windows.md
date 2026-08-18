@@ -1,5 +1,5 @@
 ---
-title: "The Thing: Remasterered"
+title: "The Thing: Remastered"
 titleId: "PPSA24381"
 status: "in-game"
 testedVersion: "KytyPS5-2026-08-03-d09c81d"

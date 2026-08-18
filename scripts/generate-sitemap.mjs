@@ -10,6 +10,7 @@ import { readdir, readFile, writeFile } from "node:fs/promises";
 import { readFileSync } from "node:fs";
 import { fileURLToPath } from "node:url";
 import path from "node:path";
+import { siteGameKey } from "./lib/compat-export.mjs";
 
 const ROOT = path.resolve(path.dirname(fileURLToPath(import.meta.url)), "..");
 const COMPAT_DIR = path.join(ROOT, "src", "content", "compat");
@@ -60,7 +61,7 @@ for (const file of await readdir(COMPAT_DIR)) {
   const raw = await readFile(path.join(COMPAT_DIR, file), "utf8");
   const data = parseFrontmatter(raw);
   const slug = file.replace(/\.md$/, "");
-  const key = String(data.titleId || slug);
+  const key = data.titleId ? siteGameKey(data.titleId) : slug;
   if (seen.has(key)) continue;
   seen.add(key);
   gameUrls.push([`/game/${key}`, "weekly", "0.7"]);
