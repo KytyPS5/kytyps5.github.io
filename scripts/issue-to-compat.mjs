@@ -267,7 +267,9 @@ const titleId = pickTitleId(intake.titleId);
 // conversion for the same game + OS overwrites that OS's status in place.
 const slug =
   flags.slug ||
-  title.toLowerCase().replace(/[^a-z0-9]+/g, "-").replace(/^-|-$/g, "") + (os ? `-${os}` : "");
+  (title
+    ? title.toLowerCase().replace(/[^a-z0-9]+/g, "-").replace(/^-|-$/g, "") + (os ? `-${os}` : "")
+    : "");
 
 const errors = [];
 if (!title) errors.push("--title / \"Game title\" is required (or set one with /settitle on the mirror issue)");
@@ -303,14 +305,14 @@ const reportBody = bodySections.join("\n\n");
 
 const frontmatter = [
   "---",
-  `title: "${title}"`,
-  `titleId: "${titleId}"`,
+  `title: ${JSON.stringify(title)}`,
+  `titleId: ${JSON.stringify(titleId)}`,
   `status: "${status}"`,
-  `testedVersion: "${version}"`,
+  `testedVersion: ${JSON.stringify(version)}`,
   `testedDate: "${date}"`,
   `os: "${os}"`,
-  hardware ? `hardware: "${hardware}"` : null,
-  gameVersion ? `gameVersion: "${gameVersion}"` : null,
+  hardware ? `hardware: ${JSON.stringify(hardware)}` : null,
+  gameVersion ? `gameVersion: ${JSON.stringify(gameVersion)}` : null,
   screenshots.length ? `screenshots: ${JSON.stringify(screenshots)}` : null,
   "---",
   "",
