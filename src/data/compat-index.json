@@ -883,14 +883,14 @@
     "title": "Minecraft",
     "titleId": "PPSA17221",
     "cover": "https://image.api.playstation.com/vulcan/ap/rnd/202407/1020/91fe046f742042e3b31e57f7731dbe2226e1fd1e02a36223.jpg",
-    "overall": "main-menu",
+    "overall": "in-game",
     "os": {
-      "windows": "main-menu"
+      "windows": "in-game"
     },
     "reportCounts": {
       "windows": 1
     },
-    "latestTested": "2026-08-03"
+    "latestTested": "2026-08-18"
   },
   {
     "key": "PPSA02787",
