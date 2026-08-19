@@ -210,6 +210,19 @@
     "latestTested": "2026-08-06"
   },
   {
+    "key": "PPSA19015",
+    "title": "Arcade Game Zone",
+    "titleId": "PPSA19015",
+    "overall": "in-game",
+    "os": {
+      "windows": "in-game"
+    },
+    "reportCounts": {
+      "windows": 1
+    },
+    "latestTested": "2026-08-19"
+  },
+  {
     "key": "PPSA06410",
     "title": "Arcade Spirits: The New Challengers",
     "titleId": "PPSA06410",
