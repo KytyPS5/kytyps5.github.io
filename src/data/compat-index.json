@@ -363,6 +363,20 @@
     "latestTested": "2026-07-24"
   },
   {
+    "key": "PPSA01502",
+    "title": "Bugsnax",
+    "titleId": "PPSA01502",
+    "cover": "https://image.api.playstation.com/vulcan/ap/rnd/202006/1917/hGSdG2l6eGt4KyyUozhceMW6.png",
+    "overall": "main-menu",
+    "os": {
+      "windows": "main-menu"
+    },
+    "reportCounts": {
+      "windows": 1
+    },
+    "latestTested": "2026-08-18"
+  },
+  {
     "key": "PPSA01649",
     "title": "Call of Duty®",
     "titleId": "PPSA01649",
