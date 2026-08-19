@@ -1045,6 +1045,20 @@
     "latestTested": "2026-08-05"
   },
   {
+    "key": "PPSA02530",
+    "title": "PRAGMATA",
+    "titleId": "PPSA02530",
+    "cover": "https://image.api.playstation.com/vulcan/ap/rnd/202511/2605/903271eb79de107c27515fd04ee6f9e9cfdf2d6028a48673.png",
+    "overall": "doesnt-boot",
+    "os": {
+      "windows": "doesnt-boot"
+    },
+    "reportCounts": {
+      "windows": 1
+    },
+    "latestTested": "2026-08-19"
+  },
+  {
     "key": "PPSA10067",
     "title": "Prince of Persia: The Lost Crown",
     "titleId": "PPSA10067",
