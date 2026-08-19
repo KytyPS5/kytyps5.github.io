@@ -503,6 +503,19 @@
     "latestTested": "2026-08-10"
   },
   {
+    "key": "PPSA21444",
+    "title": "DOOM + DOOM II",
+    "titleId": "PPSA21444",
+    "overall": "in-game",
+    "os": {
+      "windows": "in-game"
+    },
+    "reportCounts": {
+      "windows": 1
+    },
+    "latestTested": "2026-08-18"
+  },
+  {
     "key": "PPSA09077",
     "title": "DREDGE",
     "titleId": "PPSA09077",
