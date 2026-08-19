@@ -391,6 +391,20 @@
     "latestTested": "2026-08-01"
   },
   {
+    "key": "PPSA01545",
+    "title": "Call of The Sea",
+    "titleId": "PPSA01545",
+    "cover": "https://image.api.playstation.com/vulcan/ap/rnd/202104/1314/55il6neBPVpJHr55Yqu4cN1Y.png",
+    "overall": "main-menu",
+    "os": {
+      "windows": "main-menu"
+    },
+    "reportCounts": {
+      "windows": 1
+    },
+    "latestTested": "2026-08-18"
+  },
+  {
     "key": "PPSA02432",
     "title": "Crash Bandicoot™ 4: It’s About Time",
     "titleId": "PPSA02432",
