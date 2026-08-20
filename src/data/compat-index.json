@@ -947,6 +947,20 @@
     "latestTested": "2026-08-08"
   },
   {
+    "key": "PPSA07934",
+    "title": "Medieval Dynasty",
+    "titleId": "PPSA07934",
+    "cover": "https://image.api.playstation.com/vulcan/ap/rnd/202405/2708/4730b81b9b30437a90e4fcb5e0635b7d9810f78fa04a40de.jpg",
+    "overall": "main-menu",
+    "os": {
+      "windows": "main-menu"
+    },
+    "reportCounts": {
+      "windows": 1
+    },
+    "latestTested": "2026-08-19"
+  },
+  {
     "key": "PPSA17221",
     "title": "Minecraft",
     "titleId": "PPSA17221",
