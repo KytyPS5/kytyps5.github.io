@@ -557,6 +557,20 @@
     "latestTested": "2026-08-18"
   },
   {
+    "key": "PPSA01981",
+    "title": "DOOM Eternal",
+    "titleId": "PPSA01981",
+    "cover": "https://image.api.playstation.com/vulcan/ap/rnd/202010/2806/IhUTQzhUhCvaTQF1P6iyFyXl.png",
+    "overall": "doesnt-boot",
+    "os": {
+      "windows": "doesnt-boot"
+    },
+    "reportCounts": {
+      "windows": 1
+    },
+    "latestTested": "2026-08-20"
+  },
+  {
     "key": "PPSA02929",
     "title": "Dreaming Sarah",
     "titleId": "PPSA02929",
