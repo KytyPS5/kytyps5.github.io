@@ -822,6 +822,19 @@
     "latestTested": "2026-08-07"
   },
   {
+    "key": "PPSA17168",
+    "title": "Hi-Fi RUSH",
+    "titleId": "PPSA17168",
+    "overall": "in-game",
+    "os": {
+      "windows": "in-game"
+    },
+    "reportCounts": {
+      "windows": 1
+    },
+    "latestTested": "2026-08-19"
+  },
+  {
     "key": "PPSA04181",
     "title": "Hoa",
     "titleId": "PPSA04181",
