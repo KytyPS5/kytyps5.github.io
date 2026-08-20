@@ -1639,6 +1639,20 @@
     "latestTested": "2026-08-19"
   },
   {
+    "key": "PPSA05683",
+    "title": "Tropico 6",
+    "titleId": "PPSA05683",
+    "cover": "https://image.api.playstation.com/vulcan/ap/rnd/202010/0614/DG1sBnZ3HFGEqry0KNikYW1H.jpg",
+    "overall": "logo",
+    "os": {
+      "windows": "logo"
+    },
+    "reportCounts": {
+      "windows": 1
+    },
+    "latestTested": "2026-08-20"
+  },
+  {
     "key": "PPSA24558",
     "title": "TUROK",
     "titleId": "PPSA24558",
