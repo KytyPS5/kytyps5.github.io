@@ -1364,6 +1364,20 @@
     "latestTested": "2026-08-10"
   },
   {
+    "key": "PPSA08804",
+    "title": "Sonic Racing: CrossWorlds",
+    "titleId": "PPSA08804",
+    "cover": "https://image.api.playstation.com/vulcan/ap/rnd/202502/2420/bccdbba86a2531b06bae4608e0a5fb1812e210e5818beb29.jpg",
+    "overall": "logo",
+    "os": {
+      "windows": "logo"
+    },
+    "reportCounts": {
+      "windows": 1
+    },
+    "latestTested": "2026-08-19"
+  },
+  {
     "key": "PPSA02198",
     "title": "STAR WARS Jedi: Fallen Order™",
     "titleId": "PPSA02198",
