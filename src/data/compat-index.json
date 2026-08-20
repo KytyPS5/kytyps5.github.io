@@ -585,6 +585,19 @@
     "latestTested": "2026-07-19"
   },
   {
+    "key": "PPSA27360",
+    "title": "EA SPORTS FC 26",
+    "titleId": "PPSA27360",
+    "overall": "doesnt-boot",
+    "os": {
+      "windows": "doesnt-boot"
+    },
+    "reportCounts": {
+      "windows": 1
+    },
+    "latestTested": "2026-08-19"
+  },
+  {
     "key": "PPSA04184",
     "title": "EA SPORTS™ College Football 25",
     "titleId": "PPSA04184",
