@@ -959,6 +959,19 @@
     "latestTested": "2026-07-19"
   },
   {
+    "key": "PPSA29629",
+    "title": "MARVEL Cosmic Invasion",
+    "titleId": "PPSA29629",
+    "overall": "in-game",
+    "os": {
+      "windows": "in-game"
+    },
+    "reportCounts": {
+      "windows": 1
+    },
+    "latestTested": "2026-08-20"
+  },
+  {
     "key": "PPSA01411",
     "title": "Marvel's Spider-Man: Miles Morales",
     "titleId": "PPSA01411",
