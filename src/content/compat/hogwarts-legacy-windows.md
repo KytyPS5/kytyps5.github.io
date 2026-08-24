@@ -1,18 +1,22 @@
 ---
-title: "Hogwarts Legacy"
-titleId: "PPSA01593"
+title: "Hogwarts Legacy V01.000.013"
+titleId: "PPSA01603"
 status: "logo"
-testedVersion: "0.0.5.5 BETA"
-testedDate: "2026-07-19"
+testedVersion: "2026-08-08-87428d7"
+testedDate: "2026-08-08"
 os: "windows"
-hardware: "AMD Ryzen 7 7700X / AMD Radeon 7900XTX"
+hardware: "AMD Ryzen 9 9950X3D / AMD Radeon RX 7900 XT / 256GB / 20GB"
 ---
 
-Game boots to the splash screen, then crashes.
+See the original issue for details.
 
-**Steps to reproduce:** Open Emulator Boot game
+## Steps to reproduce
 
-**Extra notes:** Default settings.
+Boot Game
+nothing
 
-> Source: [KytyPS5 issue #64](https://github.com/KytyPS5/KytyPS5/issues/64)
+## Expected behavior
 
+Game boots and shows Splash screen and intro Video up to the Main Menu
+
+> Source: [KytyPS5 issue #209](https://github.com/KytyPS5/KytyPS5/issues/209)
