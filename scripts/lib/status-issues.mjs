@@ -53,6 +53,9 @@ import { cleanField, normalizeOs, parseIssueBody } from "./issue-form.mjs";
 /** Label every mirror issue carries (closed = already converted via /compat). */
 export const MIRROR_LABEL = "compat";
 
+/** Label added when an upstream issue was edited with status/version changes. */
+export const UPDATED_LABEL = "updated-existing";
+
 /** Cap for the mirrored body — GitHub issue bodies allow ~64k chars. */
 const BODY_CAP = 60_000;
 
@@ -294,6 +297,66 @@ export function gameKeyFor(titleId, games) {
   return key;
 }
 
+/** The `status` frontmatter of a report (canonical status slug). */
+export function reportStatus(md) {
+  const m = String(md ?? "").match(/^status:\s*"?([^"\n]+)"?/m);
+  return m ? String(m[1]).trim().toLowerCase() : undefined;
+}
+
+/** The `testedVersion` frontmatter of a report. */
+export function reportVersion(md) {
+  const m = String(md ?? "").match(/^testedVersion:\s*"?([^"\n]+)"?/m);
+  return m ? String(m[1]).trim() : undefined;
+}
+
+/**
+ * Normalized status ladder: maps template options & legacy statuses to canonical slugs.
+ */
+export function issueStatus(body) {
+  const sections = parseIssueBody(body);
+  const raw = cleanField(sections, "Compatibility status");
+  const v = String(raw ?? "").trim().toLowerCase();
+  const TEMPLATE_STATUS = {
+    "doesn't boot": "doesnt-boot",
+    "doesnt boot": "doesnt-boot",
+    "does not boot": "doesnt-boot",
+    logo: "logo",
+    "main menu": "main-menu",
+    "in game": "in-game",
+    playable: "in-game",
+    perfect: "in-game",
+  };
+  return TEMPLATE_STATUS[v] ?? (["doesnt-boot", "logo", "main-menu", "in-game"].includes(v) ? v : undefined);
+}
+
+/** The KytyPS5 version from an upstream issue body. */
+export function issueVersion(body) {
+  const sections = parseIssueBody(body);
+  return (
+    cleanField(sections, "KytyPS5 version") ||
+    cleanField(sections, "KytyPS5 build (commit or release, not the game version)") ||
+    undefined
+  );
+}
+
+/**
+ * Build mirror body for an updated report issue, prepending a prominent diff
+ * summary notice before the upstream issue body and provenance footer.
+ */
+export function buildUpdatedMirrorBody(
+  upstreamBody,
+  { oldStatus, newStatus, oldVersion, newVersion },
+  { number, url, created },
+) {
+  const diffLines = [
+    "### 🔄 Upstream Report Updated",
+    `- **Version:** \`${oldVersion || "unknown"}\` → \`${newVersion || "unknown"}\``,
+    `- **Status:** \`${oldStatus || "unknown"}\` → \`${newStatus || "unknown"}\``,
+  ];
+  const base = buildMirrorBody(upstreamBody, { number, url, created });
+  return `${diffLines.join("\n")}\n\n---\n\n${base}`;
+}
+
 /**
  * Scheduled-run gate: should an upstream issue get a mirror?
  *
@@ -303,22 +366,27 @@ export function gameKeyFor(titleId, games) {
  * report for the same (game, OS) is already as new or newer than the
  * candidate. Exception: when TWO OR MORE candidates for the same (game, OS)
  * arrive in the same run they're a fresh batch — all of them are mirrored.
+ * Also mirrors when an edited issue has a changed status or version.
  * Manual runs never call this (workflow_dispatch always mirrors the issue).
  *
- * `candidate` is { number, created } with created = YYYY-MM-DD; `report` is
- * the existing report for the candidate's (game, OS) ({ sourceNumber,
- * testedDate }) or undefined; `batchSize` is how many candidates this run
- * found for that (game, OS). Returns { create, reason? }.
+ * `candidate` is { number, created, isEdited?, statusChanged?, versionChanged? };
+ * `report` is the existing report for the candidate's (game, OS) ({ sourceNumber,
+ * testedDate, status, version }) or undefined; `batchSize` is how many candidates
+ * this run found for that (game, OS). Returns { create, isUpdate?, reason? }.
  */
 export function shouldCreateMirror(candidate, { report, batchSize }) {
   if (report) {
-    if (report.sourceNumber === candidate.number) {
+    const hasSemanticChange = candidate.statusChanged || candidate.versionChanged;
+    if (candidate.isEdited && hasSemanticChange) {
+      return { create: true, isUpdate: true, reason: "upstream report was edited with changes" };
+    }
+    if (report.sourceNumber === candidate.number && !hasSemanticChange) {
       return { create: false, reason: "already converted" };
     }
     if (batchSize > 1) {
       return { create: true, reason: "same-run batch" };
     }
-    if (report.testedDate && !(candidate.created > report.testedDate)) {
+    if (report.testedDate && !(candidate.created > report.testedDate) && !hasSemanticChange) {
       return {
         create: false,
         reason: `existing ${report.testedDate} report is as new or newer`,

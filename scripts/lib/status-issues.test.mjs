@@ -3,9 +3,12 @@ import { parseIssueBody } from "./issue-form.mjs";
 import {
   appendOverrides,
   buildMirrorBody,
+  buildUpdatedMirrorBody,
   gameKeyFor,
   issueOs,
+  issueStatus,
   issueTitleId,
+  issueVersion,
   MIRROR_LABEL,
   mirrorSlug,
   mirrorSource,
@@ -15,10 +18,13 @@ import {
   refreshMirrorBody,
   reportOs,
   reportSourceNumber,
+  reportStatus,
   reportTestedDate,
   reportTitleId,
+  reportVersion,
   shouldCreateMirror,
   titleIdKey,
+  UPDATED_LABEL,
 } from "./status-issues.mjs";
 
 const UPSTREAM_BODY = `### Game title
@@ -382,8 +388,87 @@ describe("dedup keys (titleId-based (game, OS) matching)", () => {
   });
 });
 
-describe("MIRROR_LABEL", () => {
-  it("is the compat label", () => {
+describe("MIRROR_LABEL and UPDATED_LABEL", () => {
+  it("defines the expected labels", () => {
     expect(MIRROR_LABEL).toBe("compat");
+    expect(UPDATED_LABEL).toBe("updated-existing");
+  });
+});
+
+describe("reportStatus and reportVersion", () => {
+  const md = `---\ntitle: "Demon's Souls"\nstatus: "doesnt-boot"\ntestedVersion: "0.2.2-abc"\ntestedDate: "2026-08-10"\nos: "windows"\n---\n`;
+
+  it("reads status and testedVersion from frontmatter", () => {
+    expect(reportStatus(md)).toBe("doesnt-boot");
+    expect(reportVersion(md)).toBe("0.2.2-abc");
+  });
+
+  it("returns undefined when missing", () => {
+    expect(reportStatus("no frontmatter")).toBeUndefined();
+    expect(reportVersion("no frontmatter")).toBeUndefined();
+  });
+});
+
+describe("issueStatus and issueVersion", () => {
+  it("extracts status and version from upstream issue body", () => {
+    expect(issueStatus(UPSTREAM_BODY)).toBe("in-game");
+    expect(issueVersion(UPSTREAM_BODY)).toBe("main");
+  });
+
+  it("normalizes legacy status values", () => {
+    const legacy = UPSTREAM_BODY.replace("In game", "playable");
+    expect(issueStatus(legacy)).toBe("in-game");
+  });
+});
+
+describe("buildUpdatedMirrorBody", () => {
+  it("prepends the diff notice and preserves provenance", () => {
+    const body = buildUpdatedMirrorBody(
+      UPSTREAM_BODY,
+      {
+        oldStatus: "doesnt-boot",
+        newStatus: "in-game",
+        oldVersion: "0.2.1",
+        newVersion: "0.2.2",
+      },
+      {
+        number: 42,
+        url: "https://github.com/KytyPS5/KytyPS5/issues/42",
+        created: "2026-08-20",
+      },
+    );
+    expect(body).toContain("### 🔄 Upstream Report Updated");
+    expect(body).toContain("- **Version:** `0.2.1` → `0.2.2`");
+    expect(body).toContain("- **Status:** `doesnt-boot` → `in-game`");
+    expect(body).toContain("Mirrors [KytyPS5 issue #42](https://github.com/KytyPS5/KytyPS5/issues/42) — created 2026-08-20.");
+  });
+});
+
+describe("shouldCreateMirror with edits", () => {
+  const report = { sourceNumber: 222, testedDate: "2026-08-09", status: "doesnt-boot", version: "0.2.1" };
+
+  it("mirrors an edited issue when status or version changed", () => {
+    expect(
+      shouldCreateMirror(
+        { number: 222, created: "2026-08-20", isEdited: true, statusChanged: true },
+        { report, batchSize: 1 },
+      ),
+    ).toEqual({
+      create: true,
+      isUpdate: true,
+      reason: "upstream report was edited with changes",
+    });
+  });
+
+  it("skips an edited issue when neither status nor version changed", () => {
+    expect(
+      shouldCreateMirror(
+        { number: 222, created: "2026-08-20", isEdited: true, statusChanged: false, versionChanged: false },
+        { report, batchSize: 1 },
+      ),
+    ).toEqual({
+      create: false,
+      reason: "already converted",
+    });
   });
 });

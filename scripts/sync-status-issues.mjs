@@ -39,21 +39,29 @@ import { readdir, readFile } from "node:fs/promises";
 import { fileURLToPath } from "node:url";
 import path from "node:path";
 import {
+  appendOverrides,
   buildMirrorBody,
+  buildUpdatedMirrorBody,
   gameKeyFor,
   issueOs,
+  issueStatus,
   issueTitleId,
+  issueVersion,
   MIRROR_LABEL,
   mirrorSlug,
   mirrorSource,
   mirrorTitle,
+  readOverrides,
   refreshMirrorBody,
   reportOs,
   reportSourceNumber,
+  reportStatus,
   reportTestedDate,
   reportTitleId,
+  reportVersion,
   shouldCreateMirror,
   titleIdKey,
+  UPDATED_LABEL,
 } from "./lib/status-issues.mjs";
 
 const ROOT = path.resolve(path.dirname(fileURLToPath(import.meta.url)), "..");
@@ -84,8 +92,80 @@ async function api(url, options) {
   return res.json();
 }
 
-/** One KytyPS5 issue, or every open issue (paginated, [GAME STATUS] titles). */
+/** One KytyPS5 issue, or recent issues via GraphQL / REST. */
 async function fetchCandidates() {
+  const [owner, name] = upstreamRepo.split("/");
+  if (token) {
+    try {
+      if (issueNumber) {
+        const query = `query {
+          repository(owner: "${owner}", name: "${name}") {
+            issue(number: ${issueNumber}) {
+              number
+              title
+              state
+              createdAt
+              lastEditedAt
+              updatedAt
+              body
+              url
+            }
+          }
+        }`;
+        const res = await api("https://api.github.com/graphql", {
+          method: "POST",
+          headers: { authorization: `Bearer ${token}`, "content-type": "application/json" },
+          body: JSON.stringify({ query }),
+        });
+        const issue = res?.data?.repository?.issue;
+        if (issue) return [{ ...issue, html_url: issue.url }];
+      } else {
+        const all = [];
+        let cursor = null;
+        for (let page = 1; page <= 5; page++) {
+          const afterClause = cursor ? `, after: "${cursor}"` : "";
+          const query = `query {
+            repository(owner: "${owner}", name: "${name}") {
+              issues(first: 100, states: [OPEN, CLOSED], orderBy: { field: UPDATED_AT, direction: DESC }${afterClause}) {
+                pageInfo {
+                  hasNextPage
+                  endCursor
+                }
+                nodes {
+                  number
+                  title
+                  state
+                  createdAt
+                  lastEditedAt
+                  updatedAt
+                  body
+                  url
+                }
+              }
+            }
+          }`;
+          const res = await api("https://api.github.com/graphql", {
+            method: "POST",
+            headers: { authorization: `Bearer ${token}`, "content-type": "application/json" },
+            body: JSON.stringify({ query }),
+          });
+          const issuesData = res?.data?.repository?.issues;
+          if (!issuesData?.nodes?.length) break;
+          all.push(...issuesData.nodes.map((i) => ({ ...i, html_url: i.url })));
+          if (!issuesData.pageInfo.hasNextPage) break;
+          cursor = issuesData.pageInfo.endCursor;
+        }
+        return all.filter(
+          (issue) =>
+            /\[GAME (?:STATUS|BUG)\]/i.test(issue.title ?? "") ||
+            (issue.body && issue.body.includes("### Compatibility status")),
+        );
+      }
+    } catch (err) {
+      console.warn(`[sync-status-issues] GraphQL query failed (${err.message}), falling back to REST API`);
+    }
+  }
+
   const headers = token ? { authorization: `Bearer ${token}` } : {};
   if (issueNumber) {
     const issue = await api(`https://api.github.com/repos/${upstreamRepo}/issues/${issueNumber}`, { headers });
@@ -94,16 +174,21 @@ async function fetchCandidates() {
   const all = [];
   for (let page = 1; page <= 5; page++) {
     const batch = await api(
-      `https://api.github.com/repos/${upstreamRepo}/issues?state=open&per_page=100&page=${page}`,
+      `https://api.github.com/repos/${upstreamRepo}/issues?state=all&sort=updated&direction=desc&per_page=100&page=${page}`,
       { headers },
     );
     all.push(...batch);
     if (batch.length < 100) break;
   }
-  return all.filter((issue) => !issue.pull_request && /^\[GAME STATUS\]/i.test(issue.title ?? ""));
+  return all.filter(
+    (issue) =>
+      !issue.pull_request &&
+      (/\[GAME (?:STATUS|BUG)\]/i.test(issue.title ?? "") ||
+        (issue.body && issue.body.includes("### Compatibility status"))),
+  );
 }
 
-/** Reports on this checkout (main): report slug → { titleId, os, sourceNumber, testedDate }. */
+/** Reports on this checkout (main): report slug → { titleId, os, status, version, sourceNumber, testedDate }. */
 async function reportIndex() {
   const reports = new Map();
   for (const file of await readdir(COMPAT_DIR)) {
@@ -112,6 +197,8 @@ async function reportIndex() {
     reports.set(file.slice(0, -3), {
       titleId: reportTitleId(raw),
       os: reportOs(raw),
+      status: reportStatus(raw),
+      version: reportVersion(raw),
       sourceNumber: reportSourceNumber(raw),
       testedDate: reportTestedDate(raw),
     });
@@ -119,7 +206,7 @@ async function reportIndex() {
   return reports;
 }
 
-/** Existing mirrors in this repo: KytyPS5 issue number → { state, body }. */
+/** Existing mirrors in this repo: KytyPS5 issue number → { number, state, body }. */
 async function fetchMirrors() {
   const headers = { authorization: `Bearer ${token}` };
   const mirrors = new Map();
@@ -146,20 +233,19 @@ async function patchIssue(number, fields) {
   });
 }
 
-async function createIssue(title, body) {
+async function createIssue(title, body, labels = [MIRROR_LABEL]) {
   await api(`https://api.github.com/repos/${thisRepo}/issues`, {
     method: "POST",
     headers: { authorization: `Bearer ${token}`, "content-type": "application/json" },
-    body: JSON.stringify({ title, body, labels: [MIRROR_LABEL] }),
+    body: JSON.stringify({ title, body, labels }),
   });
 }
 
 const candidates = await fetchCandidates();
 const games = JSON.parse(await readFile(path.join(ROOT, "src", "data", "games.json"), "utf8"));
 const reports = await reportIndex();
-// Reports keyed by (game, OS) — every region variant of a game resolves to
-// the same game key, so punctuation-differing titles and region-variant
-// serials dedup against the SAME report (not the title+OS slug).
+
+// Reports keyed by (game, OS)
 const byGameOs = new Map();
 for (const report of reports.values()) {
   if (!report.titleId || !report.os) continue;
@@ -167,8 +253,7 @@ for (const report of reports.values()) {
   byGameOs.set(`${gameKey}|${report.os}`, report);
   byGameOs.set(`${report.titleId}|${report.os}`, report);
 }
-// How many candidates this run map to each (game, OS) — a run that finds two
-// or more issues for one (game, OS) mirrors all of them (see shouldCreateMirror).
+
 const candidateKey = (issue) => {
   const body = issue.body ?? "";
   const titleId = issueTitleId(body);
@@ -177,6 +262,7 @@ const candidateKey = (issue) => {
   const slug = mirrorSlug(body, issue.title);
   return slug ? `slug:${slug}` : undefined;
 };
+
 const batchCounts = new Map();
 for (const issue of candidates) {
   const key = candidateKey(issue);
@@ -191,50 +277,77 @@ let skipped = 0;
 for (const issue of candidates) {
   const number = issue.number;
   const mirror = mirrors.get(number);
-  const createdDate = String(issue.created_at).slice(0, 10);
-  // Rebuild the upstream snapshot, re-applying any /setos /setid /settitle
-  // overrides the EXISTING mirror recorded — a refresh must never drop them.
-  // New candidates (no mirror yet) just get the plain rebuilt body.
-  const newBody = refreshMirrorBody(issue.body, mirror?.body, {
-    number,
-    url: issue.html_url,
-    created: createdDate,
-  });
+  const createdDate = String(issue.createdAt || issue.created_at || "").slice(0, 10);
+  const lastEditDate = issue.lastEditedAt ? String(issue.lastEditedAt).slice(0, 10) : undefined;
+  const effectiveDate = lastEditDate || createdDate;
+  const isEdited = issue.lastEditedAt !== null && issue.lastEditedAt !== undefined;
+
+  const key = candidateKey(issue);
+  const report = key
+    ? key.startsWith("slug:")
+      ? reports.get(key.slice(5))
+      : (byGameOs.get(key) ?? undefined)
+    : undefined;
+
+  const candStatus = issueStatus(issue.body);
+  const candVersion = issueVersion(issue.body);
+  const statusChanged = candStatus && report?.status && candStatus !== report.status;
+  const versionChanged = candVersion && report?.version && candVersion !== report.version;
+  const isUpdate = isEdited && (statusChanged || versionChanged);
+
+  const baseBody = isUpdate
+    ? buildUpdatedMirrorBody(
+        issue.body,
+        {
+          oldStatus: report?.status,
+          newStatus: candStatus,
+          oldVersion: report?.version,
+          newVersion: candVersion,
+        },
+        { number, url: issue.html_url, created: effectiveDate },
+      )
+    : refreshMirrorBody(issue.body, mirror?.body, {
+        number,
+        url: issue.html_url,
+        created: effectiveDate,
+      });
+
+  const newBody = isUpdate && mirror?.body
+    ? appendOverrides(baseBody, readOverrides(mirror.body))
+    : baseBody;
   const newTitle = mirrorTitle(issue.body, issue.title);
 
   if (mirror) {
-    if (mirror.state === "closed" && !issueNumber) {
-      // Closed = already converted via /compat (or intentionally declined).
+    if (mirror.state === "closed" && !issueNumber && !isUpdate) {
+      // Closed = already converted via /compat (and no status/version edit detected).
       skipped++;
       continue;
     }
-    if (mirror.body === newBody && mirror.state === "open") {
+    if (mirror.body === newBody && mirror.state === "open" && !isUpdate) {
       skipped++; // nothing to refresh
       continue;
     }
-    // Refresh the snapshot (and reopen a closed mirror on manual runs).
+    // Refresh the snapshot (and reopen closed mirror if updated or manual run).
     const patch = mirror.body === newBody ? {} : { body: newBody };
     if (mirror.state === "closed") patch.state = "open";
+    if (isUpdate) patch.labels = [MIRROR_LABEL, UPDATED_LABEL];
     await patchIssue(mirror.number, patch);
     updated++;
-    console.log(`[sync-status-issues] refreshed mirror for KytyPS5 issue #${number} (${issue.title})`);
+    console.log(
+      `[sync-status-issues] refreshed mirror for KytyPS5 issue #${number} (${issue.title})${isUpdate ? " [updated-existing]" : ""}`,
+    );
     continue;
   }
 
   if (!issueNumber) {
-    // Scheduled run: only mirror when no report for this (game, OS) is
-    // already as new or newer. Manual runs always mirror the issue.
-    // The report is matched by (game, OS) — titleId-resolved through
-    // games.json — with the title+OS slug as a fallback when the issue
-    // carries no parsable serial.
-    const key = candidateKey(issue);
-    const report = key
-      ? key.startsWith("slug:")
-        ? reports.get(key.slice(5))
-        : (byGameOs.get(key) ?? undefined)
-      : undefined;
     const decision = shouldCreateMirror(
-      { number, created: createdDate },
+      {
+        number,
+        created: effectiveDate,
+        isEdited,
+        statusChanged,
+        versionChanged,
+      },
       {
         report,
         batchSize: key ? (batchCounts.get(key) ?? 1) : 1,
@@ -249,9 +362,12 @@ for (const issue of candidates) {
     }
   }
 
-  await createIssue(newTitle, newBody);
+  const labels = isUpdate ? [MIRROR_LABEL, UPDATED_LABEL] : [MIRROR_LABEL];
+  await createIssue(newTitle, newBody, labels);
   created++;
-  console.log(`[sync-status-issues] created mirror issue for KytyPS5 issue #${number} (${newTitle})`);
+  console.log(
+    `[sync-status-issues] created mirror issue for KytyPS5 issue #${number} (${newTitle})${isUpdate ? " [updated-existing]" : ""}`,
+  );
 }
 
 console.log(

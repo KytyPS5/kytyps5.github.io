@@ -46,7 +46,7 @@ const GAMES_FILE = path.join(ROOT, "src", "data", "games.json");
 const STATUSES = ["doesnt-boot", "logo", "main-menu", "in-game"];
 const OSES = ["windows", "linux", "macos"];
 const TITLE_ID_REGEX = /^PPSA-?\d{5}$/i;
-const TITLE_ID_LIST_REGEX = /PPSA-?\d{5}/gi;
+const TITLE_ID_LIST_REGEX = /PPSA[\s-]?\d{5}/gi;
 
 /**
  * Some submitters list several serials for one game (region variants of the
@@ -64,7 +64,8 @@ function pickTitleId(raw) {
         `using ${codes[0]} as the report's titleId (the games DB keeps every region variant)`,
     );
   }
-  return codes?.[0] ?? v;
+  const chosen = codes?.[0] ?? v;
+  return chosen.replace(/\s+/g, "").toUpperCase();
 }
 
 /**
@@ -152,7 +153,7 @@ function readIntake(body, flags) {
   return {
     title: overrides.title ?? title ?? flags.title,
     titleId: overrides.titleId ?? flags.titleId ?? titleId ?? titleIdLegacy,
-    statusRaw: statusRaw ?? statusLegacy,
+    statusRaw: overrides.status ?? flags.status ?? statusRaw ?? statusLegacy,
     version: flags.version ?? version ?? versionLegacy,
     date: legacyDate ?? flags.date, // new template has no date — workflow passes issue.created_at
     os: overrides.os ?? flags.os ?? os ?? osLegacy,
