@@ -756,14 +756,14 @@
     "title": "Grand Theft Auto III – The Definitive Edition",
     "titleId": "PPSA03527",
     "cover": "https://image.api.playstation.com/vulcan/ap/rnd/202110/2914/LRd5LiIFOgY8oi9GdaGC8dmC.jpg",
-    "overall": "doesnt-boot",
+    "overall": "main-menu",
     "os": {
-      "windows": "doesnt-boot"
+      "windows": "main-menu"
     },
     "reportCounts": {
       "windows": 1
     },
-    "latestTested": "2026-08-10"
+    "latestTested": "2026-08-24"
   },
   {
     "key": "PPSA03420",
