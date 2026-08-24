@@ -2,26 +2,21 @@
 title: "Dead Cells"
 titleId: "PPSA15552"
 status: "in-game"
-testedVersion: "KytyPS5-2026-08-11-ca7c8f0"
-testedDate: "2026-08-11"
+testedVersion: "KytyPS5-2026-08-15-566a450"
+testedDate: "2026-08-15"
 os: "windows"
-hardware: "Intel i7-11800H / NVIDIA GeForce RTX 3060 Laptop GPU / 32 GB DDR4 RAM / 6 GB VRAM"
+hardware: "Intel Core i5-12400F / NVIDIA GeForce RTX 4070 ,drivers 610.88 WHQL / 32 GB DDR4 RAM,12 GB VRAM"
+screenshots: ["https://github.com/user-attachments/assets/32a0b6eb-7d29-4e60-b57f-429c391bff8e","https://github.com/user-attachments/assets/7dc41286-f8e1-4868-9436-043a4d61ed55"]
 ---
 
-The game seems to work pretty well, some color accuracy was wrong but nothing major
+Everything is working.
 
 ## Steps to reproduce
 
-Open emulator
-Boot game
-Start new game
+Launch the emulator. Start the game and play.
 
 ## Expected behavior
 
-Performed as expected on real hardware
+No known issue
 
-## Extra notes
-
-This is only a brief test
-
-> Source: [KytyPS5 issue #234](https://github.com/KytyPS5/KytyPS5/issues/234)
+> Source: [KytyPS5 issue #262](https://github.com/KytyPS5/KytyPS5/issues/262)
