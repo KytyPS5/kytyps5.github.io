@@ -405,6 +405,19 @@
     "latestTested": "2026-08-18"
   },
   {
+    "key": "PPSA15645",
+    "title": "Castlevania Dominus Collection",
+    "titleId": "PPSA15645",
+    "overall": "main-menu",
+    "os": {
+      "windows": "main-menu"
+    },
+    "reportCounts": {
+      "windows": 1
+    },
+    "latestTested": "2026-08-24"
+  },
+  {
     "key": "PPSA02432",
     "title": "Crash Bandicoot™ 4: It’s About Time",
     "titleId": "PPSA02432",
