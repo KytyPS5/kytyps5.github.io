@@ -597,6 +597,20 @@
     "latestTested": "2026-08-20"
   },
   {
+    "key": "PPSA08587",
+    "title": "DRAGON BALL XENOVERSE 2",
+    "titleId": "PPSA08587",
+    "cover": "https://image.api.playstation.com/vulcan/ap/rnd/202312/2115/3ac50f394d24bd8d5af5650eef32fcc1654166d30e3a3216.jpg",
+    "overall": "doesnt-boot",
+    "os": {
+      "windows": "doesnt-boot"
+    },
+    "reportCounts": {
+      "windows": 1
+    },
+    "latestTested": "2026-08-08"
+  },
+  {
     "key": "PPSA02929",
     "title": "Dreaming Sarah",
     "titleId": "PPSA02929",
@@ -623,6 +637,20 @@
       "windows": 1
     },
     "latestTested": "2026-07-19"
+  },
+  {
+    "key": "PPSA02261",
+    "title": "Dying Light 2",
+    "titleId": "PPSA02261",
+    "cover": "https://image.api.playstation.com/vulcan/ap/rnd/202501/3115/420630164b84387c4355bacfe7fbd3a684716e703d573876.png",
+    "overall": "doesnt-boot",
+    "os": {
+      "windows": "doesnt-boot"
+    },
+    "reportCounts": {
+      "windows": 1
+    },
+    "latestTested": "2026-08-08"
   },
   {
     "key": "PPSA04184",
