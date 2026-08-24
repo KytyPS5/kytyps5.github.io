@@ -418,6 +418,19 @@
     "latestTested": "2026-08-24"
   },
   {
+    "key": "PPSA15065",
+    "title": "Cat Quest III",
+    "titleId": "PPSA15065",
+    "overall": "in-game",
+    "os": {
+      "windows": "in-game"
+    },
+    "reportCounts": {
+      "windows": 1
+    },
+    "latestTested": "2026-08-24"
+  },
+  {
     "key": "PPSA02432",
     "title": "Crash Bandicoot™ 4: It’s About Time",
     "titleId": "PPSA02432",
