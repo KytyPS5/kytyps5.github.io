@@ -447,10 +447,10 @@ describe("buildUpdatedMirrorBody", () => {
 describe("shouldCreateMirror with edits", () => {
   const report = { sourceNumber: 222, testedDate: "2026-08-09", status: "doesnt-boot", version: "0.2.1" };
 
-  it("mirrors an edited issue when status or version changed", () => {
+  it("mirrors an edited issue when editDate is newer than report and status changed", () => {
     expect(
       shouldCreateMirror(
-        { number: 222, created: "2026-08-20", isEdited: true, statusChanged: true },
+        { number: 222, created: "2026-08-01", isEdited: true, editDate: "2026-08-20", statusChanged: true },
         { report, batchSize: 1 },
       ),
     ).toEqual({
@@ -460,10 +460,22 @@ describe("shouldCreateMirror with edits", () => {
     });
   });
 
+  it("skips an edited issue when editDate is older than or equal to report testedDate", () => {
+    expect(
+      shouldCreateMirror(
+        { number: 222, created: "2026-08-01", isEdited: true, editDate: "2026-08-05", statusChanged: true },
+        { report, batchSize: 1 },
+      ),
+    ).toEqual({
+      create: false,
+      reason: "already converted",
+    });
+  });
+
   it("skips an edited issue when neither status nor version changed", () => {
     expect(
       shouldCreateMirror(
-        { number: 222, created: "2026-08-20", isEdited: true, statusChanged: false, versionChanged: false },
+        { number: 222, created: "2026-08-20", isEdited: true, editDate: "2026-08-20", statusChanged: false, versionChanged: false },
         { report, batchSize: 1 },
       ),
     ).toEqual({
