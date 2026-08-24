@@ -1641,6 +1641,19 @@
     "latestTested": "2026-08-19"
   },
   {
+    "key": "PPSA10513",
+    "title": "Trinity Trigger",
+    "titleId": "PPSA10513",
+    "overall": "in-game",
+    "os": {
+      "windows": "in-game"
+    },
+    "reportCounts": {
+      "windows": 1
+    },
+    "latestTested": "2026-08-22"
+  },
+  {
     "key": "PPSA05683",
     "title": "Tropico 6",
     "titleId": "PPSA05683",
