@@ -1626,6 +1626,19 @@
     "latestTested": "2026-08-17"
   },
   {
+    "key": "PPSA24643",
+    "title": "The Messenger",
+    "titleId": "PPSA24643",
+    "overall": "in-game",
+    "os": {
+      "windows": "in-game"
+    },
+    "reportCounts": {
+      "windows": 1
+    },
+    "latestTested": "2026-08-24"
+  },
+  {
     "key": "PPSA24381",
     "title": "The Thing: Remastered",
     "titleId": "PPSA24381",
