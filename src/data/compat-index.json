@@ -349,9 +349,9 @@
     "latestTested": "2026-07-21"
   },
   {
-    "key": "PPSA26355",
+    "key": "PPSA23082",
     "title": "Bubble Bobble SUGAR DUNGEONS",
-    "titleId": "PPSA26355",
+    "titleId": "PPSA23082",
     "cover": "https://image.api.playstation.com/vulcan/ap/rnd/202411/2007/4068668fbc14ea28d9b1112806311f2edfb522bbc5d7ffde.png",
     "overall": "in-game",
     "os": {
@@ -597,19 +597,6 @@
       "windows": 1
     },
     "latestTested": "2026-07-19"
-  },
-  {
-    "key": "PPSA27360",
-    "title": "EA SPORTS FC 26",
-    "titleId": "PPSA27360",
-    "overall": "doesnt-boot",
-    "os": {
-      "windows": "doesnt-boot"
-    },
-    "reportCounts": {
-      "windows": 1
-    },
-    "latestTested": "2026-08-19"
   },
   {
     "key": "PPSA04184",
@@ -973,6 +960,19 @@
     "latestTested": "2026-07-19"
   },
   {
+    "key": "PPSA27335",
+    "title": "Lorem Ipsum 35",
+    "titleId": "PPSA27335",
+    "overall": "doesnt-boot",
+    "os": {
+      "windows": "doesnt-boot"
+    },
+    "reportCounts": {
+      "windows": 1
+    },
+    "latestTested": "2026-08-19"
+  },
+  {
     "key": "PPSA29629",
     "title": "MARVEL Cosmic Invasion",
     "titleId": "PPSA29629",
@@ -1141,8 +1141,9 @@
   },
   {
     "key": "PPSA10067",
-    "title": "Prince of Persia: The Lost Crown",
+    "title": "Prince of Persia The Lost Crown",
     "titleId": "PPSA10067",
+    "cover": "https://image.api.playstation.com/vulcan/ap/rnd/202305/2313/49c238437007b1be60c572875cda19fd83ebd05359dbb50e.jpg",
     "overall": "in-game",
     "os": {
       "windows": "in-game"
@@ -1561,6 +1562,7 @@
     "key": "PPSA09347",
     "title": "The Last Faith",
     "titleId": "PPSA09347",
+    "cover": "https://image.api.playstation.com/vulcan/ap/rnd/202311/1102/6d0d8997494a67475f9d6b0594429ae46b104eb41c7ff77c.jpg",
     "overall": "main-menu",
     "os": {
       "windows": "main-menu"
