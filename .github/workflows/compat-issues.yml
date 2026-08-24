@@ -59,12 +59,16 @@ jobs:
           cache: npm
       - run: npm ci
 
-      - name: Ensure the compat label exists
+      - name: Ensure the compat and updated-existing labels exist
         env:
           GH_TOKEN: ${{ secrets.GITHUB_TOKEN }}
         run: |
           gh label create compat \
             --description "Mirror of a KytyPS5 issue — fix fields with /setos /setid /settitle, then /compat" \
+            --force
+          gh label create updated-existing \
+            --description "Upstream report was edited with changed status or version" \
+            --color "D4C5F9" \
             --force
 
       - name: Mirror unconverted issues
