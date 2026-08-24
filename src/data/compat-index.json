@@ -1139,6 +1139,19 @@
     "latestTested": "2026-08-20"
   },
   {
+    "key": "PPSA20939",
+    "title": "Potionomics: Masterwork Edition",
+    "titleId": "PPSA20939",
+    "overall": "in-game",
+    "os": {
+      "windows": "in-game"
+    },
+    "reportCounts": {
+      "windows": 1
+    },
+    "latestTested": "2026-08-24"
+  },
+  {
     "key": "PPSA02530",
     "title": "PRAGMATA",
     "titleId": "PPSA02530",
