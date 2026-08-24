@@ -376,17 +376,21 @@ export function buildUpdatedMirrorBody(
  */
 export function shouldCreateMirror(candidate, { report, batchSize }) {
   if (report) {
+    const isNewerEdit =
+      candidate.isEdited &&
+      candidate.editDate &&
+      (!report.testedDate || candidate.editDate > report.testedDate);
     const hasSemanticChange = candidate.statusChanged || candidate.versionChanged;
-    if (candidate.isEdited && hasSemanticChange) {
+    if (isNewerEdit && hasSemanticChange) {
       return { create: true, isUpdate: true, reason: "upstream report was edited with changes" };
     }
-    if (report.sourceNumber === candidate.number && !hasSemanticChange) {
+    if (report.sourceNumber === candidate.number) {
       return { create: false, reason: "already converted" };
     }
     if (batchSize > 1) {
       return { create: true, reason: "same-run batch" };
     }
-    if (report.testedDate && !(candidate.created > report.testedDate) && !hasSemanticChange) {
+    if (report.testedDate && !(candidate.created > report.testedDate)) {
       return {
         create: false,
         reason: `existing ${report.testedDate} report is as new or newer`,
