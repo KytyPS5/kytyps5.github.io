@@ -293,7 +293,10 @@ for (const issue of candidates) {
   const candVersion = issueVersion(issue.body);
   const statusChanged = candStatus && report?.status && candStatus !== report.status;
   const versionChanged = candVersion && report?.version && candVersion !== report.version;
-  const isUpdate = isEdited && (statusChanged || versionChanged);
+  const isNewerEdit = Boolean(
+    isEdited && lastEditDate && (!report?.testedDate || lastEditDate > report.testedDate),
+  );
+  const isUpdate = isNewerEdit && (statusChanged || versionChanged);
 
   const baseBody = isUpdate
     ? buildUpdatedMirrorBody(
@@ -345,6 +348,7 @@ for (const issue of candidates) {
         number,
         created: effectiveDate,
         isEdited,
+        editDate: lastEditDate,
         statusChanged,
         versionChanged,
       },
