@@ -27,7 +27,7 @@ name: Mirror game-status issues
 # exists), then run /compat on it to convert — use this after you verified an
 # issue and the report should reflect its current status. When the mirror's
 # fields need a human fix first (OS that doesn't generalize, missing
-# PPSA-XXXXX, wrong title), comment /setos /setid /settitle on it — the
+# PPSA-XXXXX, wrong title, status), comment /setos /setid /settitle /setstatus on it — the
 # overrides survive refreshes and the /compat conversion applies them.
 on:
   schedule:
@@ -64,7 +64,7 @@ jobs:
           GH_TOKEN: ${{ secrets.GITHUB_TOKEN }}
         run: |
           gh label create compat \
-            --description "Mirror of a KytyPS5 issue — fix fields with /setos /setid /settitle, then /compat" \
+            --description "Mirror of a KytyPS5 issue — fix fields with /setos /setid /settitle /setstatus, then /compat" \
             --force
           gh label create updated-existing \
             --description "Upstream report was edited with changed status or version" \

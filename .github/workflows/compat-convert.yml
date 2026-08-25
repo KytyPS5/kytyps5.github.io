@@ -14,7 +14,7 @@ name: Convert compat issue to report PR
 # gets a 👀 reaction and the mirror issue is closed — closed mirror = converted.
 #
 # Fields the issue can't express correctly can be fixed first with the /setos /
-# /setid /settitle commands (compat-set-fields.yml): they append a
+# /setid /settitle /setstatus commands (compat-set-fields.yml): they append a
 # `## Overrides` section to the mirror body which issue-to-compat.mjs reads
 # here — overrides win over the values parsed from the issue (e.g. an OS that
 # doesn't generalize, or a missing PPSA-XXXXX). Comment `/compat` again after

@@ -1,15 +1,17 @@
 name: Set compat report fields
 
-# `/setos`, `/setid` and `/settitle` comment commands on a compat mirror issue
-# (label `compat`, created by the "Mirror game-status issues" poller): record a
-# manual field correction on the mirror so a later `/compat` conversion uses it.
-# Reach for them when the upstream issue can't express a field correctly —
-# e.g. the OS text doesn't generalize to windows/linux/macos, the PPSA-XXXXX is
-# missing or "Unknown", or the game title needs a human fix:
+# `/setos`, `/setid`, `/settitle` and `/setstatus` comment commands on a
+# compat mirror issue (label `compat`, created by the "Mirror game-status issues"
+# poller): record a manual field correction on the mirror so a later `/compat`
+# conversion uses it. Reach for them when the upstream issue can't express a
+# field correctly — e.g. the OS text doesn't generalize to windows/linux/macos,
+# the PPSA-XXXXX is missing or "Unknown", the status is unparsed/changed, or the
+# game title needs a human fix:
 #
 #   /setos windows          # OS that can't be normalized (stored canonically)
 #   /setid PPSA01234        # missing / "Unknown" serial
 #   /settitle Astro Bot     # wrong or missing game title
+#   /setstatus main-menu    # unparsed or corrected status (doesnt-boot | logo | main-menu | in-game)
 #
 # Each command appends (or updates) the mirror body's `## Overrides` section
 # (scripts/set-compat-override.mjs), recomputes the mirror title, and

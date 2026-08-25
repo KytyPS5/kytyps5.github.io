@@ -36,14 +36,13 @@
 import { mkdir, readdir, readFile, unlink, writeFile } from "node:fs/promises";
 import { fileURLToPath } from "node:url";
 import path from "node:path";
-import { cleanField, normalizeOs, parseIssueBody } from "./lib/issue-form.mjs";
+import { cleanField, normalizeOs, normalizeStatus, parseIssueBody, STATUSES } from "./lib/issue-form.mjs";
 import { gameKeyFor, readOverrides, reportOs, reportTitleId } from "./lib/status-issues.mjs";
 
 const ROOT = path.resolve(path.dirname(fileURLToPath(import.meta.url)), "..");
 const DIR = path.join(ROOT, "src", "content", "compat");
 const GAMES_FILE = path.join(ROOT, "src", "data", "games.json");
 
-const STATUSES = ["doesnt-boot", "logo", "main-menu", "in-game"];
 const OSES = ["windows", "linux", "macos"];
 const TITLE_ID_REGEX = /^PPSA-?\d{5}$/i;
 const TITLE_ID_LIST_REGEX = /PPSA[\s-]?\d{5}/gi;
@@ -66,45 +65,6 @@ function pickTitleId(raw) {
   }
   const chosen = codes?.[0] ?? v;
   return chosen.replace(/\s+/g, "").toUpperCase();
-}
-
-/**
- * Canonical status ladder = the Game Emulation Status Report template options:
- *   doesnt-boot → logo → main-menu → in-game
- *
- * normalizeStatus() maps:
- *   - the template's option strings ("Doesn't boot", "Logo", "Main menu", "In game")
- *   - the site repo's OLD 4-tier template values (nothing → boots → playable →
- *     perfect), for legacy issues converted after the migration
- *   - the ancient 6-tier ladder (menus / ingame / playable-low-fps / playable)
- * Stored reports must use the new ladder (validate-compat rejects anything
- * else); this only normalizes issue intake.
- */
-const TEMPLATE_STATUS = {
-  "doesn't boot": "doesnt-boot",
-  logo: "logo",
-  "main menu": "main-menu",
-  "in game": "in-game",
-};
-const LEGACY_4_TIER = {
-  nothing: "doesnt-boot",
-  boots: "logo",
-  playable: "main-menu",
-  perfect: "in-game",
-};
-const LEGACY_6_TIER = {
-  menus: "main-menu",
-  ingame: "in-game",
-  "playable-low-fps": "in-game",
-  playable: "in-game",
-};
-
-function normalizeStatus(status) {
-  const v = String(status ?? "")
-    .trim()
-    .toLowerCase();
-  if (STATUSES.includes(v)) return v; // canonical slug passed directly
-  return TEMPLATE_STATUS[v] ?? LEGACY_4_TIER[v] ?? LEGACY_6_TIER[v] ?? undefined;
 }
 
 /**
@@ -277,11 +237,11 @@ if (!title) errors.push("--title / \"Game title\" is required (or set one with /
 if (!titleId) errors.push("--title-id / \"Game ID / serial\" is required (or set one with /setid on the mirror issue)");
 else if (/^unknown$/i.test(titleId)) errors.push("Game ID / serial is \"Unknown\" — fill in the PPSA-XXXXX on the mirror issue (/setid PPSA-XXXXX) before converting");
 else if (!TITLE_ID_REGEX.test(titleId)) errors.push(`title ID must look like PPSA-XXXXX, got \"${titleId}\"`);
-if (!status) errors.push(`--status / \"Compatibility status\" is required or unrecognized (got \"${String(statusRaw)}\") — expected one of: Doesn't boot | Logo | Main menu | In game`);
+if (!status) errors.push(`--status / "Compatibility status" is required or unrecognized (got "${String(statusRaw)}") — expected one of: Doesn't boot | Logo | Main menu | In game (or set one with /setstatus on the mirror issue)`);
 else if (statusRaw !== undefined &&
-  !(String(statusRaw).trim().toLowerCase() in TEMPLATE_STATUS) &&
-  !STATUSES.includes(String(statusRaw).trim().toLowerCase())) {
-  console.warn(`[issue-to-compat] ⚠ remapped status \"${statusRaw}\" → \"${status}\" (legacy ladder)`);
+  !STATUSES.includes(String(statusRaw).trim().toLowerCase()) &&
+  !["doesn't boot", "doesnt boot", "does not boot", "logo", "main menu", "in game"].includes(String(statusRaw).trim().toLowerCase())) {
+  console.warn(`[issue-to-compat] ⚠ remapped status "${statusRaw}" → "${status}"`);
 }
 if (!version) errors.push("--version / \"KytyPS5 version\" is required");
 if (!date || !/^\d{4}-\d{2}-\d{2}$/.test(date)) errors.push("--date must be YYYY-MM-DD (workflow passes the issue's creation date)");

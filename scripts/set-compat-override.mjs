@@ -1,7 +1,7 @@
 #!/usr/bin/env node
 /**
- * `/setos`, `/setid` and `/settitle` comment commands on a compat mirror issue
- * (see .github/workflows/compat-set-fields.yml).
+ * `/setos`, `/setid`, `/settitle` and `/setstatus` comment commands on a
+ * compat mirror issue (see .github/workflows/compat-set-fields.yml).
  *
  * These record a manual field correction on the mirror BEFORE (or after) the
  * /compat conversion, for issues whose fields can't be read cleanly:
@@ -10,6 +10,7 @@
  *                           # as the canonical windows | linux | macos
  *   /setid PPSA01234        # serial missing / "Unknown" in the issue
  *   /settitle Astro Bot     # wrong or missing game title
+ *   /setstatus main-menu    # status unparsed or changed (doesnt-boot | logo | main-menu | in-game)
  *
  * The value is written to the `## Overrides` section of the mirror issue body
  * (see scripts/lib/status-issues.mjs — readOverrides/appendOverrides), which
@@ -31,7 +32,7 @@
  * The script uses node builtins only, so the workflow needs no `npm ci`.
  */
 import { readFile } from "node:fs/promises";
-import { normalizeOs } from "./lib/issue-form.mjs";
+import { normalizeOs, normalizeStatus } from "./lib/issue-form.mjs";
 import {
   appendOverrides,
   mirrorSource,
@@ -104,10 +105,10 @@ async function main() {
   // The command is the first line; the value is everything after it.
   const match = String(comment.body ?? "")
     .split(/\r?\n/)[0]
-    .match(/^\/(setos|setid|settitle)(?:\s+(.*))?$/i);
+    .match(/^\/(setos|setid|settitle|setstatus)(?:\s+(.*))?$/i);
   if (!match) {
     await fail(
-      `unrecognized command "${String(comment.body ?? "").split(/\r?\n/)[0]}" — expected /setos, /setid or /settitle`,
+      `unrecognized command "${String(comment.body ?? "").split(/\r?\n/)[0]}" — expected /setos, /setid, /settitle or /setstatus`,
     );
   }
   const [, command, rawValue] = match;
@@ -130,6 +131,14 @@ async function main() {
       await fail(`/setid — "${value}" is not a PPSA-XXXXX title ID (e.g. PPSA01234)`);
     }
     stored = value;
+  } else if (command === "setstatus") {
+    field = "status";
+    stored = normalizeStatus(value);
+    if (!stored) {
+      await fail(
+        `/setstatus — unrecognized status "${value}" (expected doesnt-boot | logo | main-menu | in-game, or template values like "Main menu")`,
+      );
+    }
   } else {
     field = "title";
     if (!value) await fail("/settitle — a game title is required after the command");
@@ -147,7 +156,7 @@ async function main() {
   if (!source) {
     await fail(
       "this issue is not a compat mirror — its body has no `## Source` footer. " +
-        "/setos, /setid and /settitle edit the manual overrides of a mirror issue that the /compat conversion uses.",
+        "/setos, /setid, /settitle and /setstatus edit the manual overrides of a mirror issue that the /compat conversion uses.",
     );
   }
 
