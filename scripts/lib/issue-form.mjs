@@ -74,3 +74,41 @@ export function normalizeOs(os) {
   for (const [re, canonical] of OS_ALIASES) if (re.test(v)) return canonical;
   return undefined;
 }
+
+export const STATUSES = ["doesnt-boot", "logo", "main-menu", "in-game"];
+
+const TEMPLATE_STATUS = {
+  "doesn't boot": "doesnt-boot",
+  "doesnt boot": "doesnt-boot",
+  "does not boot": "doesnt-boot",
+  logo: "logo",
+  "main menu": "main-menu",
+  "in game": "in-game",
+  playable: "in-game",
+  perfect: "in-game",
+  nothing: "doesnt-boot",
+  boots: "logo",
+  menus: "main-menu",
+  ingame: "in-game",
+  "playable-low-fps": "in-game",
+};
+
+/**
+ * Fold free-text or template status options onto the canonical status ladder:
+ *   doesnt-boot → logo → main-menu → in-game
+ */
+export function normalizeStatus(status) {
+  const v = String(status ?? "").trim().toLowerCase();
+  if (!v) return undefined;
+  if (STATUSES.includes(v)) return v;
+  if (TEMPLATE_STATUS[v]) return TEMPLATE_STATUS[v];
+
+  // Regex fallback for manual edits / free-form text (e.g. "Demons souls in Main menu")
+  if (/\b(?:doesn'?t\s*boot|does\s*not\s*boot|not\s*boot(?:ing)?|nothing|no\s*boot)\b/i.test(v)) return "doesnt-boot";
+  if (/\b(?:in[- ]?game|playable|perfect)\b/i.test(v)) return "in-game";
+  if (/\b(?:main[- ]?menu|menus?)\b/i.test(v)) return "main-menu";
+  if (/\b(?:logo|splash|boots?)\b/i.test(v)) return "logo";
+
+  return undefined;
+}
+
