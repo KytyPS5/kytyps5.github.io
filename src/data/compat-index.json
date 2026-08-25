@@ -560,14 +560,14 @@
     "title": "Demon's Souls",
     "titleId": "PPSA01342",
     "cover": "https://image.api.playstation.com/vulcan/img/rnd/202011/1717/brIXKBE5BqYgBSrsDn6Wo18O.png",
-    "overall": "doesnt-boot",
+    "overall": "main-menu",
     "os": {
-      "windows": "doesnt-boot"
+      "windows": "main-menu"
     },
     "reportCounts": {
       "windows": 1
     },
-    "latestTested": "2026-08-10"
+    "latestTested": "2026-08-25"
   },
   {
     "key": "PPSA21444",
