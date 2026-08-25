@@ -152,6 +152,7 @@ describe("readOverrides", () => {
     os: "linux",
     titleId: "PPSA09999",
     title: "Stray: Director's Cut",
+    status: "main-menu",
   });
 
   it("reads the values from the `## Overrides` section", () => {
@@ -159,6 +160,7 @@ describe("readOverrides", () => {
       os: "linux",
       titleId: "PPSA09999",
       title: "Stray: Director's Cut",
+      status: "main-menu",
     });
   });
 
@@ -173,6 +175,7 @@ describe("readOverrides", () => {
       os: "linux",
       titleId: "PPSA09999",
       title: "Stray: Director's Cut",
+      status: "main-menu",
     });
   });
 });
@@ -418,6 +421,17 @@ describe("issueStatus and issueVersion", () => {
   it("normalizes legacy status values", () => {
     const legacy = UPSTREAM_BODY.replace("In game", "playable");
     expect(issueStatus(legacy)).toBe("in-game");
+  });
+
+  it("normalizes free-text / edited status values", () => {
+    const edited1 = UPSTREAM_BODY.replace("In game", "Demons souls in Main menu");
+    expect(issueStatus(edited1)).toBe("main-menu");
+
+    const edited2 = UPSTREAM_BODY.replace("In game", "Boots to logo and crashes");
+    expect(issueStatus(edited2)).toBe("logo");
+
+    const edited3 = UPSTREAM_BODY.replace("In game", "Does not boot at all");
+    expect(issueStatus(edited3)).toBe("doesnt-boot");
   });
 });
 

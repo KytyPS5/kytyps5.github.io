@@ -30,16 +30,17 @@
  * against the same report. issueTitleId() / gameKeyFor() provide the keys;
  * the slug is only a fallback when an issue carries no parsable serial.
  *
- * Manual field corrections: a maintainer can comment /setos, /setid or
- * /settitle on a mirror issue (scripts/set-compat-override.mjs) to record a
- * human override when the upstream issue can't express a field correctly
- * (e.g. an OS that doesn't normalize). The command appends a `## Overrides`
- * section after the `## Source` footer:
+ * Manual field corrections: a maintainer can comment /setos, /setid,
+ * /settitle or /setstatus on a mirror issue (scripts/set-compat-override.mjs)
+ * to record a human override when the upstream issue can't express a field
+ * correctly (e.g. an OS that doesn't normalize). The command appends a
+ * `## Overrides` section after the `## Source` footer:
  *
  *   ## Overrides
  *   - os: windows
  *   - titleId: PPSA01234
  *   - title: Astro Bot
+ *   - status: main-menu
  *
  * readOverrides()/appendOverrides() manage that section; the /compat
  * conversion (issue-to-compat.mjs) reads it and the overrides win over the
@@ -48,7 +49,7 @@
  * values can never be mistaken for provenance.
  */
 
-import { cleanField, normalizeOs, parseIssueBody } from "./issue-form.mjs";
+import { cleanField, normalizeOs, normalizeStatus, parseIssueBody } from "./issue-form.mjs";
 
 /** Label every mirror issue carries (closed = already converted via /compat). */
 export const MIRROR_LABEL = "compat";
@@ -183,6 +184,7 @@ export function readOverrides(body) {
     if (key === "os") overrides.os = value;
     else if (key === "titleid") overrides.titleId = value;
     else if (key === "title") overrides.title = value;
+    else if (key === "status") overrides.status = value;
   }
   return overrides;
 }
@@ -204,9 +206,9 @@ export function refreshMirrorBody(issueBody, mirrorBody, { number, url, created 
 /**
  * Append (or replace) the `## Overrides` section on a mirror body, keeping any
  * other existing overrides. Used by scripts/set-compat-override.mjs to record
- * a /setos /setid /settitle value and by sync-status-issues.mjs to carry the
- * existing overrides across a mirror refresh. Returns the body unchanged when
- * `overrides` is empty.
+ * a /setos /setid /settitle /setstatus value and by sync-status-issues.mjs to
+ * carry the existing overrides across a mirror refresh. Returns the body
+ * unchanged when `overrides` is empty.
  */
 export function appendOverrides(body, overrides = {}) {
   const raw = String(body ?? "");
@@ -216,6 +218,7 @@ export function appendOverrides(body, overrides = {}) {
   if (overrides.os) entries.push(`- os: ${overrides.os}`);
   if (overrides.titleId) entries.push(`- titleId: ${overrides.titleId}`);
   if (overrides.title) entries.push(`- title: ${overrides.title}`);
+  if (overrides.status) entries.push(`- status: ${overrides.status}`);
   if (!entries.length) return base;
   return `${base}\n\n## Overrides\n${entries.join("\n")}\n`;
 }
@@ -315,18 +318,7 @@ export function reportVersion(md) {
 export function issueStatus(body) {
   const sections = parseIssueBody(body);
   const raw = cleanField(sections, "Compatibility status");
-  const v = String(raw ?? "").trim().toLowerCase();
-  const TEMPLATE_STATUS = {
-    "doesn't boot": "doesnt-boot",
-    "doesnt boot": "doesnt-boot",
-    "does not boot": "doesnt-boot",
-    logo: "logo",
-    "main menu": "main-menu",
-    "in game": "in-game",
-    playable: "in-game",
-    perfect: "in-game",
-  };
-  return TEMPLATE_STATUS[v] ?? (["doesnt-boot", "logo", "main-menu", "in-game"].includes(v) ? v : undefined);
+  return normalizeStatus(raw);
 }
 
 /** The KytyPS5 version from an upstream issue body. */
