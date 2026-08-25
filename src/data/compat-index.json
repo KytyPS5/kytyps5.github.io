@@ -1721,6 +1721,19 @@
     "latestTested": "2026-08-19"
   },
   {
+    "key": "PPSA28465",
+    "title": "Trails in the Sky 1st Chapter",
+    "titleId": "PPSA28465",
+    "overall": "main-menu",
+    "os": {
+      "windows": "main-menu"
+    },
+    "reportCounts": {
+      "windows": 1
+    },
+    "latestTested": "2026-08-24"
+  },
+  {
     "key": "PPSA10513",
     "title": "Trinity Trigger",
     "titleId": "PPSA10513",
