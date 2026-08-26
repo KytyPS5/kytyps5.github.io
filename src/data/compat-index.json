@@ -863,6 +863,20 @@
     "latestTested": "2026-08-07"
   },
   {
+    "key": "PPSA09803",
+    "title": "GRIS",
+    "titleId": "PPSA09803",
+    "cover": "https://image.api.playstation.com/vulcan/ap/rnd/202211/1801/k5m7YQ0uOlwpqSYe5XoZ7aJX.jpg",
+    "overall": "in-game",
+    "os": {
+      "windows": "in-game"
+    },
+    "reportCounts": {
+      "windows": 1
+    },
+    "latestTested": "2026-08-25"
+  },
+  {
     "key": "PPSA13527",
     "title": "GYLT",
     "titleId": "PPSA13527",
