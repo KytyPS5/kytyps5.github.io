@@ -1124,6 +1124,20 @@
     "latestTested": "2026-07-19"
   },
   {
+    "key": "PPSA09797",
+    "title": "OCTOPATH TRAVELER II PS4＆PS5",
+    "titleId": "PPSA09797",
+    "cover": "https://image.api.playstation.com/vulcan/ap/rnd/202208/3005/71h0GsGzaJteaHHuyCEQY1pK.png",
+    "overall": "in-game",
+    "os": {
+      "windows": "in-game"
+    },
+    "reportCounts": {
+      "windows": 1
+    },
+    "latestTested": "2026-08-26"
+  },
+  {
     "key": "PPSA18189",
     "title": "PAC-MAN WORLD 2 Re-PAC",
     "titleId": "PPSA18189",
