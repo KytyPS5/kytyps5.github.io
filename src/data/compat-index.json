@@ -1124,6 +1124,20 @@
     "latestTested": "2026-07-19"
   },
   {
+    "key": "PPSA02721",
+    "title": "Neptunia ReVerse",
+    "titleId": "PPSA02721",
+    "cover": "https://image.api.playstation.com/vulcan/ap/rnd/202105/2414/1EejsoGWUbS2zTMcD4oLejcV.jpg",
+    "overall": "logo",
+    "os": {
+      "windows": "logo"
+    },
+    "reportCounts": {
+      "windows": 1
+    },
+    "latestTested": "2026-08-25"
+  },
+  {
     "key": "PPSA18189",
     "title": "PAC-MAN WORLD 2 Re-PAC",
     "titleId": "PPSA18189",
