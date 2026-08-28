@@ -1248,6 +1248,19 @@
     "latestTested": "2026-08-25"
   },
   {
+    "key": "PPSA21631",
+    "title": "Poppy Playtime: Chapter 2",
+    "titleId": "PPSA21631",
+    "overall": "in-game",
+    "os": {
+      "windows": "in-game"
+    },
+    "reportCounts": {
+      "windows": 1
+    },
+    "latestTested": "2026-08-27"
+  },
+  {
     "key": "PPSA20939",
     "title": "Potionomics: Masterwork Edition",
     "titleId": "PPSA20939",
