@@ -1965,5 +1965,18 @@
       "windows": 1
     },
     "latestTested": "2026-07-20"
+  },
+  {
+    "key": "PPSA33096",
+    "title": "メモリーズオフ 双想 ～Break out of my shell～",
+    "titleId": "PPSA33096",
+    "overall": "in-game",
+    "os": {
+      "windows": "in-game"
+    },
+    "reportCounts": {
+      "windows": 1
+    },
+    "latestTested": "2026-08-28"
   }
 ]
