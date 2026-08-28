@@ -1664,6 +1664,19 @@
     "latestTested": "2026-08-19"
   },
   {
+    "key": "PPSA26893",
+    "title": "SpongeBob SquarePants: Titans of the Tide",
+    "titleId": "PPSA26893",
+    "overall": "doesnt-boot",
+    "os": {
+      "windows": "doesnt-boot"
+    },
+    "reportCounts": {
+      "windows": 1
+    },
+    "latestTested": "2026-08-28"
+  },
+  {
     "key": "PPSA02198",
     "title": "STAR WARS Jedi: Fallen Order™",
     "titleId": "PPSA02198",
