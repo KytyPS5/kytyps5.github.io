@@ -918,6 +918,20 @@
     "latestTested": "2026-08-07"
   },
   {
+    "key": "PPSA05617",
+    "title": "Hello Neighbor 2",
+    "titleId": "PPSA05617",
+    "cover": "https://image.api.playstation.com/vulcan/ap/rnd/202312/0613/27db3d585e033c19cdfd27f912621d4c08a5439a5127bc93.png",
+    "overall": "in-game",
+    "os": {
+      "windows": "in-game"
+    },
+    "reportCounts": {
+      "windows": 1
+    },
+    "latestTested": "2026-08-27"
+  },
+  {
     "key": "PPSA17168",
     "title": "Hi-Fi RUSH",
     "titleId": "PPSA17168",
