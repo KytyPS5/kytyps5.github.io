@@ -833,6 +833,20 @@
     "latestTested": "2026-07-25"
   },
   {
+    "key": "PPSA09233",
+    "title": "Ghost Song",
+    "titleId": "PPSA09233",
+    "cover": "https://image.api.playstation.com/vulcan/ap/rnd/202208/1818/aWbw79ZDNe2aBrmwFIS7NCQn.png",
+    "overall": "in-game",
+    "os": {
+      "windows": "in-game"
+    },
+    "reportCounts": {
+      "windows": 1
+    },
+    "latestTested": "2026-08-28"
+  },
+  {
     "key": "PPSA03527",
     "title": "Grand Theft Auto III – The Definitive Edition",
     "titleId": "PPSA03527",
