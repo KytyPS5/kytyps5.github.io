@@ -987,6 +987,20 @@
     "latestTested": "2026-07-19"
   },
   {
+    "key": "PPSA06625",
+    "title": "LEGO® Brawls",
+    "titleId": "PPSA06625",
+    "cover": "https://image.api.playstation.com/vulcan/ap/rnd/202205/1904/8g8gq8OkLhgO7CsqwCNzIE9T.png",
+    "overall": "in-game",
+    "os": {
+      "windows": "in-game"
+    },
+    "reportCounts": {
+      "windows": 1
+    },
+    "latestTested": "2026-08-28"
+  },
+  {
     "key": "PPSA14632",
     "title": "LEGO® ホライゾン アドベンチャー",
     "titleId": "PPSA14632",
