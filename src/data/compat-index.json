@@ -431,6 +431,20 @@
     "latestTested": "2026-08-24"
   },
   {
+    "key": "PPSA04379",
+    "title": "Construction Simulator",
+    "titleId": "PPSA04379",
+    "cover": "https://image.api.playstation.com/vulcan/ap/rnd/202204/2908/psAm3F2fvr43azewWlJpwWQ4.png",
+    "overall": "main-menu",
+    "os": {
+      "windows": "main-menu"
+    },
+    "reportCounts": {
+      "windows": 1
+    },
+    "latestTested": "2026-08-28"
+  },
+  {
     "key": "PPSA02432",
     "title": "Crash Bandicoot™ 4: It’s About Time",
     "titleId": "PPSA02432",
