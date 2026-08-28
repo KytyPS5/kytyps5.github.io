@@ -1042,6 +1042,20 @@
     "latestTested": "2026-07-19"
   },
   {
+    "key": "PPSA04048",
+    "title": "LEGO® 2K Drive",
+    "titleId": "PPSA04048",
+    "cover": "https://image.api.playstation.com/vulcan/ap/rnd/202303/0918/993bf17561f1efee17dbad02781742c16d00546b46cc6f78.jpg",
+    "overall": "logo",
+    "os": {
+      "windows": "logo"
+    },
+    "reportCounts": {
+      "windows": 1
+    },
+    "latestTested": "2026-08-28"
+  },
+  {
     "key": "PPSA06625",
     "title": "LEGO® Brawls",
     "titleId": "PPSA06625",
