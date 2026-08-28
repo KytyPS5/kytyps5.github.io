@@ -1665,6 +1665,20 @@
     "latestTested": "2026-08-10"
   },
   {
+    "key": "PPSA02452",
+    "title": "Subnautica",
+    "titleId": "PPSA02452",
+    "cover": "https://image.api.playstation.com/vulcan/img/rnd/202009/3006/aoc0zZTCTd9zNQub08y9CIgm.jpg",
+    "overall": "main-menu",
+    "os": {
+      "windows": "main-menu"
+    },
+    "reportCounts": {
+      "windows": 1
+    },
+    "latestTested": "2026-08-28"
+  },
+  {
     "key": "PPSA15246",
     "title": "Teardown",
     "titleId": "PPSA15246",
