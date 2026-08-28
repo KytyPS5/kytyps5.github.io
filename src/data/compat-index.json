@@ -1594,6 +1594,20 @@
     "latestTested": "2026-07-19"
   },
   {
+    "key": "PPSA05060",
+    "title": "RoboCop: Rogue City",
+    "titleId": "PPSA05060",
+    "cover": "https://image.api.playstation.com/vulcan/ap/rnd/202206/2712/kf2FLok3XYWxOiCOXdbAbzPg.jpg",
+    "overall": "logo",
+    "os": {
+      "windows": "logo"
+    },
+    "reportCounts": {
+      "windows": 1
+    },
+    "latestTested": "2026-08-28"
+  },
+  {
     "key": "PPSA01289",
     "title": "Sackboy: A Big Adventure",
     "titleId": "PPSA01289",
