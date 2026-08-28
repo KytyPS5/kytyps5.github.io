@@ -570,6 +570,19 @@
     "latestTested": "2026-08-08"
   },
   {
+    "key": "PPSA25661",
+    "title": "Deliver At All Costs",
+    "titleId": "PPSA25661",
+    "overall": "in-game",
+    "os": {
+      "windows": "in-game"
+    },
+    "reportCounts": {
+      "windows": 1
+    },
+    "latestTested": "2026-08-28"
+  },
+  {
     "key": "PPSA01342",
     "title": "Demon's Souls",
     "titleId": "PPSA01342",
