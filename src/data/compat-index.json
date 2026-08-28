@@ -1000,6 +1000,20 @@
     "latestTested": "2026-08-17"
   },
   {
+    "key": "PPSA06437",
+    "title": "Let's Build a Zoo",
+    "titleId": "PPSA06437",
+    "cover": "https://image.api.playstation.com/vulcan/ap/rnd/202209/2610/NEram1xKm854pKilIKzRNoIf.jpg",
+    "overall": "in-game",
+    "os": {
+      "windows": "in-game"
+    },
+    "reportCounts": {
+      "windows": 1
+    },
+    "latestTested": "2026-08-28"
+  },
+  {
     "key": "PPSA10261",
     "title": "Lies of P",
     "titleId": "PPSA10261",
