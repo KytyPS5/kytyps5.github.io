@@ -1654,14 +1654,14 @@
     "title": "SAROS",
     "titleId": "PPSA07632",
     "cover": "https://image.api.playstation.com/vulcan/ap/rnd/202509/2318/ca19e7b6909c03a0d64a84981109c0cdaa98e7fdb8820e36.png",
-    "overall": "doesnt-boot",
+    "overall": "logo",
     "os": {
-      "windows": "doesnt-boot"
+      "windows": "logo"
     },
     "reportCounts": {
       "windows": 1
     },
-    "latestTested": "2026-08-15"
+    "latestTested": "2026-08-27"
   },
   {
     "key": "PPSA07817",
