@@ -1262,6 +1262,20 @@
     "latestTested": "2026-08-26"
   },
   {
+    "key": "PPSA01529",
+    "title": "Overcooked! All You Can Eat",
+    "titleId": "PPSA01529",
+    "cover": "https://image.api.playstation.com/vulcan/img/rnd/202109/2814/KBjM7tWNPQIy2nca7OhRRwlf.jpg",
+    "overall": "in-game",
+    "os": {
+      "windows": "in-game"
+    },
+    "reportCounts": {
+      "windows": 1
+    },
+    "latestTested": "2026-08-28"
+  },
+  {
     "key": "PPSA18189",
     "title": "PAC-MAN WORLD 2 Re-PAC",
     "titleId": "PPSA18189",
