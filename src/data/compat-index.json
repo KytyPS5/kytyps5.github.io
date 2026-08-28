@@ -1761,6 +1761,19 @@
     "latestTested": "2026-08-09"
   },
   {
+    "key": "PPSA25646",
+    "title": "Tetris® Forever",
+    "titleId": "PPSA25646",
+    "overall": "in-game",
+    "os": {
+      "windows": "in-game"
+    },
+    "reportCounts": {
+      "windows": 1
+    },
+    "latestTested": "2026-08-28"
+  },
+  {
     "key": "PPSA03351",
     "title": "The Callisto Protocol",
     "titleId": "PPSA03351",
