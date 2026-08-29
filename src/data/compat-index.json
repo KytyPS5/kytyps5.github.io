@@ -1290,6 +1290,19 @@
     "latestTested": "2026-08-26"
   },
   {
+    "key": "PPSA21906",
+    "title": "Once Upon A KATAMARI",
+    "titleId": "PPSA21906",
+    "overall": "doesnt-boot",
+    "os": {
+      "windows": "doesnt-boot"
+    },
+    "reportCounts": {
+      "windows": 1
+    },
+    "latestTested": "2026-08-28"
+  },
+  {
     "key": "PPSA01529",
     "title": "Overcooked! All You Can Eat",
     "titleId": "PPSA01529",
