@@ -1042,6 +1042,20 @@
     "latestTested": "2026-08-08"
   },
   {
+    "key": "PPSA02688",
+    "title": "Infliction: Extended Cut",
+    "titleId": "PPSA02688",
+    "cover": "https://image.api.playstation.com/gs2-sec/appkgo/prod/CUSA15744_00/5/i_3a0fcff212908d8ef8d33fb822ec7871e3e8f7fa13c87cd44bc67b23e50cf91e/i/pic0.png",
+    "overall": "logo",
+    "os": {
+      "windows": "logo"
+    },
+    "reportCounts": {
+      "windows": 1
+    },
+    "latestTested": "2026-08-29"
+  },
+  {
     "key": "PPSA30568",
     "title": "Invincible VS",
     "titleId": "PPSA30568",
