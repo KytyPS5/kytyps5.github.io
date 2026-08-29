@@ -1635,6 +1635,19 @@
     "latestTested": "2026-07-19"
   },
   {
+    "key": "PPSA16959",
+    "title": "Richman 11",
+    "titleId": "PPSA16959",
+    "overall": "in-game",
+    "os": {
+      "windows": "in-game"
+    },
+    "reportCounts": {
+      "windows": 1
+    },
+    "latestTested": "2026-08-28"
+  },
+  {
     "key": "PPSA05060",
     "title": "RoboCop: Rogue City",
     "titleId": "PPSA05060",
