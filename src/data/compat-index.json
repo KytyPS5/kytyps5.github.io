@@ -2169,6 +2169,20 @@
     "latestTested": "2026-08-28"
   },
   {
+    "key": "PPSA03273",
+    "title": "Unbound: Worlds Apart",
+    "titleId": "PPSA03273",
+    "cover": "https://image.api.playstation.com/vulcan/ap/rnd/202201/0513/U5D2YPM8qJu8c3POmA27deuC.png",
+    "overall": "main-menu",
+    "os": {
+      "windows": "main-menu"
+    },
+    "reportCounts": {
+      "windows": 1
+    },
+    "latestTested": "2026-08-29"
+  },
+  {
     "key": "PPSA03061",
     "title": "void tRrLM();++ //Void Terrarium++",
     "titleId": "PPSA03061",
