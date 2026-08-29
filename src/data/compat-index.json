@@ -2062,6 +2062,19 @@
     "latestTested": "2026-07-27"
   },
   {
+    "key": "PPSA20798",
+    "title": "Ufouria The Saga 2",
+    "titleId": "PPSA20798",
+    "overall": "doesnt-boot",
+    "os": {
+      "windows": "doesnt-boot"
+    },
+    "reportCounts": {
+      "windows": 1
+    },
+    "latestTested": "2026-08-28"
+  },
+  {
     "key": "PPSA03061",
     "title": "void tRrLM();++ //Void Terrarium++",
     "titleId": "PPSA03061",
