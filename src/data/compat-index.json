@@ -1317,6 +1317,19 @@
     "latestTested": "2026-08-25"
   },
   {
+    "key": "PPSA28002",
+    "title": "NINJA GAIDEN: Ragebound",
+    "titleId": "PPSA28002",
+    "overall": "in-game",
+    "os": {
+      "windows": "in-game"
+    },
+    "reportCounts": {
+      "windows": 1
+    },
+    "latestTested": "2026-08-29"
+  },
+  {
     "key": "PPSA09797",
     "title": "OCTOPATH TRAVELER II PS4＆PS5",
     "titleId": "PPSA09797",
