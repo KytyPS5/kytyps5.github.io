@@ -1675,6 +1675,19 @@
     "latestTested": "2026-08-28"
   },
   {
+    "key": "PPSA26677",
+    "title": "Rune Factory: Guardians of Azuma",
+    "titleId": "PPSA26677",
+    "overall": "doesnt-boot",
+    "os": {
+      "windows": "doesnt-boot"
+    },
+    "reportCounts": {
+      "windows": 1
+    },
+    "latestTested": "2026-08-29"
+  },
+  {
     "key": "PPSA01289",
     "title": "Sackboy: A Big Adventure",
     "titleId": "PPSA01289",
