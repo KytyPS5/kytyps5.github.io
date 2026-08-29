@@ -2061,6 +2061,20 @@
     "latestTested": "2026-08-24"
   },
   {
+    "key": "PPSA01916",
+    "title": "The Persistence",
+    "titleId": "PPSA01916",
+    "cover": "https://image.api.playstation.com/vulcan/ap/rnd/202105/1111/qM56rS2rdFuGljXTT2UpVkF5.jpg",
+    "overall": "doesnt-boot",
+    "os": {
+      "windows": "doesnt-boot"
+    },
+    "reportCounts": {
+      "windows": 1
+    },
+    "latestTested": "2026-08-29"
+  },
+  {
     "key": "PPSA24381",
     "title": "The Thing: Remastered",
     "titleId": "PPSA24381",
