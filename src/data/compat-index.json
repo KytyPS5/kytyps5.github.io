@@ -1276,6 +1276,19 @@
     "latestTested": "2026-07-19"
   },
   {
+    "key": "PPSA13790",
+    "title": "NASCAR Arcade Rush",
+    "titleId": "PPSA13790",
+    "overall": "logo",
+    "os": {
+      "windows": "logo"
+    },
+    "reportCounts": {
+      "windows": 1
+    },
+    "latestTested": "2026-08-28"
+  },
+  {
     "key": "PPSA02721",
     "title": "Neptunia ReVerse",
     "titleId": "PPSA02721",
