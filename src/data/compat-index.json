@@ -2210,6 +2210,19 @@
     "latestTested": "2026-07-20"
   },
   {
+    "key": "PPSA32456",
+    "title": "Ys X: Proud Nordics",
+    "titleId": "PPSA32456",
+    "overall": "logo",
+    "os": {
+      "windows": "logo"
+    },
+    "reportCounts": {
+      "windows": 1
+    },
+    "latestTested": "2026-08-29"
+  },
+  {
     "key": "PPSA33096",
     "title": "メモリーズオフ 双想 ～Break out of my shell～",
     "titleId": "PPSA33096",
