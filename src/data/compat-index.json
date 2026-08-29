@@ -1390,14 +1390,14 @@
     "title": "Planet Coaster: Console Edition",
     "titleId": "PPSA01736",
     "cover": "https://image.api.playstation.com/vulcan/ap/rnd/202010/0810/Z0fFihgvWxVA9UFjaeWB5rft.jpg",
-    "overall": "doesnt-boot",
+    "overall": "main-menu",
     "os": {
-      "windows": "doesnt-boot"
+      "windows": "main-menu"
     },
     "reportCounts": {
       "windows": 1
     },
-    "latestTested": "2026-08-20"
+    "latestTested": "2026-08-29"
   },
   {
     "key": "PPSA18454",
