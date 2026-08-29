@@ -237,6 +237,20 @@
     "latestTested": "2026-07-18"
   },
   {
+    "key": "PPSA08163",
+    "title": "Asterix & Obelix XXL: Romastered",
+    "titleId": "PPSA08163",
+    "cover": "https://image.api.playstation.com/vulcan/ap/rnd/202211/2413/SbGNqWfw7UHtkl85XFt42Hls.png",
+    "overall": "main-menu",
+    "os": {
+      "windows": "main-menu"
+    },
+    "reportCounts": {
+      "windows": 1
+    },
+    "latestTested": "2026-08-28"
+  },
+  {
     "key": "PPSA21564",
     "title": "ASTRO BOT",
     "titleId": "PPSA21564",
