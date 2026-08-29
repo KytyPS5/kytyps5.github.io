@@ -237,6 +237,20 @@
     "latestTested": "2026-07-18"
   },
   {
+    "key": "PPSA03847",
+    "title": "Assetto Corsa Competizione",
+    "titleId": "PPSA03847",
+    "cover": "https://image.api.playstation.com/vulcan/ap/rnd/202202/1817/DGst403SOfiGde7vK1F8FkUm.jpg",
+    "overall": "doesnt-boot",
+    "os": {
+      "windows": "doesnt-boot"
+    },
+    "reportCounts": {
+      "windows": 1
+    },
+    "latestTested": "2026-08-29"
+  },
+  {
     "key": "PPSA08163",
     "title": "Asterix & Obelix XXL: Romastered",
     "titleId": "PPSA08163",
