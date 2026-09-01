@@ -1,18 +1,21 @@
 ---
-title: "Pac-Man World Re-Pac"
+title: "PAC-MAN WORLD Re-PAC"
 titleId: "PPSA06399"
-status: "main-menu"
-testedVersion: "0.0.5.5"
-testedDate: "2026-07-19"
+status: "in-game"
+testedVersion: "v0.2.2"
+testedDate: "2026-08-30"
 os: "windows"
-hardware: "AMD Ryzen 7 7700X / AMD Radeon 7900XTX"
+hardware: "Intel i7 13700H / Nvidia RTX 4050 / 16gb DDR4 / 6GB Vram"
 ---
 
-Game boots to the game menu. Start a new game then it crashes after agreeing to terms and choosing language.
+Was able to play through the first level with framerates around 20fps on my laptop.
 
-**Steps to reproduce:** Open Emulator. Boot game. Choose new game. Agree to terms. Choose language. Game crashes.
+## Steps to reproduce
 
-**Extra notes:** Default settings. Controller worked fine. Some audio issues. Low frame rate.
+Used default Kyty settings, no alterations.
 
-> Source: [KytyPS5 issue #59](https://github.com/KytyPS5/KytyPS5/issues/59)
+## Expected behavior
 
+No known issue other than framerate.
+
+> Source: [KytyPS5 issue #421](https://github.com/KytyPS5/KytyPS5/issues/421)
