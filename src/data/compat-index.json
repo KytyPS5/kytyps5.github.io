@@ -2226,14 +2226,14 @@
     "key": "PPSA20798",
     "title": "Ufouria The Saga 2",
     "titleId": "PPSA20798",
-    "overall": "doesnt-boot",
+    "overall": "in-game",
     "os": {
-      "windows": "doesnt-boot"
+      "windows": "in-game"
     },
     "reportCounts": {
       "windows": 1
     },
-    "latestTested": "2026-08-28"
+    "latestTested": "2026-08-29"
   },
   {
     "key": "PPSA03273",
