@@ -1402,14 +1402,14 @@
     "title": "PAC-MAN WORLD 2 Re-PAC",
     "titleId": "PPSA18189",
     "cover": "https://image.api.playstation.com/vulcan/ap/rnd/202507/1607/f12ff852151aad2c74986b5e6bee74619e8c7ea7b612fcd7.jpg",
-    "overall": "in-game",
+    "overall": "doesnt-boot",
     "os": {
-      "windows": "in-game"
+      "windows": "doesnt-boot"
     },
     "reportCounts": {
       "windows": 1
     },
-    "latestTested": "2026-08-08"
+    "latestTested": "2026-08-29"
   },
   {
     "key": "PPSA06399",
