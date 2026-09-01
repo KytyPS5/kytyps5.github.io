@@ -1,16 +1,48 @@
 ---
 title: "ASTRO BOT"
 titleId: "PPSA21564"
-status: "logo"
-testedVersion: "2026-08-08-87428d7"
-testedDate: "2026-08-08"
+status: "doesnt-boot"
+testedVersion: "KytyPS5-2026-08-30-9992ab1"
+testedDate: "2026-08-31"
 os: "windows"
-hardware: "AMD Ryzen 9 9950X3D / AMD Radeon RX 7900 XT"
+hardware: "AMD Ryzen 7 5800X / NVIDIA GeForce RTX 5070 Ti 616.56 / 32 GB RAM / 16GB VRAM"
 ---
 
-Game Boots but does not Play the Game Opening Video Num compiled 9 shaders Num compiled 10 shaders --- Build --- Official build KytyPS5-2026-08-08-87428d7 --- Stack Trace --- [0] 00000001407994aa [1] 000000014079a48f [2] 00000001407a9718 [3] 0000000140737360 [4] 000000014071191c [5] 000000014073512e [6] 000000014073460d [7] 000000014073388e [8] 000000014073ad1c [9] 00007ffdea841bb2 [10] 00007ffdeb3d7374 [11] 00007ffdece7cc91 --- Error --- unsupported sampled depth target: resource=1 descriptor=1 encoding=0 format=1 kind=8 dimension=3 mip_mode=0 read=1 written=0 atomic=0 compare=0 guest_format=22 swizzle=0x924 image_format=130 view_format=100 image_layers=1 descriptor_type=9 base_array=0 depth=0 descriptor_pitch=1920 target_pitch=1920 addr=0x0000000513560000 size=0x0000000000870000 dwords=05135600,c1600000,010dc1df,91800924,00000000,00000000,00000000,00000000 in D:\a\KytyPS5\KytyPS5\src\graphics\host_gpu\renderer\pipeline\descriptors.cpp:342
+ASTRO BOT starts initializing successfully and KytyPS5 begins compiling shaders.
 
-**Steps to reproduce:** Boot the Game Nothing
+The emulator compiles 19 shaders before crashing in the compute shader recompiler.
 
-> Source: [KytyPS5 issue #204](https://github.com/KytyPS5/KytyPS5/issues/204)
+The final error is:
 
+ShaderRecompiler CS failed hash=0x503d7f066a496c3c:
+unsupported decoded instruction in CFG at pc 0x00002190:
+0x00002190: unsupported family=MIMG opcode=0xe6
+raw=[0xf1989f07 0x00040505 0x4442413d 0x4543403e 0x00004746]
+reason=MIMG opcode is not implemented
+
+in D:\a\KytyPS5\KytyPS5\src\graphics\shader\shader.cpp:162
+
+Before the crash, the log also reports:
+
+Unresolved import stub called: mUuUOWI-C+0[ConvertKeycode_v1][ConvertKeycode_v1.0][Func]
+
+warning: executing wave64 compute shader cs=0x0000000908e6aa00
+
+No main menu or controllable gameplay is reached.
+
+## Steps to reproduce
+
+1. Start KytyPS5.
+2. Launch ASTRO BOT (PPSA21564).
+3. Wait while the game initializes and shaders begin compiling.
+4. KytyPS5 compiles 19 shaders. The emulator crashes with ShaderRecompiler CS failed because MIMG opcode=0xe6 is not implemented.
+
+## Expected behavior
+
+The shader should be successfully recompiled and execution should continue instead of KytyPS5 terminating on the unsupported MIMG instruction.
+
+## Last working build / first broken build
+
+Unknown
+
+> Source: [KytyPS5 issue #426](https://github.com/KytyPS5/KytyPS5/issues/426)
