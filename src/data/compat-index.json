@@ -1416,14 +1416,14 @@
     "title": "PAC-MAN WORLD Re-PAC",
     "titleId": "PPSA06399",
     "cover": "https://image.api.playstation.com/vulcan/ap/rnd/202208/0810/kAZJ1QJV8zKH4TYSsYgEY4pL.png",
-    "overall": "main-menu",
+    "overall": "in-game",
     "os": {
-      "windows": "main-menu"
+      "windows": "in-game"
     },
     "reportCounts": {
       "windows": 1
     },
-    "latestTested": "2026-07-19"
+    "latestTested": "2026-08-30"
   },
   {
     "key": "PPSA09189",
