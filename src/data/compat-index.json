@@ -310,6 +310,7 @@
     "key": "PPSA10696",
     "title": "Atomic Heart",
     "titleId": "PPSA10696",
+    "cover": "https://image.api.playstation.com/vulcan/ap/rnd/202209/2815/m87aqmwNT68F9plFgyNm0TqC.jpg",
     "overall": "logo",
     "os": {
       "windows": "logo"
@@ -2171,6 +2172,7 @@
     "key": "PPSA10513",
     "title": "Trinity Trigger",
     "titleId": "PPSA10513",
+    "cover": "https://image.api.playstation.com/vulcan/ap/rnd/202304/2023/5b1dce4809ba3bac014057c1facc3906e978941f67c6fcf7.png",
     "overall": "in-game",
     "os": {
       "windows": "in-game"
