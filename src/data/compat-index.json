@@ -32,14 +32,14 @@
     "title": "41 Hours",
     "titleId": "PPSA04583",
     "cover": "https://image.api.playstation.com/vulcan/ap/rnd/202209/2109/Yp2uWqmp5iqw4HHjJntTqTG2.png",
-    "overall": "logo",
+    "overall": "doesnt-boot",
     "os": {
-      "windows": "logo"
+      "windows": "doesnt-boot"
     },
     "reportCounts": {
       "windows": 1
     },
-    "latestTested": "2026-07-18"
+    "latestTested": "2026-08-31"
   },
   {
     "key": "PPSA02388",
