@@ -269,14 +269,14 @@
     "title": "ASTRO BOT",
     "titleId": "PPSA21564",
     "cover": "https://image.api.playstation.com/vulcan/ap/rnd/202406/0500/80ecf657918558eeef8da3ee4cef326e4517d34e6c69d950.jpg",
-    "overall": "logo",
+    "overall": "doesnt-boot",
     "os": {
-      "windows": "logo"
+      "windows": "doesnt-boot"
     },
     "reportCounts": {
       "windows": 1
     },
-    "latestTested": "2026-08-08"
+    "latestTested": "2026-08-31"
   },
   {
     "key": "PPSA01325",
