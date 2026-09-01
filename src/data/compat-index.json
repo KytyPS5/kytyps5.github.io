@@ -307,6 +307,19 @@
     "latestTested": "2026-08-04"
   },
   {
+    "key": "PPSA10696",
+    "title": "Atomic Heart",
+    "titleId": "PPSA10696",
+    "overall": "logo",
+    "os": {
+      "windows": "logo"
+    },
+    "reportCounts": {
+      "windows": 1
+    },
+    "latestTested": "2026-08-29"
+  },
+  {
     "key": "PPSA02057",
     "title": "BALAN WONDERWORLD",
     "titleId": "PPSA02057",
