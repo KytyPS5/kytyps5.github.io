@@ -682,14 +682,14 @@
     "key": "PPSA17730",
     "title": "DRAGON QUEST VII Reimagined",
     "titleId": "PPSA17730",
-    "overall": "logo",
+    "overall": "in-game",
     "os": {
-      "windows": "logo"
+      "windows": "in-game"
     },
     "reportCounts": {
       "windows": 1
     },
-    "latestTested": "2026-08-26"
+    "latestTested": "2026-08-30"
   },
   {
     "key": "PPSA02929",
