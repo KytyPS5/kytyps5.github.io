@@ -1,33 +1,31 @@
 ---
-title: "DRAGON QUEST VII Reimagined"
+title: "Dragon Quest VII Reimagined"
 titleId: "PPSA17942"
-status: "logo"
-testedVersion: "KytyPS5-2026-08-26-8072718-Windows-x64"
-testedDate: "2026-08-26"
+status: "in-game"
+testedVersion: "KytyPS5-2026-08-29-1df53b1-Windows-x64"
+testedDate: "2026-08-30"
 os: "windows"
-hardware: "I7 14700KF / NVIDIA RTX4070 / 32GB RAM DDR5 / 12GB VRAM"
-screenshots: ["https://github.com/user-attachments/assets/cd017cf9-973d-4fd9-b52c-f426601bf6ef","https://github.com/user-attachments/assets/60333e2e-f883-4ef9-bf6e-588819396862"]
+hardware: "Intel I7 14700KF (stock) / NVIDIA RTX 4070 / 32Gb ram ddr5 / 12Gb vram"
 ---
 
-The game opens and then, on the first loading screen, crashes.
+Work: Now it pass through logo screen and got in game.
+Don't work: No sound and a lot of missing textures.
 
 ## Steps to reproduce
 
-1 Open kyty
-2 Open the game
+1 Open KytyPS5
+2 Run the game
 
 ## Expected behavior
 
-Not crash.
+There are no sound/music in the game and there are a ton of missing textures.
 
 ## Last working build / first broken build
 
-Still the same since 7022afa, before this idk.
+After 6980e08 the missing shaders were corrected.
 
 ## Extra notes
 
---- Error ---
-ShaderRecompiler CS failed hash=0x000000201af20000: unsupported decoded instruction in CFG at pc 0x000007fc: 0x000007fc: unsupported family=VOP1 opcode=0x61 raw=[0x7e08c2f9] reason=VOP1 opcode is not implemented
- in D:\a\KytyPS5\KytyPS5\src\graphics\shader\shader.cpp:211
+Missing shaders issue was corrected, now i've retested and posted the new results.
 
-> Source: [KytyPS5 issue #321](https://github.com/KytyPS5/KytyPS5/issues/321)
+> Source: [KytyPS5 issue #412](https://github.com/KytyPS5/KytyPS5/issues/412)
