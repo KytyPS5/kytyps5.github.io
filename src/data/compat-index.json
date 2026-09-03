@@ -725,14 +725,14 @@
     "title": "Dying Light 2",
     "titleId": "PPSA02261",
     "cover": "https://image.api.playstation.com/vulcan/ap/rnd/202501/3115/420630164b84387c4355bacfe7fbd3a684716e703d573876.png",
-    "overall": "doesnt-boot",
+    "overall": "logo",
     "os": {
-      "windows": "doesnt-boot"
+      "windows": "logo"
     },
     "reportCounts": {
       "windows": 1
     },
-    "latestTested": "2026-08-08"
+    "latestTested": "2026-09-01"
   },
   {
     "key": "PPSA04184",

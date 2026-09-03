@@ -1,23 +1,24 @@
 ---
-title: "Dying Light 2: Stay Human"
-titleId: "PPSA02262"
-status: "doesnt-boot"
-testedVersion: "2026-08-08-87428d7"
-testedDate: "2026-08-08"
+title: "Dying Light 2 Stay Human"
+titleId: "PPSA-02262"
+status: "logo"
+testedVersion: "KytyPS5-2026-09-01-0c4dfd5"
+testedDate: "2026-09-01"
 os: "windows"
-hardware: "AMD Ryzen 9 9950X3D / AMD Radeon RX 7900 XT / 256GB RAM / 20GB VRAM"
-screenshots: ["https://github.com/user-attachments/assets/8884569d-96b1-4222-82ce-42cda762b887"]
+hardware: "Intel Core i5-12400F / NVIDIA GeForce RTX 4070 ,drivers 610.88 WHQL / 32 GB DDR4 RAM,12 GB VRAM"
+screenshots: ["https://github.com/user-attachments/assets/60328bef-7f50-404b-9993-5ebe9f211500","https://github.com/user-attachments/assets/1084bc33-d378-44c8-995a-9ff69e2e5349","https://github.com/user-attachments/assets/8e347a35-9ef3-4a0e-b649-3fdf9d62f65b"]
 ---
 
-Game opens window and crashes on boot with an unresolved import stub / access violation in `runtimeLinker.cpp:1031`.
+The game starts the intro sequence, but after the intro, there is an infinite black screen.
 
 ## Steps to reproduce
 
-1. Boot the game in KytyPS5.
-2. Emulator window opens and crashes immediately.
+1. Launch Kyty PS5
+2. Open the game
+3. Wait
 
 ## Expected behavior
 
-Boot the game and see splash screen / intro video up to the Main Menu.
+The main menu should appear after the intro sequence.
 
-> Source: [KytyPS5 issue #208](https://github.com/KytyPS5/KytyPS5/issues/208)
+> Source: [KytyPS5 issue #445](https://github.com/KytyPS5/KytyPS5/issues/445)
