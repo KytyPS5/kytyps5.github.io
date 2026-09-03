@@ -210,7 +210,7 @@ async function reportIndex() {
 async function fetchMirrors() {
   const headers = { authorization: `Bearer ${token}` };
   const mirrors = new Map();
-  for (let page = 1; page <= 5; page++) {
+  for (let page = 1; page <= 50; page++) {
     const batch = await api(
       `https://api.github.com/repos/${thisRepo}/issues?state=all&labels=${MIRROR_LABEL}&per_page=100&page=${page}`,
       { headers },
@@ -291,10 +291,11 @@ for (const issue of candidates) {
 
   const candStatus = issueStatus(issue.body);
   const candVersion = issueVersion(issue.body);
-  const statusChanged = candStatus && report?.status && candStatus !== report.status;
-  const versionChanged = candVersion && report?.version && candVersion !== report.version;
+  const isSourceIssue = report?.sourceNumber !== undefined && report.sourceNumber === number;
+  const statusChanged = Boolean(isSourceIssue && candStatus && report?.status && candStatus !== report.status);
+  const versionChanged = Boolean(isSourceIssue && candVersion && report?.version && candVersion !== report.version);
   const isNewerEdit = Boolean(
-    isEdited && lastEditDate && (!report?.testedDate || lastEditDate > report.testedDate),
+    isSourceIssue && isEdited && lastEditDate && (!report?.testedDate || lastEditDate > report.testedDate),
   );
   const isUpdate = isNewerEdit && (statusChanged || versionChanged);
 
@@ -307,12 +308,12 @@ for (const issue of candidates) {
           oldVersion: report?.version,
           newVersion: candVersion,
         },
-        { number, url: issue.html_url, created: effectiveDate },
+        { number, url: issue.html_url, created: createdDate },
       )
     : refreshMirrorBody(issue.body, mirror?.body, {
         number,
         url: issue.html_url,
-        created: effectiveDate,
+        created: createdDate,
       });
 
   const newBody = isUpdate && mirror?.body
@@ -346,7 +347,7 @@ for (const issue of candidates) {
     const decision = shouldCreateMirror(
       {
         number,
-        created: effectiveDate,
+        created: createdDate,
         isEdited,
         editDate: lastEditDate,
         statusChanged,
