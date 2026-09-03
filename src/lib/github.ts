@@ -214,6 +214,41 @@ export function githubSnapshot(): Promise<GithubSnapshot | null> {
   return snapshotPromise;
 }
 
+/* ---------- Updates feed (/data/updates.json) ---------- */
+
+export interface UpdateAsset {
+  name: string;
+  url: string;
+  size: number;
+}
+
+/** Shape of public/data/updates.json, consumed by the KytyPS5 desktop launcher. */
+export interface UpdateFeed {
+  generated_at: string;
+  tag: string;
+  commit: string;
+  published_at: string;
+  html_url: string;
+  changelog: string[];
+  assets: {
+    windows: UpdateAsset | null;
+    linux: UpdateAsset | null;
+    macos: UpdateAsset | null;
+  };
+}
+
+let updatesPromise: Promise<UpdateFeed | null> | null = null;
+
+/** Fetch the static update feed. Returns null if unreachable. */
+export function updatesFeed(): Promise<UpdateFeed | null> {
+  if (!updatesPromise) {
+    updatesPromise = fetch(`${import.meta.env.BASE_URL}data/updates.json`)
+      .then((res) => (res.ok ? (res.json() as Promise<UpdateFeed>) : null))
+      .catch(() => null);
+  }
+  return updatesPromise;
+}
+
 /* ---------- Media ---------- */
 
 // Screenshots are now data-driven: the homepage carousel derives its slides

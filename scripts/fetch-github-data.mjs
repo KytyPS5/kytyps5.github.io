@@ -12,12 +12,14 @@
  * Failures are non-fatal (warn + keep/emit an empty snapshot) so an offline
  * or rate-limited build still succeeds; the live client fetch covers gaps.
  */
-import { mkdir, writeFile } from "node:fs/promises";
+import { access, mkdir, writeFile } from "node:fs/promises";
 import { fileURLToPath } from "node:url";
 import path from "node:path";
+import { buildUpdatesFeed } from "./lib/updates-feed.mjs";
 
 const ROOT = path.resolve(path.dirname(fileURLToPath(import.meta.url)), "..");
 const OUT = path.join(ROOT, "public", "data", "github.json");
+const UPDATES_OUT = path.join(ROOT, "public", "data", "updates.json");
 const REPO = "KytyPS5/KytyPS5";
 const API = `https://api.github.com/repos/${REPO}`;
 const TOKEN = process.env.GITHUB_TOKEN;
@@ -71,6 +73,8 @@ async function getContributorCount() {
   }
 }
 
+const commits = await get(`${API}/commits?per_page=6`, null);
+
 const SNAPSHOT = {
   generatedAt: new Date().toISOString(),
   repo,
@@ -79,10 +83,33 @@ const SNAPSHOT = {
   latestRelease,
   contributors: await get(`${API}/contributors?per_page=14`, null),
   contributorsCount: await getContributorCount(),
-  commits: await get(`${API}/commits?per_page=6`, null),
+  commits,
 };
 
 await mkdir(path.dirname(OUT), { recursive: true });
 await writeFile(OUT, JSON.stringify(SNAPSHOT, null, 2));
 console.log(`[github] snapshot written → ${path.relative(ROOT, OUT)}`);
+
+// Generate the lightweight updates feed consumed by the desktop launcher (Qt6)
+let writeUpdates = true;
+if (!latestRelease) {
+  try {
+    await access(UPDATES_OUT);
+    console.warn("  ! latest release unavailable; keeping existing updates.json");
+    writeUpdates = false;
+  } catch {
+    // File does not exist yet, proceed to emit fallback feed
+  }
+}
+
+if (writeUpdates) {
+  const updatesFeed = buildUpdatesFeed({
+    latestRelease,
+    commits,
+    generatedAt: SNAPSHOT.generatedAt,
+  });
+  await writeFile(UPDATES_OUT, JSON.stringify(updatesFeed, null, 2) + "\n");
+  console.log(`[updates] feed written → ${path.relative(ROOT, UPDATES_OUT)}`);
+}
+
 console.log(`[github] ${TOKEN ? "using GITHUB_TOKEN" : "anonymous (60 req/hr — set GITHUB_TOKEN to raise the limit)"}`);
