@@ -272,6 +272,12 @@ describe("mirrorSlug", () => {
     expect(mirrorSlug("", "[GAME STATUS]: Stray")).toBe("stray");
   });
 
+  it("strips trailing version numbers and parentheticals without breaking numbered titles", () => {
+    expect(mirrorSlug("", "[GAME STATUS] ASTRO BOT V01.018.000")).toBe("astro-bot");
+    expect(mirrorSlug("", "[GAME STATUS] Gran Turismo 7")).toBe("gran-turismo-7");
+    expect(mirrorSlug("", "[GAME STATUS] Stray (PS5 Edition)")).toBe("stray");
+  });
+
   it("omits the OS suffix when the body has no OS answer", () => {
     const noOs = UPSTREAM_BODY.replace(/### OS\n[\s\S]*?\n\n/, "");
     expect(mirrorSlug(noOs, "x")).toBe("stray");
@@ -290,6 +296,12 @@ describe("reportTestedDate / reportSourceNumber", () => {
   it("reads testedDate and the source issue number from a report", () => {
     expect(reportTestedDate(md)).toBe("2026-08-09");
     expect(reportSourceNumber(md)).toBe(222);
+  });
+
+  it("supports single-quoted testedDate and bare source issue number", () => {
+    const single = "---\ntestedDate: '2026-08-15'\n---\n> Source: KytyPS5 issue #426\n";
+    expect(reportTestedDate(single)).toBe("2026-08-15");
+    expect(reportSourceNumber(single)).toBe(426);
   });
 
   it("returns undefined when absent", () => {
@@ -330,11 +342,48 @@ describe("shouldCreateMirror", () => {
     });
   });
 
-  it("mirrors ALL same-game issues found in the same run (the batch exception)", () => {
+  it("skips an older issue even if batchSize > 1 (batch must NOT bypass date check)", () => {
     const reportFrom227 = { sourceNumber: 227, testedDate: "2026-08-10" };
-    expect(shouldCreateMirror({ number: 222, created: "2026-08-09" }, { report: reportFrom227, batchSize: 2 })).toEqual({
-      create: true,
-      reason: "same-run batch",
+    expect(shouldCreateMirror({ number: 204, created: "2026-08-08" }, { report: reportFrom227, batchSize: 3 })).toEqual({
+      create: false,
+      reason: "existing 2026-08-10 report is as new or newer",
+    });
+  });
+
+  it("skips an issue when candidate.created == report.testedDate", () => {
+    const reportSameDay = { sourceNumber: 426, testedDate: "2026-08-31" };
+    expect(shouldCreateMirror({ number: 204, created: "2026-08-31" }, { report: reportSameDay, batchSize: 1 })).toEqual({
+      create: false,
+      reason: "existing 2026-08-31 report is as new or newer",
+    });
+  });
+
+  it("normalizes ISO timestamps and correctly compares same-day as not newer", () => {
+    const reportSameDay = { sourceNumber: 426, testedDate: "2026-08-31" };
+    expect(shouldCreateMirror({ number: 204, created: "2026-08-31T14:30:00Z" }, { report: reportSameDay, batchSize: 1 })).toEqual({
+      create: false,
+      reason: "existing 2026-08-31 report is as new or newer",
+    });
+  });
+
+  it("skips when report exists but has no testedDate in frontmatter", () => {
+    const reportNoDate = { sourceNumber: 426, testedDate: undefined };
+    expect(shouldCreateMirror({ number: 204, created: "2026-08-08" }, { report: reportNoDate, batchSize: 1 })).toEqual({
+      create: false,
+      reason: "existing report exists for this game",
+    });
+  });
+
+  it("does not allow an older issue with isEdited=true to clobber a report from a different sourceNumber", () => {
+    const reportFrom426 = { sourceNumber: 426, testedDate: "2026-08-31", status: "doesnt-boot" };
+    expect(
+      shouldCreateMirror(
+        { number: 204, created: "2026-08-08", isEdited: true, editDate: "2026-09-02", statusChanged: true },
+        { report: reportFrom426, batchSize: 1 },
+      ),
+    ).toEqual({
+      create: false,
+      reason: "existing 2026-08-31 report is as new or newer",
     });
   });
 });
@@ -346,8 +395,10 @@ describe("dedup keys (titleId-based (game, OS) matching)", () => {
     expect(titleIdKey("")).toBe("");
   });
 
-  it("issueTitleId reads the new template's serial field", () => {
+  it("issueTitleId reads the new template's serial field and handles spaces/dashes", () => {
     expect(issueTitleId(UPSTREAM_BODY)).toBe("PPSA01670");
+    const spaced = UPSTREAM_BODY.replace("### Game ID / serial\nPPSA01670", "### Game ID / serial\nPPSA 01670");
+    expect(issueTitleId(spaced)).toBe("PPSA01670");
   });
 
   it("issueTitleId reads the legacy Title ID field", () => {

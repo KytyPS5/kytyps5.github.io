@@ -235,6 +235,8 @@ export function mirrorSlug(upstreamBody, fallbackTitle) {
   const sections = parseIssueBody(upstreamBody);
   const title = String(cleanField(sections, "Game title") || fallbackTitle || "")
     .replace(/^\[GAME STATUS\][:\s-]*/i, "")
+    .replace(/\s+v\d+\.\d+.*$/i, "")
+    .replace(/\s*\([^)]*\)\s*$/, "")
     .trim();
   const base = title.toLowerCase().replace(/[^a-z0-9]+/g, "-").replace(/^-|-$/g, "");
   if (!base) return undefined;
@@ -244,7 +246,7 @@ export function mirrorSlug(upstreamBody, fallbackTitle) {
 
 /** The `testedDate` frontmatter of a report (the source issue's creation date). */
 export function reportTestedDate(md) {
-  const m = String(md ?? "").match(/^testedDate:\s*"?(\d{4}-\d{2}-\d{2})"?\s*$/m);
+  const m = String(md ?? "").match(/^testedDate:\s*['"]?(\d{4}-\d{2}-\d{2})['"]?\s*$/m);
   return m ? m[1] : undefined;
 }
 
@@ -262,20 +264,20 @@ export function reportOs(md) {
 
 /** The `> Source:` footer's KytyPS5 issue number, if the report is a conversion. */
 export function reportSourceNumber(md) {
-  const m = String(md ?? "").match(/Source:.*?issues\/(\d+)/);
+  const m = String(md ?? "").match(/Source:.*?(?:issues\/|#)(\d+)/);
   return m ? Number(m[1]) : undefined;
 }
 
 /** Normalized bare uppercase title ID — the dedup key for games (PPSA-XXXXX → PPSAXXXXX). */
 export function titleIdKey(titleId) {
-  return String(titleId ?? "").replace(/-/g, "").toUpperCase();
+  return String(titleId ?? "").replace(/[\s-]/g, "").toUpperCase();
 }
 
 /** The PPSA-XXXXX in an upstream issue body (new "Game ID / serial" or legacy "Title ID"). */
 export function issueTitleId(body) {
   const sections = parseIssueBody(body);
   const raw = cleanField(sections, "Game ID / serial") || cleanField(sections, "Title ID");
-  const m = String(raw ?? "").match(/PPSA-?\d{5}/i);
+  const m = String(raw ?? "").match(/PPSA[\s-]?\d{5}/i);
   return m ? titleIdKey(m[0]) : undefined;
 }
 
@@ -366,26 +368,39 @@ export function buildUpdatedMirrorBody(
  * testedDate, status, version }) or undefined; `batchSize` is how many candidates
  * this run found for that (game, OS). Returns { create, isUpdate?, reason? }.
  */
-export function shouldCreateMirror(candidate, { report, batchSize }) {
+export function shouldCreateMirror(candidate, { report, batchSize = 1 }) {
   if (report) {
-    const isNewerEdit =
-      candidate.isEdited &&
-      candidate.editDate &&
-      (!report.testedDate || candidate.editDate > report.testedDate);
-    const hasSemanticChange = candidate.statusChanged || candidate.versionChanged;
-    if (isNewerEdit && hasSemanticChange) {
-      return { create: true, isUpdate: true, reason: "upstream report was edited with changes" };
-    }
-    if (report.sourceNumber === candidate.number) {
+    const candCreated = candidate.created ? String(candidate.created).slice(0, 10) : "";
+    const candEdit = candidate.editDate ? String(candidate.editDate).slice(0, 10) : undefined;
+    const repTested = report.testedDate ? String(report.testedDate).slice(0, 10) : undefined;
+
+    // Case 1: Candidate is the exact source issue the report was converted from.
+    if (report.sourceNumber !== undefined && report.sourceNumber === candidate.number) {
+      const isNewerEdit =
+        candidate.isEdited &&
+        candEdit &&
+        (!repTested || candEdit > repTested);
+      const hasSemanticChange = candidate.statusChanged || candidate.versionChanged;
+      if (isNewerEdit && hasSemanticChange) {
+        return { create: true, isUpdate: true, reason: "upstream report was edited with changes" };
+      }
       return { create: false, reason: "already converted" };
     }
-    if (batchSize > 1) {
-      return { create: true, reason: "same-run batch" };
-    }
-    if (report.testedDate && !(candidate.created > report.testedDate)) {
+
+    // Case 2: Candidate is a different issue for this (game, OS).
+    // It must be strictly newer than the existing report's tested date.
+    if (repTested) {
+      if (!candCreated || candCreated <= repTested) {
+        return {
+          create: false,
+          reason: `existing ${repTested} report is as new or newer`,
+        };
+      }
+    } else {
+      // Report exists on disk but has no testedDate frontmatter — don't duplicate.
       return {
         create: false,
-        reason: `existing ${report.testedDate} report is as new or newer`,
+        reason: "existing report exists for this game",
       };
     }
   }
