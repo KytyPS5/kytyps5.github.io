@@ -917,6 +917,20 @@
     "latestTested": "2026-08-28"
   },
   {
+    "key": "PPSA03682",
+    "title": "Ghostrunner",
+    "titleId": "PPSA03682",
+    "cover": "https://image.api.playstation.com/vulcan/img/rnd/202101/2502/vqZqtaeHQ5B3boqNn95dARtP.jpg",
+    "overall": "doesnt-boot",
+    "os": {
+      "windows": "doesnt-boot"
+    },
+    "reportCounts": {
+      "windows": 1
+    },
+    "latestTested": "2026-09-04"
+  },
+  {
     "key": "PPSA03527",
     "title": "Grand Theft Auto III – The Definitive Edition",
     "titleId": "PPSA03527",
