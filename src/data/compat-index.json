@@ -1841,6 +1841,20 @@
     "latestTested": "2026-08-10"
   },
   {
+    "key": "PPSA03130",
+    "title": "SNIPER GHOST WARRIOR CONTRACTS 2",
+    "titleId": "PPSA03130",
+    "cover": "https://image.api.playstation.com/vulcan/img/rnd/202105/0415/aU9rIDpl5omkfmIalwVIxzBw.png",
+    "overall": "main-menu",
+    "os": {
+      "windows": "main-menu"
+    },
+    "reportCounts": {
+      "windows": 1
+    },
+    "latestTested": "2026-09-04"
+  },
+  {
     "key": "PPSA08804",
     "title": "Sonic Racing: CrossWorlds",
     "titleId": "PPSA08804",
