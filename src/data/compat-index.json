@@ -237,6 +237,20 @@
     "latestTested": "2026-07-18"
   },
   {
+    "key": "PPSA03686",
+    "title": "art of rally",
+    "titleId": "PPSA03686",
+    "cover": "https://image.api.playstation.com/vulcan/ap/rnd/202108/2014/NTGLM0M42TPn9tov2v83JtwJ.png",
+    "overall": "doesnt-boot",
+    "os": {
+      "windows": "doesnt-boot"
+    },
+    "reportCounts": {
+      "windows": 1
+    },
+    "latestTested": "2026-09-04"
+  },
+  {
     "key": "PPSA03847",
     "title": "Assetto Corsa Competizione",
     "titleId": "PPSA03847",
