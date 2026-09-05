@@ -1373,6 +1373,20 @@
     "latestTested": "2026-08-25"
   },
   {
+    "key": "PPSA02804",
+    "title": "NEW Joe & Mac - Caveman Ninja",
+    "titleId": "PPSA02804",
+    "cover": "https://image.api.playstation.com/vulcan/ap/rnd/202207/0416/IiyPPQimPYqGCLSGjlRw5oAp.jpg",
+    "overall": "in-game",
+    "os": {
+      "windows": "in-game"
+    },
+    "reportCounts": {
+      "windows": 1
+    },
+    "latestTested": "2026-09-04"
+  },
+  {
     "key": "PPSA28002",
     "title": "NINJA GAIDEN: Ragebound",
     "titleId": "PPSA28002",
