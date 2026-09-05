@@ -2198,6 +2198,19 @@
     "latestTested": "2026-08-19"
   },
   {
+    "key": "PPSA14199",
+    "title": "Tour de France 2023",
+    "titleId": "PPSA14199",
+    "overall": "in-game",
+    "os": {
+      "windows": "in-game"
+    },
+    "reportCounts": {
+      "windows": 1
+    },
+    "latestTested": "2026-09-04"
+  },
+  {
     "key": "PPSA28465",
     "title": "Trails in the Sky 1st Chapter",
     "titleId": "PPSA28465",
