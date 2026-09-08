@@ -62,6 +62,7 @@ import {
   shouldCreateMirror,
   titleIdKey,
   UPDATED_LABEL,
+  isCandidateIssue,
 } from "./lib/status-issues.mjs";
 
 const ROOT = path.resolve(path.dirname(fileURLToPath(import.meta.url)), "..");
@@ -155,11 +156,7 @@ async function fetchCandidates() {
           if (!issuesData.pageInfo.hasNextPage) break;
           cursor = issuesData.pageInfo.endCursor;
         }
-        return all.filter(
-          (issue) =>
-            /\[GAME (?:STATUS|BUG)\]/i.test(issue.title ?? "") ||
-            (issue.body && issue.body.includes("### Compatibility status")),
-        );
+        return all.filter(isCandidateIssue);
       }
     } catch (err) {
       console.warn(`[sync-status-issues] GraphQL query failed (${err.message}), falling back to REST API`);
@@ -180,12 +177,7 @@ async function fetchCandidates() {
     all.push(...batch);
     if (batch.length < 100) break;
   }
-  return all.filter(
-    (issue) =>
-      !issue.pull_request &&
-      (/\[GAME (?:STATUS|BUG)\]/i.test(issue.title ?? "") ||
-        (issue.body && issue.body.includes("### Compatibility status"))),
-  );
+  return all.filter(isCandidateIssue);
 }
 
 /** Reports on this checkout (main): report slug → { titleId, os, status, version, sourceNumber, testedDate }. */

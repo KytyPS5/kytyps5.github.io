@@ -406,3 +406,25 @@ export function shouldCreateMirror(candidate, { report, batchSize = 1 }) {
   }
   return { create: true };
 }
+
+/**
+ * Regex matching game status report title prefixes.
+ * Supports standard [GAME STATUS] and [GAME BUG] as well as free-form community
+ * prefixes like [playable], [in-game], [boots], [intro], [logo], [main menu].
+ */
+export const CANDIDATE_TITLE_REGEX =
+  /\[(?:GAME (?:STATUS|BUG)|playable|in[- ]game|boots|intro|logo|main[- ]menu)\]/i;
+
+/**
+ * Test whether an upstream GitHub issue represents a compatibility report.
+ */
+export function isCandidateIssue(issue) {
+  if (issue.pull_request) return false;
+  if (CANDIDATE_TITLE_REGEX.test(issue.title ?? "")) return true;
+  const body = issue.body ?? "";
+  if (body.includes("### Compatibility status")) return true;
+  if (body.includes("### Game title") && (body.includes("### OS") || body.includes("### Operating system"))) {
+    return true;
+  }
+  return false;
+}
