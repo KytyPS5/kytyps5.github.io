@@ -45,4 +45,8 @@ The shader should be successfully recompiled and execution should continue inste
 
 Unknown
 
+## Extra notes
+
+Tested on official build KytyPS5-2026-08-30-9992ab1. The unsupported MIMG opcode 0xe6 compute shader recompiler crash is tracked upstream in KytyPS5 issue #281.
+
 > Source: [KytyPS5 issue #426](https://github.com/KytyPS5/KytyPS5/issues/426)

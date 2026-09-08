@@ -25,6 +25,7 @@ import {
   shouldCreateMirror,
   titleIdKey,
   UPDATED_LABEL,
+  isCandidateIssue,
 } from "./status-issues.mjs";
 
 const UPSTREAM_BODY = `### Game title
@@ -547,5 +548,46 @@ describe("shouldCreateMirror with edits", () => {
       create: false,
       reason: "already converted",
     });
+  });
+});
+
+describe("isCandidateIssue", () => {
+  it("rejects pull requests", () => {
+    expect(isCandidateIssue({ pull_request: {}, title: "[GAME STATUS] Test" })).toBe(false);
+  });
+
+  it("accepts [GAME STATUS] and [GAME BUG] titles", () => {
+    expect(isCandidateIssue({ title: "[GAME STATUS]: Stray" })).toBe(true);
+    expect(isCandidateIssue({ title: "[GAME BUG]: Demon Souls (BOOTS)" })).toBe(true);
+  });
+
+  it("accepts community status prefixes like [playable], [in-game], [boots]", () => {
+    expect(isCandidateIssue({ title: "[playable]: Bye Sweet carole" })).toBe(true);
+    expect(isCandidateIssue({ title: "[in-game]: Title" })).toBe(true);
+    expect(isCandidateIssue({ title: "[boots]: Title" })).toBe(true);
+    expect(isCandidateIssue({ title: "[main menu]: Title" })).toBe(true);
+  });
+
+  it("accepts issues with ### Compatibility status in body", () => {
+    expect(
+      isCandidateIssue({
+        title: "Random Title",
+        body: "### Compatibility status\nIn game\n",
+      }),
+    ).toBe(true);
+  });
+
+  it("accepts issues with ### Game title and ### OS in body", () => {
+    expect(
+      isCandidateIssue({
+        title: "Some game test",
+        body: "### Game title\nSome Game\n### OS\nWindows 11\n",
+      }),
+    ).toBe(true);
+  });
+
+  it("rejects non-compatibility issues", () => {
+    expect(isCandidateIssue({ title: "Crash when loading emulator", body: "error log" })).toBe(false);
+    expect(isCandidateIssue({ title: "Support for Win 11", body: "Does it work?" })).toBe(false);
   });
 });
