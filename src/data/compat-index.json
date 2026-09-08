@@ -1318,6 +1318,20 @@
     "latestTested": "2026-07-19"
   },
   {
+    "key": "PPSA07570",
+    "title": "Mortal Kombat 1",
+    "titleId": "PPSA07570",
+    "cover": "https://image.api.playstation.com/vulcan/ap/rnd/202305/1515/c8388641302e1fd8f8f1044f13b398027f188eb695a0d652.jpg",
+    "overall": "doesnt-boot",
+    "os": {
+      "windows": "doesnt-boot"
+    },
+    "reportCounts": {
+      "windows": 1
+    },
+    "latestTested": "2026-09-05"
+  },
+  {
     "key": "PPSA02868",
     "title": "Mortal Shell",
     "titleId": "PPSA02868",
