@@ -1374,6 +1374,20 @@
     "latestTested": "2026-08-28"
   },
   {
+    "key": "PPSA01716",
+    "title": "Need for Speed™ Unbound",
+    "titleId": "PPSA01716",
+    "cover": "https://image.api.playstation.com/vulcan/ap/rnd/202311/0911/99c9488ad3c47e6972bc55c56d18cea105e608a5bb4f9bc1.png",
+    "overall": "doesnt-boot",
+    "os": {
+      "windows": "doesnt-boot"
+    },
+    "reportCounts": {
+      "windows": 1
+    },
+    "latestTested": "2026-09-06"
+  },
+  {
     "key": "PPSA02721",
     "title": "Neptunia ReVerse",
     "titleId": "PPSA02721",
