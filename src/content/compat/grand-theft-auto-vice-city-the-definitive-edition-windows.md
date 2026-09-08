@@ -1,18 +1,29 @@
 ---
 title: "Grand Theft Auto: Vice City - The Definitive Edition"
-titleId: "PPSA03531"
+titleId: "PPSA03530"
 status: "main-menu"
-testedVersion: "769edf4"
-testedDate: "2026-08-07"
+testedVersion: "0.2.2"
+testedDate: "2026-09-06"
 os: "windows"
-hardware: "AMD Ryzen 7 7700X / AMD Radeon 9070 XT"
+hardware: "Intel Core i713Gen / RTX 5060 / 16GBDDR5 8GB VRam"
 ---
 
-Game boots. Select new game from the main menu, a cutscene begins to play then crashes the game.
+Game Open , Where Click Start It Loading And Crash
 
-**Steps to reproduce:** Open Emulator Boot Game Select New Game from the main menu.
+## Steps to reproduce
 
-**Extra notes:** Default settings.
+1. Open Emulator
+2. Open Gta VC DE'
+3. 3 Start Play
+4. loading
+5. crash
 
-> Source: [KytyPS5 issue #188](https://github.com/KytyPS5/KytyPS5/issues/188)
+## Expected behavior
 
+No known issue
+
+## Extra notes
+
+I Think Its Beasue Unreal Engine 4 But Not Sure
+
+> Source: [KytyPS5 issue #496](https://github.com/KytyPS5/KytyPS5/issues/496)
