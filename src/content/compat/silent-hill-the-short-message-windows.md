@@ -1,37 +1,26 @@
 ---
 title: "SILENT HILL: The Short Message"
 titleId: "PPSA10112"
-status: "main-menu"
-testedVersion: "KytyPS5-2026-08-09-d7063d0"
-testedDate: "2026-08-10"
+status: "doesnt-boot"
+testedVersion: "KytyPS5-2026-09-09-0b4e78c"
+testedDate: "2026-09-09"
 os: "windows"
-hardware: "Intel Core i3-12100F / AMD Radeon RX 6600 / 16 GB RAM"
+hardware: "Intel Core i3-12100F / AMD Radeon RX 6600 (8 GB) / 16GB / 8GB"
 ---
 
-The game successfully boots and reaches the Main Menu. However, upon selecting "New Game" and confirming the warning/disclaimer screen, the entire PC completely freezes (Hard System Freeze / Hang). 
+The game crashes immediately during the loading/initialization phase before displaying any logos or reaching the menu. 
 
-No error messages or crash logs are created because the whole system stops responding and requires a hard manual reboot.
+Host exception: Access violation (`3221225477` / `0xC0000005`) at `runtimeLinker.cpp:843` when attempting to access memory address `0x0000000000000004`.
 
 ## Steps to reproduce
 
-1. Open KytyPS5.
-2. Boot SILENT HILL: The Short Message (PPSA10112).
-3. Navigate through the initial screens to the Main Menu.
-4. Select "New Game".
-5. Confirm the warning screen prompt.
-6. Observe complete system freeze (hard reboot required).
+1. Launch KytyPS5 (build KytyPS5-2026-09-09-0b4e78c).
+2. Start SILENT HILL: The Short Message (PPSA10112, v01.000.001).
+3. Wait for shaders and modules to load.
+4. The emulator crashes with an unhandled host exception.
 
 ## Expected behavior
 
-The game should proceed to load the intro/gameplay level without triggering a GPU/system driver crash or hard system lockup.
+The game should boot and display the opening intro/logos or progress further into the boot sequence.
 
-## Last working build / first broken build
-
-Unknown
-
-## Extra notes
-
-Tested on official build KytyPS5-2026-08-09-d7063d0. App version: 01.000.001 (FW 8.20).
-Note: Probable GPU driver timeout / Vulkan queue deadlock triggering a hard OS hang.
-
-> Source: [KytyPS5 issue #228](https://github.com/KytyPS5/KytyPS5/issues/228)
+> Source: [KytyPS5 issue #547](https://github.com/KytyPS5/KytyPS5/issues/547)
