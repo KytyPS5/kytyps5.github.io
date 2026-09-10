@@ -29,6 +29,11 @@ on:
       - ".gitignore"
       - ".github/**"
   workflow_dispatch:
+    inputs:
+      force_full:
+        description: "Force full build (bypass content-only optimization)"
+        type: boolean
+        default: false
 
 permissions:
   contents: read
@@ -61,11 +66,15 @@ jobs:
         shell: bash
         run: |
           if [ "${{ github.event_name }}" = "workflow_dispatch" ]; then
-            echo "scope=full" >> "$GITHUB_OUTPUT"
-            exit 0
+            if [ "${{ github.event.inputs.force_full }}" = "true" ]; then
+              echo "scope=full" >> "$GITHUB_OUTPUT"
+              exit 0
+            fi
+            CHANGED="$(git diff --name-only HEAD~1 HEAD 2>/dev/null || true)"
+          else
+            BASE="${{ github.event.before }}"
+            CHANGED="$(git diff --name-only "$BASE" HEAD 2>/dev/null || true)"
           fi
-          BASE="${{ github.event.before }}"
-          CHANGED="$(git diff --name-only "$BASE" HEAD 2>/dev/null || true)"
           if [ -z "$CHANGED" ]; then
             echo "scope=full" >> "$GITHUB_OUTPUT"
             exit 0
@@ -145,7 +154,7 @@ jobs:
           cp public/data/compat-index.json dist/data/compat-index.json
           cp -r public/data/compat/. dist/data/compat/
           cp public/sitemap.xml dist/sitemap.xml
-          cp -r public/screenshots/. dist/screenshots/
+          [ -d public/screenshots ] && cp -r public/screenshots/. dist/screenshots/ || true
           echo "Content-only deploy: skipped npm ci / tsc / vite build."
 
       - uses: actions/configure-pages@v6

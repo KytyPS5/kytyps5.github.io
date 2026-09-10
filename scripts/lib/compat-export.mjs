@@ -271,7 +271,11 @@ export function parseReport(raw, slug) {
   else if (!PLATFORMS.includes(os)) {
     errors.push(`os must be windows | linux | macos, got "${String(os)}"`);
   }
-  if (score !== undefined && (score < 1 || score > 5)) errors.push("score must be 1–5");
+  if (fm.score !== undefined) {
+    if (typeof fm.score !== "number" || !Number.isInteger(fm.score) || fm.score < 1 || fm.score > 5) {
+      errors.push("`score` must be an integer between 1 and 5");
+    }
+  }
 
   if (errors.length) throw new Error(`${slug}: ${errors.join("; ")}`);
 

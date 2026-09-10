@@ -20,6 +20,10 @@ permissions:
   pull-requests: write
   actions: write
 
+concurrency:
+  group: ci-${{ github.workflow }}-${{ github.ref }}
+  cancel-in-progress: ${{ github.ref != 'refs/heads/main' }}
+
 jobs:
   test:
     runs-on: ubuntu-latest
@@ -69,6 +73,8 @@ jobs:
 
       - name: Test
         if: steps.scope.outputs.scope != 'report'
+        env:
+          CHECK_SEED_SYNC: ${{ github.head_ref == 'data/games-refresh' }}
         run: npm test
 
       # prebuild validates compat reports and regenerates the GitHub snapshot,
@@ -108,12 +114,21 @@ jobs:
           PR_NUMBER: ${{ github.event.pull_request.number }}
         run: |
           for i in {1..12}; do
-            STATE="$(gh pr view "$PR_NUMBER" --json state --jq .state)"
+            STATE="$(gh pr view "$PR_NUMBER" --json state --jq .state 2>/dev/null || true)"
             if [ "$STATE" = "MERGED" ]; then
-              echo "PR #$PR_NUMBER merged successfully. Dispatching deploy.yml..."
+              echo "PR #$PR_NUMBER merged successfully."
+              MERGE_SHA="$(gh pr view "$PR_NUMBER" --json mergeCommit --jq '.mergeCommit.oid // empty' 2>/dev/null || true)"
+              if [ -n "$MERGE_SHA" ]; then
+                EXISTING="$(gh run list --workflow=deploy.yml --commit="$MERGE_SHA" --json databaseId -q '.[0].databaseId // empty' 2>/dev/null || true)"
+                if [ -n "$EXISTING" ]; then
+                  echo "Deploy already queued or running for commit $MERGE_SHA. Skipping manual dispatch."
+                  exit 0
+                fi
+              fi
+              echo "Dispatching deploy.yml for main..."
               gh workflow run deploy.yml --ref main
               exit 0
             fi
             sleep 5
           done
-          echo "PR #$PR_NUMBER was not merged within 60s (may require manual merge or still processing)."
+          echo "PR #$PR_NUMBER was not merged within 60s."

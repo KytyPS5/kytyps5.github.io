@@ -25,7 +25,7 @@
  * ./lib/compat-export.mjs); src/lib/compat.test.ts keeps it in sync with the
  * TS parser via a fixture comparison test.
  *
- * Usage: node scripts/export-site-compat-json.mjs [--pretty]
+ * Usage: node scripts/export-site-compat-json.mjs [--pretty] [--seed]
  */
 import { mkdir, readdir, readFile, writeFile } from "node:fs/promises";
 import { fileURLToPath } from "node:url";
@@ -39,6 +39,7 @@ const PUBLIC_DATA = path.join(ROOT, "public", "data");
 const DETAIL_DIR = path.join(PUBLIC_DATA, "compat");
 const SEED_FILE = path.join(ROOT, "src", "data", "compat-index.json");
 const PRETTY = process.argv.includes("--pretty");
+const WRITE_SEED = process.argv.includes("--seed");
 
 const reports = [];
 for (const file of await readdir(COMPAT_DIR)) {
@@ -56,7 +57,9 @@ const json = JSON.stringify(payload, null, PRETTY ? 2 : 0) + "\n";
 
 await mkdir(DETAIL_DIR, { recursive: true });
 await writeFile(path.join(PUBLIC_DATA, "compat-index.json"), json);
-await writeFile(SEED_FILE, JSON.stringify(slim, null, 2) + "\n");
+if (WRITE_SEED) {
+  await writeFile(SEED_FILE, JSON.stringify(slim, null, 2) + "\n");
+}
 
 // One detail file per tested game, keyed by the canonical route key.
 for (const entry of index) {
@@ -65,6 +68,7 @@ for (const entry of index) {
 }
 
 console.log(
-  `[compat-site] wrote public/data/compat-index.json + ${index.length} detail file(s) in public/data/compat/ ` +
-    `(seed → src/data/compat-index.json) from ${reports.length} report(s).`,
+  `[compat-site] wrote public/data/compat-index.json + ${index.length} detail file(s) in public/data/compat/` +
+    (WRITE_SEED ? " (seed → src/data/compat-index.json)" : "") +
+    ` from ${reports.length} report(s).`,
 );
