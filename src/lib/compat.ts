@@ -400,7 +400,11 @@ export function parseCompatReport(raw: string, slug: string): CompatReport {
   else if (!OSES.includes(os as Os)) {
     errors.push(`os must be windows | linux | macos, got "${String(os)}"`);
   }
-  if (score !== undefined && (score < 1 || score > 5)) errors.push("score must be 1–5");
+  if (data.score !== undefined) {
+    if (typeof data.score !== "number" || !Number.isInteger(data.score) || data.score < 1 || data.score > 5) {
+      errors.push("`score` must be an integer between 1 and 5");
+    }
+  }
 
   if (errors.length) throw new Error(`${slug}: ${errors.join("; ")}`);
 

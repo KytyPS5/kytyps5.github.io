@@ -106,7 +106,7 @@ jobs:
         env:
           GH_TOKEN: ${{ secrets.GITHUB_TOKEN }}
         run: |
-          gh workflow run deploy.yml --ref main
+          gh workflow run deploy.yml --ref main -f force_full=true
           echo "Deployed data was stale — dispatched a rebuild."
       - name: Nothing to do
         if: steps.changed.outputs.changed != 'true'

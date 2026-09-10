@@ -157,8 +157,7 @@ jobs:
         with:
           token: ${{ secrets.ACTIONS_BOT_TOKEN || secrets.GITHUB_TOKEN }}
           add-paths: |
-            src/content/compat/**
-            public/screenshots/**
+            src/content/compat/
           commit-message: "${{ steps.convert.outputs.pr_title }}"
           branch: compat/${{ steps.convert.outputs.slug }}
           title: ${{ steps.convert.outputs.pr_title }}

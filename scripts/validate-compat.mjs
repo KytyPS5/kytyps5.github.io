@@ -81,6 +81,11 @@ for (const file of await readdir(DIR)) {
   if (data.trusted !== undefined && typeof data.trusted !== "boolean") {
     errors.push("`trusted` must be a boolean (true | false)");
   }
+  if (data.score !== undefined) {
+    if (typeof data.score !== "number" || !Number.isInteger(data.score) || data.score < 1 || data.score > 5) {
+      errors.push("`score` must be an integer between 1 and 5");
+    }
+  }
 
   // Screenshots are evidence attached to a community-verified report, never a
   // status by themselves. The 6 "inferred from the upstream screenshot gallery"

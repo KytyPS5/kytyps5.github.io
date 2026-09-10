@@ -201,6 +201,22 @@ describe("JS parser parity (scripts/lib/compat-export.mjs vs src/lib/compat.ts)"
     expect(() => parseCompatReport(bad, "x")).toThrow(/status must be one of/);
   });
 
+  it("rejects invalid score values with identical errors in JS and TS", () => {
+    for (const badScore of ["0", "6", "3.5", '"bad"']) {
+      const invalid = VALID.replace('hardware: "Ryzen 9 / RTX 5090"', `score: ${badScore}`);
+      expect(() => jsParseReport(invalid, "x")).toThrow("`score` must be an integer between 1 and 5");
+      expect(() => parseCompatReport(invalid, "x")).toThrow("`score` must be an integer between 1 and 5");
+    }
+  });
+
+  it("accepts valid score integers in JS and TS", () => {
+    for (const validScore of [1, 2, 3, 4, 5]) {
+      const valid = VALID.replace('hardware: "Ryzen 9 / RTX 5090"', `score: ${validScore}`);
+      expect(jsParseReport(valid, "x").score).toBe(validScore);
+      expect(parseCompatReport(valid, "x").score).toBe(validScore);
+    }
+  });
+
   it("builds the same merged index as the removed client-side buildGameIndex semantics", () => {
     // The export's buildSiteIndex mirrors what the compatibility page used to
     // compute with buildGameIndex + displayStatus: same game merge, same
