@@ -175,8 +175,8 @@ jobs:
           node scripts/export-compat-json.mjs
           node scripts/export-site-compat-json.mjs
           node scripts/generate-sitemap.mjs
-          rm -rf dist/data dist/screenshots
-          mkdir -p dist/data dist/data/compat dist/screenshots
+          rm -rf dist/data/compat dist/screenshots
+          mkdir -p dist/data/compat dist/screenshots
           cp public/data/compatibility.json dist/data/compatibility.json
           cp public/data/compat-index.json dist/data/compat-index.json
           cp -r public/data/compat/. dist/data/compat/
