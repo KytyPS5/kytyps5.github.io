@@ -42,7 +42,7 @@ jobs:
         id: cpr
         uses: peter-evans/create-pull-request@v6
         with:
-          token: ${{ secrets.GITHUB_TOKEN }}
+          token: ${{ secrets.ACTIONS_BOT_TOKEN || secrets.GITHUB_TOKEN }}
           add-paths: |
             src/data/games.json
             src/data/compat-index.json
@@ -50,3 +50,10 @@ jobs:
           branch: data/games-refresh
           title: "data: refresh games database"
           delete-branch: true
+
+      - name: Enable auto-merge for data refresh PR
+        if: steps.cpr.outcome == 'success' && steps.cpr.outputs.pull-request-number != ''
+        env:
+          GH_TOKEN: ${{ secrets.ACTIONS_BOT_TOKEN || secrets.GITHUB_TOKEN }}
+        run: |
+          gh pr merge "${{ steps.cpr.outputs.pull-request-number }}" --auto --squash || echo "::warning::Failed to enable auto-merge on PR #${{ steps.cpr.outputs.pull-request-number }}"

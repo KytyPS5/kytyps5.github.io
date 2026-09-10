@@ -5,6 +5,9 @@ import {
   buildMirrorBody,
   buildUpdatedMirrorBody,
   gameKeyFor,
+  isCandidateIssue,
+  isMatchingGame,
+  issueGameTitle,
   issueOs,
   issueStatus,
   issueTitleId,
@@ -14,18 +17,20 @@ import {
   mirrorSource,
   mirrorTitle,
   mirrorUpstreamBody,
+  normalizeGameTitle,
   readOverrides,
   refreshMirrorBody,
   reportOs,
   reportSourceNumber,
   reportStatus,
   reportTestedDate,
+  reportTitle,
   reportTitleId,
+  reportTrusted,
   reportVersion,
   shouldCreateMirror,
   titleIdKey,
   UPDATED_LABEL,
-  isCandidateIssue,
 } from "./status-issues.mjs";
 
 const UPSTREAM_BODY = `### Game title
@@ -179,6 +184,13 @@ describe("readOverrides", () => {
       status: "main-menu",
     });
   });
+
+  it("reads trusted boolean override", () => {
+    const t = appendOverrides(buildMirrorBody(UPSTREAM_BODY, src), { trusted: true });
+    expect(readOverrides(t).trusted).toBe(true);
+    const f = appendOverrides(buildMirrorBody(UPSTREAM_BODY, src), { trusted: false });
+    expect(readOverrides(f).trusted).toBe(false);
+  });
 });
 
 describe("appendOverrides", () => {
@@ -188,6 +200,12 @@ describe("appendOverrides", () => {
     const body = appendOverrides(buildMirrorBody(UPSTREAM_BODY, src), { os: "windows" });
     expect(body.endsWith("## Overrides\n- os: windows\n")).toBe(true);
     expect(mirrorSource(body)).toEqual(src);
+  });
+
+  it("appends trusted override correctly", () => {
+    const body = appendOverrides(buildMirrorBody(UPSTREAM_BODY, src), { trusted: true });
+    expect(body).toContain("- trusted: true");
+    expect(readOverrides(body).trusted).toBe(true);
   });
 
   it("replaces the section but keeps other overrides", () => {
@@ -589,5 +607,73 @@ describe("isCandidateIssue", () => {
   it("rejects non-compatibility issues", () => {
     expect(isCandidateIssue({ title: "Crash when loading emulator", body: "error log" })).toBe(false);
     expect(isCandidateIssue({ title: "Support for Win 11", body: "Does it work?" })).toBe(false);
+  });
+});
+
+describe("reportTitle and reportTrusted", () => {
+  it("extracts title and trusted from report frontmatter", () => {
+    const md = '---\ntitle: "Demon\'s Souls"\ntrusted: true\n---\n';
+    expect(reportTitle(md)).toBe("Demon's Souls");
+    expect(reportTrusted(md)).toBe(true);
+  });
+
+  it("handles missing trusted or false", () => {
+    const md = '---\ntitle: "Demon\'s Souls"\ntrusted: false\n---\n';
+    expect(reportTrusted(md)).toBe(false);
+    expect(reportTrusted("no frontmatter")).toBe(false);
+  });
+});
+
+describe("issueGameTitle", () => {
+  it("extracts Game title from issue body", () => {
+    expect(issueGameTitle(UPSTREAM_BODY)).toBe("Stray");
+  });
+
+  it("returns undefined when missing", () => {
+    expect(issueGameTitle("no form")).toBeUndefined();
+  });
+});
+
+describe("normalizeGameTitle", () => {
+  it("strips accents, prefixes, OS/version suffixes, and apostrophes", () => {
+    expect(normalizeGameTitle("[GAME STATUS] Pokémon: Let's Go! v1.0.0 (Windows)")).toBe("pokemon lets go");
+    expect(normalizeGameTitle("Demon's Souls")).toBe("demons souls");
+    expect(normalizeGameTitle("Stray: Director’s Cut (windows)")).toBe("stray directors cut");
+  });
+});
+
+describe("isMatchingGame", () => {
+  const games = [
+    { titleId: "PPSA01670", allTitleIds: ["PPSA01670", "PPSA01671"] },
+  ];
+
+  it("matches when title and titleId correspond to the same game", () => {
+    const result = isMatchingGame("Stray", "PPSA01670", "Stray", "PPSA01670", games);
+    expect(result.matches).toBe(true);
+    expect(result.titleChanged).toBe(false);
+    expect(result.idChanged).toBe(false);
+  });
+
+  it("matches across regional serial variants of the same game", () => {
+    const result = isMatchingGame("Stray", "PPSA01671", "Stray", "PPSA01670", games);
+    expect(result.matches).toBe(true);
+  });
+
+  it("detects when game title has changed", () => {
+    const result = isMatchingGame("Astro Bot", "PPSA01670", "Stray", "PPSA01670", games);
+    expect(result.matches).toBe(false);
+    expect(result.titleChanged).toBe(true);
+    expect(result.idChanged).toBe(false);
+  });
+
+  it("detects when game titleId has changed to different game", () => {
+    const result = isMatchingGame("Stray", "PPSA99999", "Stray", "PPSA01670", games);
+    expect(result.matches).toBe(false);
+    expect(result.idChanged).toBe(true);
+  });
+
+  it("returns no match if any required title or id is missing (presence check)", () => {
+    expect(isMatchingGame(undefined, undefined, "Stray", "PPSA01670", games).matches).toBe(false);
+    expect(isMatchingGame("Stray", "PPSA01670", undefined, undefined, games).matches).toBe(false);
   });
 });

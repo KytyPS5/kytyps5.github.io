@@ -70,6 +70,8 @@ export interface CompatFrontmatter {
    * be an http(s) URL and the report to link its community source.
    */
   screenshots?: string[];
+  /** Optional flag indicating collaborator trust for automated report updates. */
+  trusted?: boolean;
 }
 
 /** Provenance of a report — issue link when community-filed. */

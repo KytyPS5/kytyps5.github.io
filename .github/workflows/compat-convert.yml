@@ -28,6 +28,12 @@ name: Convert compat issue to report PR
 on:
   issue_comment:
     types: [created]
+  workflow_dispatch:
+    inputs:
+      issue_number:
+        description: "Mirror issue number to convert"
+        required: true
+        type: string
 
 permissions:
   contents: write
@@ -37,15 +43,16 @@ permissions:
 # Serialize /compat runs per issue so two quick comments can't race on the
 # same branch.
 concurrency:
-  group: compat-convert-${{ github.event.issue.number }}
+  group: compat-convert-${{ github.event.issue.number || inputs.issue_number }}
   cancel-in-progress: true
 
 jobs:
   convert:
     if: >
-      github.event.issue.pull_request == null &&
-      startsWith(github.event.comment.body, '/compat') &&
-      contains(fromJSON('["OWNER", "MEMBER", "COLLABORATOR"]'), github.event.comment.author_association)
+      github.event_name == 'workflow_dispatch' ||
+      (github.event.issue.pull_request == null &&
+       startsWith(github.event.comment.body, '/compat') &&
+       contains(fromJSON('["OWNER", "MEMBER", "COLLABORATOR"]'), github.event.comment.author_association))
     runs-on: ubuntu-latest
     steps:
       - uses: actions/checkout@v4
@@ -55,16 +62,39 @@ jobs:
           cache: npm
       - run: npm ci
 
-      - name: Read the mirror body and extract its upstream source
-        id: source
+      - name: Resolve mirror issue context
+        id: issue_context
         env:
-          BODY: ${{ github.event.issue.body }}
+          GH_TOKEN: ${{ secrets.GITHUB_TOKEN }}
+          ISSUE_NUMBER: ${{ github.event.issue.number || inputs.issue_number }}
+          EVENT_BODY: ${{ github.event.issue.body }}
+          REPO: ${{ github.repository }}
         run: |
           node - <<'NODE'
           (async () => {
             const fs = require("node:fs");
             const { mirrorSource } = await import("./scripts/lib/status-issues.mjs");
-            const body = process.env.BODY ?? "";
+            let body = process.env.EVENT_BODY ?? "";
+            const issueNum = process.env.ISSUE_NUMBER;
+            const repo = process.env.REPO;
+            const token = process.env.GH_TOKEN;
+            let issueUrl = `https://github.com/${repo}/issues/${issueNum}`;
+
+            if (!body && issueNum) {
+              const res = await fetch(`https://api.github.com/repos/${repo}/issues/${issueNum}`, {
+                headers: { authorization: `Bearer ${token}`, "user-agent": "gh-actions" }
+              });
+              if (!res.ok) {
+                const msg = `Failed to fetch mirror issue #${issueNum}: HTTP ${res.status}`;
+                fs.writeFileSync("/tmp/compat-failure.txt", msg);
+                console.error("::error::" + msg);
+                process.exit(1);
+              }
+              const data = await res.json();
+              body = data.body ?? "";
+              issueUrl = data.html_url || issueUrl;
+            }
+
             fs.writeFileSync("/tmp/mirror-issue-body.txt", body);
             const src = mirrorSource(body);
             if (!src) {
@@ -76,29 +106,22 @@ jobs:
               console.error("::error::" + msg);
               process.exit(1);
             }
-            // Step outputs must go to $GITHUB_OUTPUT — plain stdout lines are
-            // not captured as outputs by the Actions runner (they only surface
-            // in the logs), which previously left --date/--source empty and
-            // failed the conversion with "--date must be YYYY-MM-DD".
             const out = process.env.GITHUB_OUTPUT;
             if (out) {
               fs.appendFileSync(
                 out,
-                `number=${src.number}\nurl=${src.url}\ncreated=${src.created}\n`,
+                `mirror_number=${issueNum}\nmirror_url=${issueUrl}\nnumber=${src.number}\nurl=${src.url}\ncreated=${src.created}\n`
               );
             }
-            console.log(`number=${src.number}`);
-            console.log(`url=${src.url}`);
-            console.log(`created=${src.created}`);
           })();
           NODE
 
       - name: Convert the issue to a report
         id: convert
         env:
-          ISSUE_DATE: ${{ steps.source.outputs.created }}
-          ISSUE_NUM: ${{ steps.source.outputs.number }}
-          ISSUE_URL: ${{ steps.source.outputs.url }}
+          ISSUE_DATE: ${{ steps.issue_context.outputs.created }}
+          ISSUE_NUM: ${{ steps.issue_context.outputs.number }}
+          ISSUE_URL: ${{ steps.issue_context.outputs.url }}
         run: |
           # Capture the converter's output so a failure can be posted back as
           # a readable comment (the final step reads /tmp/compat-failure.txt).
@@ -137,19 +160,18 @@ jobs:
       - name: Open or update the report PR
         id: cpr
         uses: peter-evans/create-pull-request@v6
-        # The PR step failing (e.g. the compat/<slug> branch already exists
-        # without a PR) must not silently skip the failure comment — its
-        # outcome is checked by the next step instead.
         continue-on-error: true
         with:
-          token: ${{ secrets.GITHUB_TOKEN }}
+          token: ${{ secrets.ACTIONS_BOT_TOKEN || secrets.GITHUB_TOKEN }}
           commit-message: "${{ steps.convert.outputs.pr_title }}"
           branch: compat/${{ steps.convert.outputs.slug }}
           title: ${{ steps.convert.outputs.pr_title }}
           body: |
-            Auto-converted from ${{ github.event.issue.html_url }} via `/compat`.
+            Auto-converted from ${{ steps.issue_context.outputs.mirror_url }} via `/compat`.
 
-            ${{ steps.source.outputs.url }}
+            ${{ steps.issue_context.outputs.url }}
+
+            <!-- mirror-issue: ${{ steps.issue_context.outputs.mirror_number }} -->
           delete-branch: true
 
       - name: Fail the job if the report PR could not be opened
@@ -158,15 +180,24 @@ jobs:
           printf 'Failed to open or update the report PR (branch compat/%s) — the branch may already exist without a PR. See the workflow log for the create-pull-request error.' "${{ steps.convert.outputs.slug }}" > /tmp/compat-failure.txt
           exit 1
 
+      - name: Enable auto-merge on the report PR
+        if: steps.cpr.outcome == 'success' && steps.cpr.outputs.pull-request-number != ''
+        env:
+          GH_TOKEN: ${{ secrets.ACTIONS_BOT_TOKEN || secrets.GITHUB_TOKEN }}
+        run: |
+          gh pr merge "${{ steps.cpr.outputs.pull-request-number }}" --auto --squash || echo "::warning::Failed to enable auto-merge on PR #${{ steps.cpr.outputs.pull-request-number }}"
+
       - name: Acknowledge and close the mirror
         if: steps.cpr.outcome == 'success' && steps.convert.outputs.slug != ''
         env:
           GH_TOKEN: ${{ secrets.GITHUB_TOKEN }}
         run: |
-          gh api --method POST \
-            repos/${{ github.repository }}/issues/comments/${{ github.event.comment.id }}/reactions \
-            -f content=eyes
-          gh issue close ${{ github.event.issue.number }} \
+          if [ "${{ github.event_name }}" = "issue_comment" ]; then
+            gh api --method POST \
+              repos/${{ github.repository }}/issues/comments/${{ github.event.comment.id }}/reactions \
+              -f content=eyes || true
+          fi
+          gh issue close "${{ steps.issue_context.outputs.mirror_number }}" \
             --comment "Converted — report PR: ${{ steps.convert.outputs.pr_title }}"
 
       - name: Post the failure as a comment
@@ -174,15 +205,14 @@ jobs:
         env:
           GH_TOKEN: ${{ secrets.GITHUB_TOKEN }}
         run: |
-          # Post the reason captured by the failing step back on the issue.
-          # No file = an infra failure (checkout / npm ci / post-conversion
-          # housekeeping) — skip the comment rather than post a misleading
-          # "/compat failed" after the conversion actually succeeded.
           if [ ! -f /tmp/compat-failure.txt ]; then
             echo "no captured failure message — skipping comment"
             exit 0
           fi
-          MSG="$(cat /tmp/compat-failure.txt)"
-          gh api --method POST \
-            repos/${{ github.repository }}/issues/${{ github.event.issue.number }}/comments \
-            -f "body=❌ **/compat failed.** $MSG" || true
+          TARGET_ISSUE="${{ steps.issue_context.outputs.mirror_number || inputs.issue_number || github.event.issue.number }}"
+          if [ -n "$TARGET_ISSUE" ]; then
+            MSG="$(cat /tmp/compat-failure.txt)"
+            gh api --method POST \
+              "repos/${{ github.repository }}/issues/${TARGET_ISSUE}/comments" \
+              -f "body=❌ **/compat failed.** $MSG" || true
+          fi

@@ -78,6 +78,9 @@ for (const file of await readdir(DIR)) {
     errors.push("`testedDate` required as YYYY-MM-DD");
   if (!data.os) errors.push("missing required `os` (windows | linux | macos)");
   else if (!OSES.includes(data.os)) errors.push(`os must be ${OSES.join(" | ")}`);
+  if (data.trusted !== undefined && typeof data.trusted !== "boolean") {
+    errors.push("`trusted` must be a boolean (true | false)");
+  }
 
   // Screenshots are evidence attached to a community-verified report, never a
   // status by themselves. The 6 "inferred from the upstream screenshot gallery"
