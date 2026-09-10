@@ -333,7 +333,7 @@ export function buildSiteIndex(games, reports) {
 
   const consumed = new Set();
   const entries = (games ?? []).map((g) => {
-    const ids = new Set((g.allTitleIds ?? []).map(norm));
+    const ids = new Set([g.titleId, ...(g.allTitleIds ?? [])].filter(Boolean).map(norm));
     const gameReports = [];
     for (const id of ids) {
       if (consumed.has(id)) continue;

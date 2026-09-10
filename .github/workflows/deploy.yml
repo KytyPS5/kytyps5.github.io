@@ -64,15 +64,22 @@ jobs:
       - name: Detect change scope
         id: scope
         shell: bash
+        env:
+          EVENT_NAME: ${{ github.event_name }}
+          FORCE_FULL: ${{ github.event.inputs.force_full }}
+          BEFORE_SHA: ${{ github.event.before }}
         run: |
-          if [ "${{ github.event_name }}" = "workflow_dispatch" ]; then
-            if [ "${{ github.event.inputs.force_full }}" = "true" ]; then
+          if [ "$EVENT_NAME" = "workflow_dispatch" ]; then
+            if [ "$FORCE_FULL" = "true" ]; then
               echo "scope=full" >> "$GITHUB_OUTPUT"
               exit 0
             fi
             CHANGED="$(git diff --name-only HEAD~1 HEAD 2>/dev/null || true)"
           else
-            BASE="${{ github.event.before }}"
+            BASE="$BEFORE_SHA"
+            if [ -z "$BASE" ] || [ "$BASE" = "0000000000000000000000000000000000000000" ]; then
+              BASE="HEAD~1"
+            fi
             CHANGED="$(git diff --name-only "$BASE" HEAD 2>/dev/null || true)"
           fi
           if [ -z "$CHANGED" ]; then
@@ -148,9 +155,10 @@ jobs:
           (steps.scope.outputs.scope == 'content' && steps.dist-check.outputs.restored == 'false')
         env:
           GITHUB_TOKEN: ${{ secrets.GITHUB_TOKEN }}
+          GITHUB_SHA: ${{ github.sha }}
         run: |
           npm run build
-          echo "${{ github.sha }}" > dist/.built-commit
+          echo "$GITHUB_SHA" > dist/.built-commit
 
       - name: Cache built site
         if: |
@@ -170,6 +178,8 @@ jobs:
       - name: Regenerate and overlay content
         if: steps.scope.outputs.scope == 'content' && steps.dist-check.outputs.restored == 'true'
         shell: bash
+        env:
+          GITHUB_SHA: ${{ github.sha }}
         run: |
           node scripts/validate-compat.mjs
           node scripts/export-compat-json.mjs
@@ -179,10 +189,11 @@ jobs:
           mkdir -p dist/data/compat dist/screenshots
           cp public/data/compatibility.json dist/data/compatibility.json
           cp public/data/compat-index.json dist/data/compat-index.json
+          [ -f public/data/updates.json ] && cp public/data/updates.json dist/data/updates.json || true
           cp -r public/data/compat/. dist/data/compat/
           cp public/sitemap.xml dist/sitemap.xml
           [ -d public/screenshots ] && cp -r public/screenshots/. dist/screenshots/ || true
-          echo "${{ github.sha }}" > dist/.built-commit
+          echo "$GITHUB_SHA" > dist/.built-commit
           echo "Content-only deploy: skipped npm ci / tsc / vite build."
 
       - uses: actions/configure-pages@v6

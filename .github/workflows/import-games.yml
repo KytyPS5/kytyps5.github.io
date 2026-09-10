@@ -56,5 +56,15 @@ jobs:
         if: steps.cpr.outcome == 'success' && steps.cpr.outputs.pull-request-number != ''
         env:
           GH_TOKEN: ${{ secrets.ACTIONS_BOT_TOKEN || secrets.GITHUB_TOKEN }}
+          PR_NUMBER: ${{ steps.cpr.outputs.pull-request-number }}
         run: |
-          gh pr merge "${{ steps.cpr.outputs.pull-request-number }}" --auto --squash || echo "::warning::Failed to enable auto-merge on PR #${{ steps.cpr.outputs.pull-request-number }}"
+          if gh pr merge "$PR_NUMBER" --auto --squash; then
+            echo "Auto-merge enabled for PR #$PR_NUMBER"
+          else
+            PR_STATUS="$(gh pr view "$PR_NUMBER" --json autoMergeRequest,state --jq '.autoMergeRequest != null or .state == "MERGED"' 2>/dev/null || true)"
+            if [ "$PR_STATUS" = "true" ]; then
+              echo "Auto-merge already enabled or merged for PR #$PR_NUMBER"
+            else
+              echo "::warning::Failed to enable auto-merge on PR #$PR_NUMBER"
+            fi
+          fi
