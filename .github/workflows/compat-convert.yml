@@ -145,13 +145,6 @@ jobs:
           OS="$(sed -n 's/^os: "\(.*\)"$/\1/p' "src/content/compat/$SLUG.md" | head -1)"
           echo "slug=$SLUG" >> "$GITHUB_OUTPUT"
           echo "pr_title=compat: $TITLE ($OS)" >> "$GITHUB_OUTPUT"
-          # The site index seed must travel with the PR, exactly like the old
-          # poller's PR did — the deployed site refreshes it at runtime anyway,
-          # this keeps dev / first paint current.
-          if ! node scripts/export-site-compat-json.mjs >/dev/null 2>&1; then
-            printf 'Failed to refresh the site compat index (export-site-compat-json.mjs) — see the workflow log.' > /tmp/compat-failure.txt
-            exit 1
-          fi
           if ! node scripts/validate-compat.mjs >/tmp/compat-validate.log 2>&1; then
             printf 'The generated report is invalid — %s' "$(tail -1 /tmp/compat-validate.log)" > /tmp/compat-failure.txt
             exit 1
@@ -163,6 +156,9 @@ jobs:
         continue-on-error: true
         with:
           token: ${{ secrets.ACTIONS_BOT_TOKEN || secrets.GITHUB_TOKEN }}
+          add-paths: |
+            src/content/compat/**
+            public/screenshots/**
           commit-message: "${{ steps.convert.outputs.pr_title }}"
           branch: compat/${{ steps.convert.outputs.slug }}
           title: ${{ steps.convert.outputs.pr_title }}
