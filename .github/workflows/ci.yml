@@ -42,14 +42,21 @@ jobs:
       - name: Detect change scope
         id: scope
         shell: bash
+        env:
+          EVENT_NAME: ${{ github.event_name }}
+          BASE: ${{ github.event.pull_request.base.sha }}
+          HEAD_SHA: ${{ github.event.pull_request.head.sha }}
         run: |
           # Pushes to main are always the full pipeline.
-          if [ "${{ github.event_name }}" = "push" ]; then
+          if [ "$EVENT_NAME" = "push" ]; then
             echo "scope=full" >> "$GITHUB_OUTPUT"
             exit 0
           fi
-          BASE="${{ github.event.pull_request.base.sha }}"
-          HEAD_SHA="${{ github.event.pull_request.head.sha }}"
+          if [ -z "$BASE" ] || [ -z "$HEAD_SHA" ]; then
+            echo "::warning::Missing PR base or head SHA; treating as full."
+            echo "scope=full" >> "$GITHUB_OUTPUT"
+            exit 0
+          fi
           CHANGED="$(git diff --name-only "$BASE" "$HEAD_SHA" 2>/dev/null || true)"
           if [ -z "$CHANGED" ]; then
             echo "scope=full" >> "$GITHUB_OUTPUT"

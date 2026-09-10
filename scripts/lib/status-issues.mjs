@@ -311,7 +311,7 @@ export function gameKeyFor(titleId, games) {
   const key = titleIdKey(titleId);
   if (!key) return undefined;
   for (const g of games ?? []) {
-    if ((g.allTitleIds ?? []).some((id) => titleIdKey(id) === key)) return titleIdKey(g.titleId);
+    if (titleIdKey(g.titleId) === key || (g.allTitleIds ?? []).some((id) => titleIdKey(id) === key)) return titleIdKey(g.titleId);
   }
   return key;
 }

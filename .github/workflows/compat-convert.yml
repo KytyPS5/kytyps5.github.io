@@ -171,8 +171,10 @@ jobs:
 
       - name: Fail the job if the report PR could not be opened
         if: steps.cpr.outcome == 'failure'
+        env:
+          SLUG: ${{ steps.convert.outputs.slug }}
         run: |
-          printf 'Failed to open or update the report PR (branch compat/%s) — the branch may already exist without a PR. See the workflow log for the create-pull-request error.' "${{ steps.convert.outputs.slug }}" > /tmp/compat-failure.txt
+          printf 'Failed to open or update the report PR (branch compat/%s) — the branch may already exist without a PR. See the workflow log for the create-pull-request error.' "$SLUG" > /tmp/compat-failure.txt
           exit 1
 
       - name: Enable auto-merge on the report PR
@@ -180,11 +182,14 @@ jobs:
         if: steps.cpr.outcome == 'success'
         env:
           GH_TOKEN: ${{ secrets.ACTIONS_BOT_TOKEN || secrets.GITHUB_TOKEN }}
+          CPR_NUMBER: ${{ steps.cpr.outputs.pull-request-number }}
+          CPR_URL: ${{ steps.cpr.outputs.pull-request-url }}
+          SLUG: ${{ steps.convert.outputs.slug }}
         run: |
-          PR_NUMBER="${{ steps.cpr.outputs.pull-request-number }}"
-          PR_URL="${{ steps.cpr.outputs.pull-request-url }}"
+          PR_NUMBER="$CPR_NUMBER"
+          PR_URL="$CPR_URL"
           if [ -z "$PR_NUMBER" ]; then
-            PR_NUMBER="$(gh pr list --head "compat/${{ steps.convert.outputs.slug }}" --state open --json number --jq '.[0].number // empty')"
+            PR_NUMBER="$(gh pr list --head "compat/${SLUG}" --state open --json number --jq '.[0].number // empty')"
             if [ -n "$PR_NUMBER" ]; then
               PR_URL="$(gh pr view "$PR_NUMBER" --json url --jq '.url // empty')"
             fi
@@ -196,8 +201,13 @@ jobs:
             if gh pr merge "$PR_NUMBER" --auto --squash; then
               echo "enabled=true" >> "$GITHUB_OUTPUT"
             else
-              echo "enabled=false" >> "$GITHUB_OUTPUT"
-              echo "::warning::Failed to enable auto-merge on PR #$PR_NUMBER"
+              PR_STATUS="$(gh pr view "$PR_NUMBER" --json autoMergeRequest,state --jq '.autoMergeRequest != null or .state == "MERGED"' 2>/dev/null || true)"
+              if [ "$PR_STATUS" = "true" ]; then
+                echo "enabled=true" >> "$GITHUB_OUTPUT"
+              else
+                echo "enabled=false" >> "$GITHUB_OUTPUT"
+                echo "::warning::Failed to enable auto-merge on PR #$PR_NUMBER"
+              fi
             fi
           else
             echo "enabled=noop" >> "$GITHUB_OUTPUT"
@@ -207,36 +217,45 @@ jobs:
         if: steps.cpr.outcome == 'success' && steps.convert.outputs.slug != ''
         env:
           GH_TOKEN: ${{ secrets.GITHUB_TOKEN }}
+          EVENT_NAME: ${{ github.event_name }}
+          REPO: ${{ github.repository }}
+          COMMENT_ID: ${{ github.event.comment.id }}
+          PR_TITLE: ${{ steps.convert.outputs.pr_title }}
+          PR_URL: ${{ steps.auto_merge.outputs.pr_url || steps.cpr.outputs.pull-request-url }}
+          AUTO_MERGE_ENABLED: ${{ steps.auto_merge.outputs.enabled }}
+          MIRROR_NUMBER: ${{ steps.issue_context.outputs.mirror_number }}
         run: |
-          if [ "${{ github.event_name }}" = "issue_comment" ]; then
+          if [ "$EVENT_NAME" = "issue_comment" ]; then
             gh api --method POST \
-              repos/${{ github.repository }}/issues/comments/${{ github.event.comment.id }}/reactions \
+              "repos/${REPO}/issues/comments/${COMMENT_ID}/reactions" \
               -f content=eyes || true
           fi
 
-          PR_URL="${{ steps.auto_merge.outputs.pr_url || steps.cpr.outputs.pull-request-url }}"
-
-          if [ "${{ steps.auto_merge.outputs.enabled }}" = "false" ]; then
-            gh issue comment "${{ steps.issue_context.outputs.mirror_number }}" \
-              -b "⚠️ Report PR was opened: ${{ steps.convert.outputs.pr_title }} (${PR_URL}), but auto-merge could not be enabled. The mirror issue will remain open until the PR is merged manually."
+          if [ "$AUTO_MERGE_ENABLED" = "false" ]; then
+            gh issue comment "$MIRROR_NUMBER" \
+              -b "⚠️ Report PR was opened: ${PR_TITLE} (${PR_URL}), but auto-merge could not be enabled. The mirror issue will remain open until the PR is merged manually."
+          elif [ "$AUTO_MERGE_ENABLED" = "noop" ]; then
+            gh issue close "$MIRROR_NUMBER" \
+              --comment "Compatibility report (${PR_TITLE}) is already up to date on main; no pull request needed."
           else
-            gh issue close "${{ steps.issue_context.outputs.mirror_number }}" \
-              --comment "Converted — report PR: ${{ steps.convert.outputs.pr_title }}"
+            gh issue close "$MIRROR_NUMBER" \
+              --comment "Converted — report PR: ${PR_TITLE} (${PR_URL})"
           fi
 
       - name: Post the failure as a comment
         if: failure()
         env:
           GH_TOKEN: ${{ secrets.GITHUB_TOKEN }}
+          REPO: ${{ github.repository }}
+          TARGET_ISSUE: ${{ steps.issue_context.outputs.mirror_number || inputs.issue_number || github.event.issue.number }}
         run: |
           if [ ! -f /tmp/compat-failure.txt ]; then
             echo "no captured failure message — skipping comment"
             exit 0
           fi
-          TARGET_ISSUE="${{ steps.issue_context.outputs.mirror_number || inputs.issue_number || github.event.issue.number }}"
           if [ -n "$TARGET_ISSUE" ]; then
             MSG="$(cat /tmp/compat-failure.txt)"
             gh api --method POST \
-              "repos/${{ github.repository }}/issues/${TARGET_ISSUE}/comments" \
+              "repos/${REPO}/issues/${TARGET_ISSUE}/comments" \
               -f "body=❌ **/compat failed.** $MSG" || true
           fi

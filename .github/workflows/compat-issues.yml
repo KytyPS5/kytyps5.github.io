@@ -78,10 +78,11 @@ jobs:
         id: sync
         env:
           GH_TOKEN: ${{ secrets.GITHUB_TOKEN }}
+          INPUT_ISSUE_NUMBER: ${{ inputs.issue_number }}
         run: |
           ARGS=()
-          if [ -n "${{ inputs.issue_number }}" ]; then
-            ARGS+=(--issue-number "${{ inputs.issue_number }}")
+          if [ -n "$INPUT_ISSUE_NUMBER" ]; then
+            ARGS+=(--issue-number "$INPUT_ISSUE_NUMBER")
           fi
           node scripts/sync-status-issues.mjs "${ARGS[@]}"
 
@@ -89,8 +90,12 @@ jobs:
         if: steps.sync.outputs.trusted_updates != '' && steps.sync.outputs.trusted_updates != '[]'
         env:
           GH_TOKEN: ${{ secrets.ACTIONS_BOT_TOKEN || secrets.GITHUB_TOKEN }}
+          UPDATES: ${{ steps.sync.outputs.trusted_updates }}
         run: |
-          UPDATES='${{ steps.sync.outputs.trusted_updates }}'
+          if [ -z "$UPDATES" ] || [ "$UPDATES" = "[]" ]; then
+            echo "No trusted updates to convert."
+            exit 0
+          fi
           for num in $(echo "$UPDATES" | jq -r '.[]'); do
             echo "Auto-converting trusted update for mirror issue #$num..."
             gh workflow run compat-convert.yml -f issue_number="$num"
