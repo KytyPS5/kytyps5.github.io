@@ -372,17 +372,14 @@ export function buildUpdatedMirrorBody(
  * upstream issues for the same game clobber each other's marker when
  * converted. Instead of tracking per issue number, compare dates: skip when a
  * report for the same (game, OS) is already as new or newer than the
- * candidate. Exception: when TWO OR MORE candidates for the same (game, OS)
- * arrive in the same run they're a fresh batch — all of them are mirrored.
- * Also mirrors when an edited issue has a changed status or version.
+ * candidate. Also mirrors when an edited issue has a changed status or version.
  * Manual runs never call this (workflow_dispatch always mirrors the issue).
  *
  * `candidate` is { number, created, isEdited?, statusChanged?, versionChanged? };
  * `report` is the existing report for the candidate's (game, OS) ({ sourceNumber,
- * testedDate, status, version }) or undefined; `batchSize` is how many candidates
- * this run found for that (game, OS). Returns { create, isUpdate?, reason? }.
+ * testedDate, status, version }) or undefined. Returns { create, isUpdate?, reason? }.
  */
-export function shouldCreateMirror(candidate, { report, batchSize = 1 }) {
+export function shouldCreateMirror(candidate, { report }) {
   if (report) {
     const candCreated = candidate.created ? String(candidate.created).slice(0, 10) : "";
     const candEdit = candidate.editDate ? String(candidate.editDate).slice(0, 10) : undefined;

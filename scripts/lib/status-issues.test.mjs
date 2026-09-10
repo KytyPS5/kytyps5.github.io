@@ -333,13 +333,13 @@ describe("shouldCreateMirror", () => {
   const report = { sourceNumber: 222, testedDate: "2026-08-09" };
 
   it("mirrors when no report exists for the (game, OS)", () => {
-    expect(shouldCreateMirror({ number: 227, created: "2026-08-10" }, { report: undefined, batchSize: 1 })).toEqual({
+    expect(shouldCreateMirror({ number: 227, created: "2026-08-10" }, { report: undefined })).toEqual({
       create: true,
     });
   });
 
   it("mirrors an issue NEWER than the existing report", () => {
-    expect(shouldCreateMirror({ number: 227, created: "2026-08-10" }, { report, batchSize: 1 })).toEqual({
+    expect(shouldCreateMirror({ number: 227, created: "2026-08-10" }, { report })).toEqual({
       create: true,
     });
   });
@@ -347,7 +347,7 @@ describe("shouldCreateMirror", () => {
   it("skips an issue OLDER than the existing report (the clobbered-marker case)", () => {
     // Report converted from #227 (tested 2026-08-10); older #222 must not be re-mirrored.
     const reportFrom227 = { sourceNumber: 227, testedDate: "2026-08-10" };
-    expect(shouldCreateMirror({ number: 222, created: "2026-08-09" }, { report: reportFrom227, batchSize: 1 })).toEqual({
+    expect(shouldCreateMirror({ number: 222, created: "2026-08-09" }, { report: reportFrom227 })).toEqual({
       create: false,
       reason: "existing 2026-08-10 report is as new or newer",
     });
@@ -355,15 +355,15 @@ describe("shouldCreateMirror", () => {
 
   it("skips the exact issue the report was converted from, regardless of date", () => {
     const older = { sourceNumber: 222, testedDate: "2026-08-05" };
-    expect(shouldCreateMirror({ number: 222, created: "2026-08-09" }, { report: older, batchSize: 1 })).toEqual({
+    expect(shouldCreateMirror({ number: 222, created: "2026-08-09" }, { report: older })).toEqual({
       create: false,
       reason: "already converted",
     });
   });
 
-  it("skips an older issue even if batchSize > 1 (batch must NOT bypass date check)", () => {
+  it("skips an older issue when a newer report exists", () => {
     const reportFrom227 = { sourceNumber: 227, testedDate: "2026-08-10" };
-    expect(shouldCreateMirror({ number: 204, created: "2026-08-08" }, { report: reportFrom227, batchSize: 3 })).toEqual({
+    expect(shouldCreateMirror({ number: 204, created: "2026-08-08" }, { report: reportFrom227 })).toEqual({
       create: false,
       reason: "existing 2026-08-10 report is as new or newer",
     });
@@ -371,7 +371,7 @@ describe("shouldCreateMirror", () => {
 
   it("skips an issue when candidate.created == report.testedDate", () => {
     const reportSameDay = { sourceNumber: 426, testedDate: "2026-08-31" };
-    expect(shouldCreateMirror({ number: 204, created: "2026-08-31" }, { report: reportSameDay, batchSize: 1 })).toEqual({
+    expect(shouldCreateMirror({ number: 204, created: "2026-08-31" }, { report: reportSameDay })).toEqual({
       create: false,
       reason: "existing 2026-08-31 report is as new or newer",
     });
@@ -379,7 +379,7 @@ describe("shouldCreateMirror", () => {
 
   it("normalizes ISO timestamps and correctly compares same-day as not newer", () => {
     const reportSameDay = { sourceNumber: 426, testedDate: "2026-08-31" };
-    expect(shouldCreateMirror({ number: 204, created: "2026-08-31T14:30:00Z" }, { report: reportSameDay, batchSize: 1 })).toEqual({
+    expect(shouldCreateMirror({ number: 204, created: "2026-08-31T14:30:00Z" }, { report: reportSameDay })).toEqual({
       create: false,
       reason: "existing 2026-08-31 report is as new or newer",
     });
@@ -387,7 +387,7 @@ describe("shouldCreateMirror", () => {
 
   it("skips when report exists but has no testedDate in frontmatter", () => {
     const reportNoDate = { sourceNumber: 426, testedDate: undefined };
-    expect(shouldCreateMirror({ number: 204, created: "2026-08-08" }, { report: reportNoDate, batchSize: 1 })).toEqual({
+    expect(shouldCreateMirror({ number: 204, created: "2026-08-08" }, { report: reportNoDate })).toEqual({
       create: false,
       reason: "existing report exists for this game",
     });
@@ -398,7 +398,7 @@ describe("shouldCreateMirror", () => {
     expect(
       shouldCreateMirror(
         { number: 204, created: "2026-08-08", isEdited: true, editDate: "2026-09-02", statusChanged: true },
-        { report: reportFrom426, batchSize: 1 },
+        { report: reportFrom426 },
       ),
     ).toEqual({
       create: false,
@@ -535,7 +535,7 @@ describe("shouldCreateMirror with edits", () => {
     expect(
       shouldCreateMirror(
         { number: 222, created: "2026-08-01", isEdited: true, editDate: "2026-08-20", statusChanged: true },
-        { report, batchSize: 1 },
+        { report },
       ),
     ).toEqual({
       create: true,
@@ -548,7 +548,7 @@ describe("shouldCreateMirror with edits", () => {
     expect(
       shouldCreateMirror(
         { number: 222, created: "2026-08-01", isEdited: true, editDate: "2026-08-05", statusChanged: true },
-        { report, batchSize: 1 },
+        { report },
       ),
     ).toEqual({
       create: false,
@@ -560,7 +560,7 @@ describe("shouldCreateMirror with edits", () => {
     expect(
       shouldCreateMirror(
         { number: 222, created: "2026-08-20", isEdited: true, editDate: "2026-08-20", statusChanged: false, versionChanged: false },
-        { report, batchSize: 1 },
+        { report },
       ),
     ).toEqual({
       create: false,

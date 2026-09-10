@@ -176,11 +176,32 @@ jobs:
           exit 1
 
       - name: Enable auto-merge on the report PR
-        if: steps.cpr.outcome == 'success' && steps.cpr.outputs.pull-request-number != ''
+        id: auto_merge
+        if: steps.cpr.outcome == 'success'
         env:
           GH_TOKEN: ${{ secrets.ACTIONS_BOT_TOKEN || secrets.GITHUB_TOKEN }}
         run: |
-          gh pr merge "${{ steps.cpr.outputs.pull-request-number }}" --auto --squash || echo "::warning::Failed to enable auto-merge on PR #${{ steps.cpr.outputs.pull-request-number }}"
+          PR_NUMBER="${{ steps.cpr.outputs.pull-request-number }}"
+          PR_URL="${{ steps.cpr.outputs.pull-request-url }}"
+          if [ -z "$PR_NUMBER" ]; then
+            PR_NUMBER="$(gh pr list --head "compat/${{ steps.convert.outputs.slug }}" --state open --json number --jq '.[0].number // empty')"
+            if [ -n "$PR_NUMBER" ]; then
+              PR_URL="$(gh pr view "$PR_NUMBER" --json url --jq '.url // empty')"
+            fi
+          fi
+
+          if [ -n "$PR_NUMBER" ]; then
+            echo "pr_number=$PR_NUMBER" >> "$GITHUB_OUTPUT"
+            echo "pr_url=$PR_URL" >> "$GITHUB_OUTPUT"
+            if gh pr merge "$PR_NUMBER" --auto --squash; then
+              echo "enabled=true" >> "$GITHUB_OUTPUT"
+            else
+              echo "enabled=false" >> "$GITHUB_OUTPUT"
+              echo "::warning::Failed to enable auto-merge on PR #$PR_NUMBER"
+            fi
+          else
+            echo "enabled=noop" >> "$GITHUB_OUTPUT"
+          fi
 
       - name: Acknowledge and close the mirror
         if: steps.cpr.outcome == 'success' && steps.convert.outputs.slug != ''
@@ -192,8 +213,16 @@ jobs:
               repos/${{ github.repository }}/issues/comments/${{ github.event.comment.id }}/reactions \
               -f content=eyes || true
           fi
-          gh issue close "${{ steps.issue_context.outputs.mirror_number }}" \
-            --comment "Converted — report PR: ${{ steps.convert.outputs.pr_title }}"
+
+          PR_URL="${{ steps.auto_merge.outputs.pr_url || steps.cpr.outputs.pull-request-url }}"
+
+          if [ "${{ steps.auto_merge.outputs.enabled }}" = "false" ]; then
+            gh issue comment "${{ steps.issue_context.outputs.mirror_number }}" \
+              -b "⚠️ Report PR was opened: ${{ steps.convert.outputs.pr_title }} (${PR_URL}), but auto-merge could not be enabled. The mirror issue will remain open until the PR is merged manually."
+          else
+            gh issue close "${{ steps.issue_context.outputs.mirror_number }}" \
+              --comment "Converted — report PR: ${{ steps.convert.outputs.pr_title }}"
+          fi
 
       - name: Post the failure as a comment
         if: failure()
