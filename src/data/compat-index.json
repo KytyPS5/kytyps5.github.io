@@ -1966,6 +1966,20 @@
     "latestTested": "2026-07-19"
   },
   {
+    "key": "PPSA05064",
+    "title": "Steelrising",
+    "titleId": "PPSA05064",
+    "cover": "https://image.api.playstation.com/vulcan/ap/rnd/202405/0208/0623e9d572d7f6690abc76ff57976f6c885443b0e1d70b56.jpg",
+    "overall": "main-menu",
+    "os": {
+      "windows": "main-menu"
+    },
+    "reportCounts": {
+      "windows": 1
+    },
+    "latestTested": "2026-09-10"
+  },
+  {
     "key": "PPSA02100",
     "title": "Stray",
     "titleId": "PPSA02100",
