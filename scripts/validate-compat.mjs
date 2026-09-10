@@ -168,21 +168,40 @@ for (const file of await readdir(DIR)) {
 
 // One verified report per (game, OS) — the site's aggregation IS the single
 // report's status, so two reports for the same game+OS are a pipeline error,
-// not a silent vote. Report both slugs so the maintainer can retire the
-// stale one.
+// not a silent vote. Cross-alias check uses games.json (allTitleIds) to ensure
+// regional variants of the same game don't collide in buildSiteIndex.
+const GAMES_FILE = path.join(ROOT, "src", "data", "games.json");
+const games = existsSync(GAMES_FILE) ? JSON.parse(await readFile(GAMES_FILE, "utf8")) : [];
+const norm = (id) => String(id ?? "").replace(/-/g, "").toUpperCase();
+const idToGameKey = new Map();
+for (const g of games) {
+  const canonical = norm(g.titleId);
+  if (!canonical) continue;
+  if (!idToGameKey.has(canonical)) idToGameKey.set(canonical, canonical);
+  for (const alias of g.allTitleIds ?? []) {
+    const normAlias = norm(alias);
+    if (normAlias && !idToGameKey.has(normAlias)) {
+      idToGameKey.set(normAlias, canonical);
+    }
+  }
+}
+
 const seen = new Map();
 for (const file of await readdir(DIR)) {
   if (!file.endsWith(".md")) continue;
   const raw = await readFile(path.join(DIR, file), "utf8");
   const { data } = parseFrontmatter(raw);
   if (!data.titleId || !data.os) continue; // missing fields reported above
-  const key = `${String(data.titleId).replace(/-/g, "").toUpperCase()}|${String(data.os).toLowerCase()}`;
+  const normTitleId = norm(data.titleId);
+  const gameKey = idToGameKey.get(normTitleId) ?? normTitleId;
+  const key = `${gameKey}|${String(data.os).toLowerCase()}`;
   const slug = file.replace(/\.md$/, "");
   const prev = seen.get(key);
   if (prev) {
     failed = true;
+    const canonicalNote = gameKey !== normTitleId ? ` (canonical alias ${gameKey})` : "";
     console.error(
-      `[compat] ✗ ${slug} duplicates ${prev} for (game, OS) ${data.titleId} / ${data.os} — ` +
+      `[compat] ✗ ${slug} duplicates ${prev} for (game, OS) ${data.titleId} / ${data.os}${canonicalNote} — ` +
         "keep one verified report per (game, OS); retire the stale one.",
     );
   } else {

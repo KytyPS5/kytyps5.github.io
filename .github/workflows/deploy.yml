@@ -102,11 +102,35 @@ jobs:
         if: steps.scope.outputs.scope == 'content'
         shell: bash
         run: |
-          if [ -f dist/index.html ]; then
-            echo "restored=true" >> "$GITHUB_OUTPUT"
-          else
+          if [ ! -f dist/index.html ] || [ ! -f dist/.built-commit ]; then
+            echo "Cached build missing index.html or .built-commit (legacy/missing cache); falling back to full build."
             echo "restored=false" >> "$GITHUB_OUTPUT"
+            exit 0
           fi
+          CACHED_SHA="$(tr -d '[:space:]' < dist/.built-commit)"
+          if [ -z "$CACHED_SHA" ]; then
+            echo "Cached .built-commit is empty; falling back to full build."
+            echo "restored=false" >> "$GITHUB_OUTPUT"
+            exit 0
+          fi
+          if ! git cat-file -e "${CACHED_SHA}^{commit}" 2>/dev/null; then
+            echo "Cached commit $CACHED_SHA not found in git history; falling back to full build."
+            echo "restored=false" >> "$GITHUB_OUTPUT"
+            exit 0
+          fi
+          if ! git merge-base --is-ancestor "$CACHED_SHA" HEAD 2>/dev/null; then
+            echo "Cached commit $CACHED_SHA is not an ancestor of HEAD; falling back to full build."
+            echo "restored=false" >> "$GITHUB_OUTPUT"
+            exit 0
+          fi
+          DIFF="$(git diff --name-only "$CACHED_SHA" HEAD 2>/dev/null || true)"
+          if [ -n "$DIFF" ] && printf '%s\n' "$DIFF" | grep -vqE '^(src/content/compat/|public/screenshots/|public/data/)'; then
+            echo "Code changes detected between cached commit $CACHED_SHA and HEAD; triggering full build."
+            echo "restored=false" >> "$GITHUB_OUTPUT"
+            exit 0
+          fi
+          echo "Restored cache at commit $CACHED_SHA is valid ancestor with only content changes."
+          echo "restored=true" >> "$GITHUB_OUTPUT"
 
       # ---- Full build (also the fallback when the content-only cache missed) ----
       - name: Install dependencies
@@ -124,7 +148,9 @@ jobs:
           (steps.scope.outputs.scope == 'content' && steps.dist-check.outputs.restored == 'false')
         env:
           GITHUB_TOKEN: ${{ secrets.GITHUB_TOKEN }}
-        run: npm run build
+        run: |
+          npm run build
+          echo "${{ github.sha }}" > dist/.built-commit
 
       - name: Cache built site
         if: |
@@ -149,12 +175,14 @@ jobs:
           node scripts/export-compat-json.mjs
           node scripts/export-site-compat-json.mjs
           node scripts/generate-sitemap.mjs
+          rm -rf dist/data dist/screenshots
           mkdir -p dist/data dist/data/compat dist/screenshots
           cp public/data/compatibility.json dist/data/compatibility.json
           cp public/data/compat-index.json dist/data/compat-index.json
           cp -r public/data/compat/. dist/data/compat/
           cp public/sitemap.xml dist/sitemap.xml
           [ -d public/screenshots ] && cp -r public/screenshots/. dist/screenshots/ || true
+          echo "${{ github.sha }}" > dist/.built-commit
           echo "Content-only deploy: skipped npm ci / tsc / vite build."
 
       - uses: actions/configure-pages@v6

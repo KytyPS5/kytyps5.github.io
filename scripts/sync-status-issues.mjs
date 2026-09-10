@@ -272,11 +272,6 @@ const candidateKey = (issue) => {
   return slug ? `slug:${slug}` : undefined;
 };
 
-const batchCounts = new Map();
-for (const issue of candidates) {
-  const key = candidateKey(issue);
-  if (key) batchCounts.set(key, (batchCounts.get(key) ?? 0) + 1);
-}
 const mirrors = await fetchMirrors();
 
 let created = 0;
@@ -411,10 +406,7 @@ for (const issue of candidates) {
         statusChanged,
         versionChanged,
       },
-      {
-        report,
-        batchSize: key ? (batchCounts.get(key) ?? 1) : 1,
-      },
+      { report },
     );
     if (!decision.create) {
       skipped++;

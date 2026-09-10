@@ -15,9 +15,7 @@ name: Mirror game-status issues
 #   - a report already exists for the same (game, OS) whose testedDate is as
 #     new or newer than the upstream issue's creation date (dates, not issue
 #     numbers: a report records ONE source, and converting a newer issue for
-#     the same game would overwrite the older one's marker). The one exception
-#     is a run that finds two or more issues for the same (game, OS) — that's
-#     a fresh batch, all of them get mirrored.
+#     the same game would overwrite the older one's marker).
 # Scheduled runs also refresh OPEN mirrors whose upstream body changed — fixing
 # an upstream issue (e.g. filling in the PPSA-XXXXX) is picked up by the next
 # poll, no manual cleanup.

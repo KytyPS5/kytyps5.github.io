@@ -71,6 +71,12 @@ jobs:
       - name: Validate compatibility reports
         run: node scripts/validate-compat.mjs
 
+      - name: Validate compatibility exports & sitemap
+        run: |
+          node scripts/export-compat-json.mjs
+          node scripts/export-site-compat-json.mjs
+          node scripts/generate-sitemap.mjs
+
       - name: Test
         if: steps.scope.outputs.scope != 'report'
         env:
@@ -113,7 +119,7 @@ jobs:
           GH_REPO: ${{ github.repository }}
           PR_NUMBER: ${{ github.event.pull_request.number }}
         run: |
-          for i in {1..12}; do
+          for i in {1..36}; do
             STATE="$(gh pr view "$PR_NUMBER" --json state --jq .state 2>/dev/null || true)"
             if [ "$STATE" = "MERGED" ]; then
               echo "PR #$PR_NUMBER merged successfully."
@@ -131,4 +137,4 @@ jobs:
             fi
             sleep 5
           done
-          echo "PR #$PR_NUMBER was not merged within 60s."
+          echo "PR #$PR_NUMBER was not merged within 180s."
