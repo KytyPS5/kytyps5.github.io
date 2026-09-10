@@ -37,7 +37,7 @@ import { mkdir, readdir, readFile, unlink, writeFile } from "node:fs/promises";
 import { fileURLToPath } from "node:url";
 import path from "node:path";
 import { cleanField, normalizeOs, normalizeStatus, parseIssueBody, STATUSES } from "./lib/issue-form.mjs";
-import { gameKeyFor, readOverrides, reportOs, reportTitleId } from "./lib/status-issues.mjs";
+import { gameKeyFor, readOverrides, reportOs, reportTitleId, reportTrusted } from "./lib/status-issues.mjs";
 
 const ROOT = path.resolve(path.dirname(fileURLToPath(import.meta.url)), "..");
 const DIR = path.join(ROOT, "src", "content", "compat");
@@ -107,6 +107,9 @@ function readIntake(body, flags) {
   const legacyGameVersion = cleanField(sections, "Game version") || undefined;
   const legacyHardware = cleanField(sections, "Hardware (CPU / GPU)") || undefined;
 
+  const trustedFlag = flags.trusted !== undefined ? (flags.trusted === "true" || flags.trusted === true) : undefined;
+  const trusted = trustedFlag ?? overrides.trusted;
+
   // Explicit flags win over parsed values, except the title (the parsed
   // "Game title" field is more reliable than the issue title) and the date
   // (a legacy "Test date" is the real test date, better than created_at).
@@ -130,6 +133,7 @@ function readIntake(body, flags) {
     expected: flags.expected ?? expected,
     regression,
     extra: flags.extraNotes ?? extra ?? extraLegacy,
+    trusted,
   };
 }
 
@@ -158,6 +162,7 @@ const flags = {
   gameVersion: arg("game-version"),
   slug: arg("slug"),
   issueBodyFile: arg("issue-body-file"),
+  trusted: arg("trusted"),
 };
 
 const issueBody = flags.issueBodyFile ? await readFile(flags.issueBodyFile, "utf8") : "";
@@ -181,6 +186,7 @@ const intake = flags.issueBodyFile
       source: flags.source,
       sourceUrl: flags.sourceUrl,
       gameVersion: flags.gameVersion,
+      trusted: flags.trusted !== undefined ? (flags.trusted === "true" || flags.trusted === true) : undefined,
     };
 
 const title = intake.title;
@@ -264,6 +270,28 @@ if (regression) bodySections.push(`## Last working build / first broken build\n\
 if (extra) bodySections.push(`## Extra notes\n\n${cap(extra)}`);
 const reportBody = bodySections.join("\n\n");
 
+await mkdir(DIR, { recursive: true });
+const games = JSON.parse(await readFile(GAMES_FILE, "utf8"));
+const gameKey = gameKeyFor(titleId, games);
+let existingTrusted = false;
+
+// Scan existing reports for the same (game, OS) to retire old slugs and detect trust
+for (const file of await readdir(DIR)) {
+  if (!file.endsWith(".md")) continue;
+  const raw = await readFile(path.join(DIR, file), "utf8");
+  const otherKey = reportTitleId(raw);
+  const otherOs = reportOs(raw);
+  if (otherKey && otherOs === os && gameKeyFor(otherKey, games) === gameKey) {
+    if (reportTrusted(raw)) existingTrusted = true;
+    if (file !== `${slug}.md`) {
+      await unlink(path.join(DIR, file));
+      console.log(`[issue-to-compat] retired ${file} — same (game, OS), replaced by ${slug}.md`);
+    }
+  }
+}
+
+const isTrusted = intake.trusted !== undefined ? intake.trusted : existingTrusted;
+
 const frontmatter = [
   "---",
   `title: ${JSON.stringify(title)}`,
@@ -275,6 +303,7 @@ const frontmatter = [
   hardware ? `hardware: ${JSON.stringify(hardware)}` : null,
   gameVersion ? `gameVersion: ${JSON.stringify(gameVersion)}` : null,
   screenshots.length ? `screenshots: ${JSON.stringify(screenshots)}` : null,
+  isTrusted ? "trusted: true" : null,
   "---",
   "",
   reportBody,
@@ -285,26 +314,6 @@ const frontmatter = [
       ? `> Source: GitHub game status report ${source}`
       : "",
 ].filter((line) => line !== null);
-
-// One verified report per (game, OS): retire any existing report for the same
-// game + OS under a DIFFERENT slug, so a re-conversion with a differently
-// spelled title ("Demon Souls" vs "Demon's Souls") or a region-variant serial
-// replaces the old file — the report PR shows the delete — instead of leaving
-// a duplicate. Matched by game key (allTitleIds) + OS; the new report is
-// written over any same-slug file below.
-await mkdir(DIR, { recursive: true });
-const games = JSON.parse(await readFile(GAMES_FILE, "utf8"));
-const gameKey = gameKeyFor(titleId, games);
-for (const file of await readdir(DIR)) {
-  if (!file.endsWith(".md") || file === `${slug}.md`) continue;
-  const raw = await readFile(path.join(DIR, file), "utf8");
-  const otherKey = reportTitleId(raw);
-  const otherOs = reportOs(raw);
-  if (otherKey && otherOs === os && gameKeyFor(otherKey, games) === gameKey) {
-    await unlink(path.join(DIR, file));
-    console.log(`[issue-to-compat] retired ${file} — same (game, OS), replaced by ${slug}.md`);
-  }
-}
 
 const out = path.join(DIR, `${slug}.md`);
 await writeFile(out, frontmatter.join("\n") + "\n");

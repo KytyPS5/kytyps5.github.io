@@ -39,10 +39,11 @@ on:
         required: false
         type: string
 
-# Only issues are touched — no code, no PRs.
+# Only issues are touched — no code, no PRs (dispatches compat-convert.yml for trusted updates).
 permissions:
   contents: read
   issues: write
+  actions: write
 
 concurrency:
   group: compat-issues
@@ -59,19 +60,24 @@ jobs:
           cache: npm
       - run: npm ci
 
-      - name: Ensure the compat and updated-existing labels exist
+      - name: Ensure the compat, updated-existing and trusted labels exist
         env:
           GH_TOKEN: ${{ secrets.GITHUB_TOKEN }}
         run: |
           gh label create compat \
-            --description "Mirror of a KytyPS5 issue — fix fields with /setos /setid /settitle /setstatus, then /compat" \
+            --description "Mirror of a KytyPS5 issue — fix fields with /setos /setid /settitle /setstatus /trusted, then /compat" \
             --force
           gh label create updated-existing \
             --description "Upstream report was edited with changed status or version" \
             --color "D4C5F9" \
             --force
+          gh label create trusted \
+            --description "Report marked trusted by collaborator — auto-accepts updates" \
+            --color "2ea44f" \
+            --force
 
       - name: Mirror unconverted issues
+        id: sync
         env:
           GH_TOKEN: ${{ secrets.GITHUB_TOKEN }}
         run: |
@@ -80,3 +86,14 @@ jobs:
             ARGS+=(--issue-number "${{ inputs.issue_number }}")
           fi
           node scripts/sync-status-issues.mjs "${ARGS[@]}"
+
+      - name: Auto-convert trusted updates
+        if: steps.sync.outputs.trusted_updates != '' && steps.sync.outputs.trusted_updates != '[]'
+        env:
+          GH_TOKEN: ${{ secrets.ACTIONS_BOT_TOKEN || secrets.GITHUB_TOKEN }}
+        run: |
+          UPDATES='${{ steps.sync.outputs.trusted_updates }}'
+          for num in $(echo "$UPDATES" | jq -r '.[]'); do
+            echo "Auto-converting trusted update for mirror issue #$num..."
+            gh workflow run compat-convert.yml -f issue_number="$num"
+          done

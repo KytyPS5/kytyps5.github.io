@@ -185,6 +185,7 @@ export function readOverrides(body) {
     else if (key === "titleid") overrides.titleId = value;
     else if (key === "title") overrides.title = value;
     else if (key === "status") overrides.status = value;
+    else if (key === "trusted") overrides.trusted = value.toLowerCase() === "true" || value === "1";
   }
   return overrides;
 }
@@ -219,6 +220,7 @@ export function appendOverrides(body, overrides = {}) {
   if (overrides.titleId) entries.push(`- titleId: ${overrides.titleId}`);
   if (overrides.title) entries.push(`- title: ${overrides.title}`);
   if (overrides.status) entries.push(`- status: ${overrides.status}`);
+  if (overrides.trusted !== undefined) entries.push(`- trusted: ${overrides.trusted}`);
   if (!entries.length) return base;
   return `${base}\n\n## Overrides\n${entries.join("\n")}\n`;
 }
@@ -248,6 +250,18 @@ export function mirrorSlug(upstreamBody, fallbackTitle) {
 export function reportTestedDate(md) {
   const m = String(md ?? "").match(/^testedDate:\s*['"]?(\d{4}-\d{2}-\d{2})['"]?\s*$/m);
   return m ? m[1] : undefined;
+}
+
+/** The `title` frontmatter of a report. */
+export function reportTitle(md) {
+  const m = String(md ?? "").match(/^title:\s*"?(.*?)"?\s*$/m);
+  return m ? m[1].trim() : undefined;
+}
+
+/** The `trusted` frontmatter of a report. */
+export function reportTrusted(md) {
+  const m = String(md ?? "").match(/^trusted:\s*(true|false)\s*$/m);
+  return m ? m[1] === "true" : false;
 }
 
 /** The `titleId` frontmatter of a report (normalized bare uppercase). */
@@ -427,4 +441,41 @@ export function isCandidateIssue(issue) {
     return true;
   }
   return false;
+}
+
+/** The raw Game title from an upstream issue body. */
+export function issueGameTitle(body) {
+  const sections = parseIssueBody(body);
+  return cleanField(sections, "Game title") || undefined;
+}
+
+/** Normalize game title for comparison (case-insensitive, diacritics stripped, non-alphanumerics collapsed). */
+export function normalizeGameTitle(title) {
+  return String(title ?? "")
+    .normalize("NFD")
+    .replace(/[\u0300-\u036f]/g, "")
+    .replace(/^\[GAME STATUS\][:\s-]*/i, "")
+    .replace(/\s+v\d+\.\d+.*$/i, "")
+    .replace(/\s*\([^)]*\)\s*$/g, "")
+    .replace(/['’]/g, "")
+    .toLowerCase()
+    .replace(/[^a-z0-9]+/g, " ")
+    .trim();
+}
+
+/** Compare upstream candidate against existing report for identity changes. */
+export function isMatchingGame(candTitle, candTitleId, reportTitle, reportTitleId, games) {
+  const normCandTitle = normalizeGameTitle(candTitle);
+  const normReportTitle = normalizeGameTitle(reportTitle);
+  const candKey = candTitleId ? gameKeyFor(candTitleId, games) : undefined;
+  const reportKey = reportTitleId ? gameKeyFor(reportTitleId, games) : undefined;
+
+  const hasTitles = Boolean(normCandTitle && normReportTitle);
+  const hasKeys = Boolean(candKey && reportKey);
+
+  const titleChanged = !hasTitles || normCandTitle !== normReportTitle;
+  const idChanged = !hasKeys || candKey !== reportKey;
+  const matches = !titleChanged && !idChanged;
+
+  return { matches, titleChanged, idChanged };
 }

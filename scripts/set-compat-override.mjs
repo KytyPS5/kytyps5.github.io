@@ -48,9 +48,13 @@ async function api(url, options) {
   const res = await fetch(url, options);
   if (!res.ok) {
     const text = await res.text().catch(() => "");
-    throw new Error(`HTTP ${res.status} ${url}: ${text.slice(0, 300)}`);
+    const error = new Error(`HTTP ${res.status} ${url}: ${text.slice(0, 300)}`);
+    error.status = res.status;
+    throw error;
   }
-  return res.json();
+  if (res.status === 204) return null;
+  const text = await res.text().catch(() => "");
+  return text ? JSON.parse(text) : null;
 }
 
 // ── environment ─────────────────────────────────────────────────────────────
@@ -105,13 +109,14 @@ async function main() {
   // The command is the first line; the value is everything after it.
   const match = String(comment.body ?? "")
     .split(/\r?\n/)[0]
-    .match(/^\/(setos|setid|settitle|setstatus)(?:\s+(.*))?$/i);
+    .match(/^\/(setos|setid|settitle|setstatus|trusted|untrusted)(?:\s+(.*))?$/i);
   if (!match) {
     await fail(
-      `unrecognized command "${String(comment.body ?? "").split(/\r?\n/)[0]}" — expected /setos, /setid, /settitle or /setstatus`,
+      `unrecognized command "${String(comment.body ?? "").split(/\r?\n/)[0]}" — expected /setos, /setid, /settitle, /setstatus, /trusted, or /untrusted`,
     );
   }
-  const [, command, rawValue] = match;
+  const [, rawCommand, rawValue] = match;
+  const command = rawCommand.toLowerCase();
   commandName = command;
   const value = String(rawValue ?? "").trim();
 
@@ -139,6 +144,9 @@ async function main() {
         `/setstatus — unrecognized status "${value}" (expected doesnt-boot | logo | main-menu | in-game, or template values like "Main menu")`,
       );
     }
+  } else if (command === "trusted" || command === "untrusted") {
+    field = "trusted";
+    stored = command === "trusted"; // boolean true/false
   } else {
     field = "title";
     if (!value) await fail("/settitle — a game title is required after the command");
@@ -156,7 +164,7 @@ async function main() {
   if (!source) {
     await fail(
       "this issue is not a compat mirror — its body has no `## Source` footer. " +
-        "/setos, /setid, /settitle and /setstatus edit the manual overrides of a mirror issue that the /compat conversion uses.",
+        "/setos, /setid, /settitle, /setstatus, /trusted and /untrusted edit the manual overrides of a mirror issue that the /compat conversion uses.",
     );
   }
 
@@ -177,6 +185,29 @@ async function main() {
     headers: { authorization: `Bearer ${token}`, "content-type": "application/json" },
     body: JSON.stringify(patch),
   });
+
+  if (field === "trusted") {
+    try {
+      if (stored) {
+        await api(`https://api.github.com/repos/${repo}/issues/${issue.number}/labels`, {
+          method: "POST",
+          headers: { authorization: `Bearer ${token}`, "content-type": "application/json" },
+          body: JSON.stringify({ labels: ["trusted"] }),
+        });
+      } else {
+        await api(`https://api.github.com/repos/${repo}/issues/${issue.number}/labels/${encodeURIComponent("trusted")}`, {
+          method: "DELETE",
+          headers: { authorization: `Bearer ${token}` },
+        });
+      }
+    } catch (err) {
+      if (!stored && err?.status === 404) {
+        // Label already absent; fine
+      } else {
+        console.warn(`[set-compat-override] failed to sync trusted label: ${err.message}`);
+      }
+    }
+  }
 
   // Acknowledge the command comment — best effort; the override is already
   // recorded, so a reaction hiccup must not fail the command.

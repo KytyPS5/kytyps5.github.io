@@ -35,6 +35,7 @@
  * The token needs issues:write on --this-repo (the workflow's GITHUB_TOKEN).
  * The KytyPS5 side is read through the PUBLIC API (no token needed).
  */
+import { appendFileSync } from "node:fs";
 import { readdir, readFile } from "node:fs/promises";
 import { fileURLToPath } from "node:url";
 import path from "node:path";
@@ -43,6 +44,9 @@ import {
   buildMirrorBody,
   buildUpdatedMirrorBody,
   gameKeyFor,
+  isCandidateIssue,
+  isMatchingGame,
+  issueGameTitle,
   issueOs,
   issueStatus,
   issueTitleId,
@@ -51,18 +55,20 @@ import {
   mirrorSlug,
   mirrorSource,
   mirrorTitle,
+  normalizeGameTitle,
   readOverrides,
   refreshMirrorBody,
   reportOs,
   reportSourceNumber,
   reportStatus,
   reportTestedDate,
+  reportTitle,
   reportTitleId,
+  reportTrusted,
   reportVersion,
   shouldCreateMirror,
   titleIdKey,
   UPDATED_LABEL,
-  isCandidateIssue,
 } from "./lib/status-issues.mjs";
 
 const ROOT = path.resolve(path.dirname(fileURLToPath(import.meta.url)), "..");
@@ -180,13 +186,15 @@ async function fetchCandidates() {
   return all.filter(isCandidateIssue);
 }
 
-/** Reports on this checkout (main): report slug → { titleId, os, status, version, sourceNumber, testedDate }. */
+/** Reports on this checkout (main): report slug → { title, trusted, titleId, os, status, version, sourceNumber, testedDate }. */
 async function reportIndex() {
   const reports = new Map();
   for (const file of await readdir(COMPAT_DIR)) {
     if (!file.endsWith(".md")) continue;
     const raw = await readFile(path.join(COMPAT_DIR, file), "utf8");
     reports.set(file.slice(0, -3), {
+      title: reportTitle(raw),
+      trusted: reportTrusted(raw),
       titleId: reportTitleId(raw),
       os: reportOs(raw),
       status: reportStatus(raw),
@@ -198,7 +206,7 @@ async function reportIndex() {
   return reports;
 }
 
-/** Existing mirrors in this repo: KytyPS5 issue number → { number, state, body }. */
+/** Existing mirrors in this repo: KytyPS5 issue number → { number, state, body, labels }. */
 async function fetchMirrors() {
   const headers = { authorization: `Bearer ${token}` };
   const mirrors = new Map();
@@ -210,7 +218,8 @@ async function fetchMirrors() {
     for (const issue of batch) {
       if (issue.pull_request) continue;
       const src = mirrorSource(issue.body);
-      if (src) mirrors.set(src.number, { number: issue.number, state: issue.state, body: issue.body ?? "" });
+      const labels = (issue.labels ?? []).map((l) => (typeof l === "string" ? l : l.name));
+      if (src) mirrors.set(src.number, { number: issue.number, state: issue.state, body: issue.body ?? "", labels });
     }
     if (batch.length < 100) break;
   }
@@ -222,6 +231,14 @@ async function patchIssue(number, fields) {
     method: "PATCH",
     headers: { authorization: `Bearer ${token}`, "content-type": "application/json" },
     body: JSON.stringify(fields),
+  });
+}
+
+async function postComment(number, body) {
+  await api(`https://api.github.com/repos/${thisRepo}/issues/${number}/comments`, {
+    method: "POST",
+    headers: { authorization: `Bearer ${token}`, "content-type": "application/json" },
+    body: JSON.stringify({ body }),
   });
 }
 
@@ -265,6 +282,8 @@ const mirrors = await fetchMirrors();
 let created = 0;
 let updated = 0;
 let skipped = 0;
+const trustedUpdates = [];
+const seenGameUpdates = new Set();
 
 for (const issue of candidates) {
   const number = issue.number;
@@ -314,24 +333,71 @@ for (const issue of candidates) {
   const newTitle = mirrorTitle(issue.body, issue.title);
 
   if (mirror) {
+    if (mirror.body === newBody && !issueNumber) {
+      skipped++;
+      continue;
+    }
     if (mirror.state === "closed" && !issueNumber && !isUpdate) {
       // Closed = already converted via /compat (and no status/version edit detected).
       skipped++;
       continue;
     }
-    if (mirror.body === newBody && mirror.state === "open" && !isUpdate) {
-      skipped++; // nothing to refresh
-      continue;
+
+    const mirrorOverrides = readOverrides(mirror.body);
+    const existingLabels = new Set(mirror.labels ?? []);
+    existingLabels.add(MIRROR_LABEL);
+    if (isUpdate) existingLabels.add(UPDATED_LABEL);
+    if (mirrorOverrides.trusted === true) {
+      existingLabels.add("trusted");
+    } else if (mirrorOverrides.trusted === false) {
+      existingLabels.delete("trusted");
     }
+
     // Refresh the snapshot (and reopen closed mirror if updated or manual run).
     const patch = mirror.body === newBody ? {} : { body: newBody };
     if (mirror.state === "closed") patch.state = "open";
-    if (isUpdate) patch.labels = [MIRROR_LABEL, UPDATED_LABEL];
+    patch.labels = Array.from(existingLabels);
     await patchIssue(mirror.number, patch);
     updated++;
     console.log(
       `[sync-status-issues] refreshed mirror for KytyPS5 issue #${number} (${issue.title})${isUpdate ? " [updated-existing]" : ""}`,
     );
+
+    if (isUpdate) {
+      // Conflict check
+      if (mirrorOverrides.status && mirrorOverrides.status !== candStatus) {
+        await postComment(
+          mirror.number,
+          `⚠️ Upstream issue changed status to \`${candStatus}\`, but this mirror has manual override status: \`${mirrorOverrides.status}\`. Skipping auto-conversion; please reconcile manually.`,
+        );
+        continue;
+      }
+
+      // Title & Title ID matching check
+      const effectiveCandTitle = mirrorOverrides.title || issueGameTitle(issue.body) || issue.title;
+      const effectiveCandTitleId = mirrorOverrides.titleId || issueTitleId(issue.body);
+      const matchResult = isMatchingGame(effectiveCandTitle, effectiveCandTitleId, report?.title, report?.titleId, games);
+      if (!matchResult.matches) {
+        await postComment(
+          mirror.number,
+          `⚠️ Game Title or Title ID changed in upstream edit (was: "${report?.title || report?.titleId}", candidate: "${effectiveCandTitle || effectiveCandTitleId}"). Refusing to auto-convert; please verify manually.`,
+        );
+        continue;
+      }
+
+      // Check if trusted
+      const isReportTrusted =
+        mirrorOverrides.trusted === true || (mirrorOverrides.trusted !== false && Boolean(report?.trusted));
+      if (isReportTrusted && isSourceIssue) {
+        const dedupKey = key || `mirror:${mirror.number}`;
+        if (!seenGameUpdates.has(dedupKey)) {
+          seenGameUpdates.add(dedupKey);
+          trustedUpdates.push(mirror.number);
+          console.log(`[sync-status-issues] queued trusted update for mirror #${mirror.number}`);
+        }
+      }
+    }
+
     continue;
   }
 
@@ -360,6 +426,7 @@ for (const issue of candidates) {
   }
 
   const labels = isUpdate ? [MIRROR_LABEL, UPDATED_LABEL] : [MIRROR_LABEL];
+  if (report?.trusted) labels.push("trusted");
   await createIssue(newTitle, newBody, labels);
   created++;
   console.log(
@@ -370,3 +437,7 @@ for (const issue of candidates) {
 console.log(
   `[sync-status-issues] ${candidates.length} candidate(s): ${created} created, ${updated} updated, ${skipped} skipped`,
 );
+
+if (process.env.GITHUB_OUTPUT) {
+  appendFileSync(process.env.GITHUB_OUTPUT, `trusted_updates=${JSON.stringify(trustedUpdates)}\n`);
+}
