@@ -67,7 +67,7 @@ if (!eventPath) {
 const event = JSON.parse(await readFile(eventPath, "utf8"));
 
 const repo = process.env.GITHUB_REPOSITORY;
-const token = process.env.GITHUB_TOKEN || process.env.GH_TOKEN;
+const token = process.env.GH_TOKEN || process.env.GITHUB_TOKEN;
 if (!repo || !token) {
   console.error("::error::set-compat-override: GITHUB_REPOSITORY and GH_TOKEN are required");
   process.exit(1);
@@ -223,6 +223,37 @@ async function main() {
 
   console.log(`[set-compat-override] ${command} → ${stored} recorded on issue #${issue.number}`);
   if (patch.title) console.log(`[set-compat-override] mirror title → ${newTitle}`);
+
+  if (command === "trusted" && issue.state === "open") {
+    try {
+      console.log(`[set-compat-override] dispatching compat-convert for open trusted mirror #${issue.number}`);
+      const dispatchRef = process.env.GITHUB_REF_NAME || "main";
+      await api(`https://api.github.com/repos/${repo}/actions/workflows/compat-convert.yml/dispatches`, {
+        method: "POST",
+        headers: {
+          authorization: `Bearer ${token}`,
+          accept: "application/vnd.github+json",
+          "content-type": "application/json",
+          "user-agent": "kyty-bot",
+        },
+        body: JSON.stringify({ ref: dispatchRef, inputs: { issue_number: String(issue.number) } }),
+      });
+    } catch (err) {
+      console.warn(`[set-compat-override] could not auto-dispatch compat-convert: ${err.message}`);
+      await api(`https://api.github.com/repos/${repo}/issues/${issue.number}/comments`, {
+        method: "POST",
+        headers: {
+          authorization: `Bearer ${token}`,
+          accept: "application/vnd.github+json",
+          "content-type": "application/json",
+          "user-agent": "kyty-bot",
+        },
+        body: JSON.stringify({
+          body: `⚠️ Marked as trusted, but auto-dispatching the conversion workflow failed (${err.message}). Please comment \`/compat\` to convert manually.`,
+        }),
+      }).catch(() => {});
+    }
+  }
 }
 
 try {
