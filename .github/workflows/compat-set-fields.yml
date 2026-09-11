@@ -28,7 +28,9 @@ on:
     types: [created]
 
 permissions:
+  contents: read
   issues: write # edit the mirror body + title, react to the command comment
+  actions: write # dispatch compat-convert.yml when /trusted is run on an open mirror
 
 # Serialize set commands per issue WITHOUT cancelling: a queued /setid run must
 # see the body an earlier /setos run wrote, or the os override would be lost.
@@ -54,5 +56,6 @@ jobs:
           node-version: 22
       - name: Record the override
         env:
-          GH_TOKEN: ${{ secrets.GITHUB_TOKEN }}
+          GH_TOKEN: ${{ secrets.ACTIONS_BOT_TOKEN || secrets.GITHUB_TOKEN }}
+          GITHUB_TOKEN: ${{ secrets.ACTIONS_BOT_TOKEN || secrets.GITHUB_TOKEN }}
         run: node scripts/set-compat-override.mjs

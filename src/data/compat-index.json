@@ -930,6 +930,20 @@
     "latestTested": "2026-09-04"
   },
   {
+    "key": "PPSA08329",
+    "title": "God of War Ragnarök",
+    "titleId": "PPSA08329",
+    "cover": "https://image.api.playstation.com/vulcan/ap/rnd/202503/2016/1f4bf1ee42276b3841e71ebb812510493ce78bfc307d3296.jpg",
+    "overall": "doesnt-boot",
+    "os": {
+      "windows": "doesnt-boot"
+    },
+    "reportCounts": {
+      "windows": 1
+    },
+    "latestTested": "2026-09-09"
+  },
+  {
     "key": "PPSA03527",
     "title": "Grand Theft Auto III – The Definitive Edition",
     "titleId": "PPSA03527",
@@ -1859,14 +1873,14 @@
     "title": "SAROS",
     "titleId": "PPSA07632",
     "cover": "https://image.api.playstation.com/vulcan/ap/rnd/202509/2318/ca19e7b6909c03a0d64a84981109c0cdaa98e7fdb8820e36.png",
-    "overall": "doesnt-boot",
+    "overall": "main-menu",
     "os": {
-      "windows": "doesnt-boot"
+      "windows": "main-menu"
     },
     "reportCounts": {
       "windows": 1
     },
-    "latestTested": "2026-09-01"
+    "latestTested": "2026-08-15"
   },
   {
     "key": "PPSA07817",
@@ -1901,14 +1915,14 @@
     "title": "SILENT HILL: The Short Message",
     "titleId": "PPSA04877",
     "cover": "https://image.api.playstation.com/vulcan/ap/rnd/202209/1505/jDGjXgHk1xK19Zizip1VdDfw.png",
-    "overall": "main-menu",
+    "overall": "doesnt-boot",
     "os": {
-      "windows": "main-menu"
+      "windows": "doesnt-boot"
     },
     "reportCounts": {
       "windows": 1
     },
-    "latestTested": "2026-08-10"
+    "latestTested": "2026-09-09"
   },
   {
     "key": "PPSA03130",

@@ -328,12 +328,11 @@ for (const issue of candidates) {
   const newTitle = mirrorTitle(issue.body, issue.title);
 
   if (mirror) {
-    if (mirror.body === newBody && !issueNumber) {
-      skipped++;
-      continue;
-    }
-    if (mirror.state === "closed" && !issueNumber && !isUpdate) {
-      // Closed = already converted via /compat (and no status/version edit detected).
+    const bodyMatches = mirror.body === newBody;
+
+    // Closed mirrors are skipped unless an un-mirrored upstream update arrived,
+    // or a maintainer explicitly triggered a manual refresh with --issue-number.
+    if (mirror.state === "closed" && !issueNumber && (!isUpdate || bodyMatches)) {
       skipped++;
       continue;
     }
@@ -348,8 +347,26 @@ for (const issue of candidates) {
       existingLabels.delete("trusted");
     }
 
-    // Refresh the snapshot (and reopen closed mirror if updated or manual run).
-    const patch = mirror.body === newBody ? {} : { body: newBody };
+    const labelsMatch =
+      existingLabels.size === (mirror.labels ?? []).length &&
+      (mirror.labels ?? []).every((l) => existingLabels.has(l));
+
+    // Active patch is needed if fields/labels changed, if reopening a closed mirror on update,
+    // or if explicitly requested via --issue-number.
+    const needsPatch =
+      Boolean(issueNumber) ||
+      !bodyMatches ||
+      !labelsMatch ||
+      (mirror.state === "closed" && isUpdate);
+
+    // If nothing changed, skip immediately: prevents re-dispatching open mirrors
+    // and eliminates warning comment spam.
+    if (!needsPatch) {
+      skipped++;
+      continue;
+    }
+
+    const patch = bodyMatches ? {} : { body: newBody };
     if (mirror.state === "closed") patch.state = "open";
     patch.labels = Array.from(existingLabels);
     await patchIssue(mirror.number, patch);
@@ -360,7 +377,7 @@ for (const issue of candidates) {
 
     if (isUpdate) {
       // Conflict check
-      if (mirrorOverrides.status && mirrorOverrides.status !== candStatus) {
+      if (mirrorOverrides.status && candStatus && mirrorOverrides.status !== candStatus) {
         await postComment(
           mirror.number,
           `⚠️ Upstream issue changed status to \`${candStatus}\`, but this mirror has manual override status: \`${mirrorOverrides.status}\`. Skipping auto-conversion; please reconcile manually.`,
