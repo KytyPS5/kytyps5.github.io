@@ -1,34 +1,28 @@
 ---
 title: "The Last Faith"
-titleId: "PPSA09346"
-status: "main-menu"
-testedVersion: "v0.2.2 Build: 566a450"
-testedDate: "2026-08-15"
+titleId: "PPSA09347"
+status: "in-game"
+testedVersion: "d285efe"
+testedDate: "2026-09-09"
 os: "windows"
-hardware: "AMD Ryzen 9 5900X 12-Core Processor (3.70 GHz) / NVIDIA GeForce RTX 3080 (10 GB) / 64GB RAM / 10GB VRAM"
+hardware: "AMD Ryzen 7 7700X / AMD Radeon 9070 XT / 32 GB DDR5 RAM / 16 GB VRAM"
+screenshots: ["https://github.com/user-attachments/assets/8aa6d1ce-eb93-4c13-b09f-64d9fe2048c2","https://github.com/user-attachments/assets/9083061f-dc0d-4b7c-ba39-e62fcbb8f253","https://github.com/user-attachments/assets/081c03b1-4025-44e4-ba49-9a3faeabff6d"]
 ---
 
-The game is working in the main menu. When going in game, its immediately crashes.
-sometimes showing the cahracter.
+Game reaches main menu, start new game, choose class and goes in game.
 
 ## Steps to reproduce
 
-1. open the game
-
-2. press x to continue
-
-3. press start game
-
-4. create a new save slot
-
-5. select the brawler class
-
-6. you can see the cutscene or skip it
-
-7. the game crashes.
+Open Emulator
+Boot Game
+Start New Game.
 
 ## Expected behavior
 
-The game should run normally.
+Behaved as expected.
 
-> Source: [KytyPS5 issue #261](https://github.com/KytyPS5/KytyPS5/issues/261)
+## Extra notes
+
+Default settings. No graphical or audio issues.
+
+> Source: [KytyPS5 issue #521](https://github.com/KytyPS5/KytyPS5/issues/521)
