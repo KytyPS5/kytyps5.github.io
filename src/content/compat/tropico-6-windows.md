@@ -1,24 +1,30 @@
 ---
 title: "Tropico 6"
-titleId: "PPSA-05682"
-status: "logo"
-testedVersion: "KytyPS5-2026-08-18-7e42513"
-testedDate: "2026-08-20"
+titleId: "PPSA05683"
+status: "in-game"
+testedVersion: "d285efe"
+testedDate: "2026-09-08"
 os: "windows"
-hardware: "Intel Core i5-12400F / NVIDIA GeForce RTX 4070 ,drivers 610.88 WHQL / 32 GB DDR4 RAM,12 GB VRAM"
-screenshots: ["https://github.com/user-attachments/assets/bcb0a4e6-d747-4fd9-acb6-b7ade0a028d5","https://github.com/user-attachments/assets/3b687114-8d02-4b75-90a4-5357b2fdfee3"]
+hardware: "AMD Ryzen 7 7700X / AMD Radeon 9070 XT / 32 GB DDR5 RAM / 16 GB VRAM"
+screenshots: ["https://github.com/user-attachments/assets/d266eb1c-ab78-48a8-af83-295af1755666","https://github.com/user-attachments/assets/bebdf14d-0802-4c52-861e-0f1bf9040f67"]
 ---
 
-The game launches and asks you to press any button, but it crashes after you press one.
+Game goes in game. Able to select new game from the main menu. Very low frame rate.
 
 ## Steps to reproduce
 
-1. Open Kyty PS5
-2. Launch the game
-3. Wait for the text to appear and press any button
+Open Emulator
+Boot Game
+New Game.
 
 ## Expected behavior
 
-A menu was supposed to appear after the game loaded.
+Behaved as expected.
 
-> Source: [KytyPS5 issue #299](https://github.com/KytyPS5/KytyPS5/issues/299)
+## Extra notes
+
+Default Settings.
+
+Report #299 uses different PPSA to this report.
+
+> Source: [KytyPS5 issue #517](https://github.com/KytyPS5/KytyPS5/issues/517)
