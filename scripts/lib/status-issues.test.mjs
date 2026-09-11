@@ -1,9 +1,10 @@
 import { describe, expect, it } from "vitest";
-import { parseIssueBody } from "./issue-form.mjs";
+import { normalizeOs, normalizeStatus, parseIssueBody } from "./issue-form.mjs";
 import {
   appendOverrides,
   buildMirrorBody,
   buildUpdatedMirrorBody,
+  extractStatusFromTitle,
   gameKeyFor,
   isCandidateIssue,
   isMatchingGame,
@@ -85,6 +86,12 @@ describe("mirrorTitle", () => {
     expect(mirrorTitle(UPSTREAM_BODY, "x", { title: "Stray: Director's Cut" })).toBe(
       "[GAME STATUS] Stray: Director's Cut (windows)",
     );
+  });
+
+  it("strips pre-existing OS suffix before appending resolved OS", () => {
+    const noGameTitle = UPSTREAM_BODY.replace("Stray", "");
+    expect(mirrorTitle(noGameTitle, "Stray (linux)")).toBe("[GAME STATUS] Stray (windows)");
+    expect(mirrorTitle(noGameTitle, "Stray (windows) (linux)")).toBe("[GAME STATUS] Stray (windows)");
   });
 });
 
@@ -435,7 +442,7 @@ describe("dedup keys (titleId-based (game, OS) matching)", () => {
     const legacy = UPSTREAM_BODY.replace("### OS\nWindows 11", "### Operating system\nWindows 11");
     expect(issueOs(legacy)).toBe("windows");
     // An OS that doesn't normalize yields no key — the slug fallback applies.
-    expect(issueOs(UPSTREAM_BODY.replace("Windows 11", "CachyOS"))).toBeUndefined();
+    expect(issueOs(UPSTREAM_BODY.replace("Windows 11", "TempleOS"))).toBeUndefined();
   });
 
   it("gameKeyFor resolves region variants to the game's canonical key", () => {
@@ -571,42 +578,121 @@ describe("shouldCreateMirror with edits", () => {
 
 describe("isCandidateIssue", () => {
   it("rejects pull requests", () => {
-    expect(isCandidateIssue({ pull_request: {}, title: "[GAME STATUS] Test" })).toBe(false);
+    expect(isCandidateIssue({ pull_request: {}, title: "[GAME STATUS] Stray (windows)", body: UPSTREAM_BODY })).toBe(false);
   });
 
-  it("accepts [GAME STATUS] and [GAME BUG] titles", () => {
-    expect(isCandidateIssue({ title: "[GAME STATUS]: Stray" })).toBe(true);
-    expect(isCandidateIssue({ title: "[GAME BUG]: Demon Souls (BOOTS)" })).toBe(true);
+  it("accepts complete valid candidate issues", () => {
+    expect(isCandidateIssue({ title: "[GAME STATUS] Stray (windows)", body: UPSTREAM_BODY })).toBe(true);
   });
 
-  it("accepts community status prefixes like [playable], [in-game], [boots]", () => {
-    expect(isCandidateIssue({ title: "[playable]: Bye Sweet carole" })).toBe(true);
-    expect(isCandidateIssue({ title: "[in-game]: Title" })).toBe(true);
-    expect(isCandidateIssue({ title: "[boots]: Title" })).toBe(true);
-    expect(isCandidateIssue({ title: "[main menu]: Title" })).toBe(true);
-  });
-
-  it("accepts issues with ### Compatibility status in body", () => {
+  it("accepts [GAME BUG] issue with PPSA and status in title and OS in body", () => {
     expect(
       isCandidateIssue({
-        title: "Random Title",
-        body: "### Compatibility status\nIn game\n",
+        title: "[GAME BUG] PPSA-01234 Demon Souls (BOOTS)",
+        body: "### OS\nWindows 11\n### KytyPS5 version\n0.2.0\n",
       }),
     ).toBe(true);
   });
 
-  it("accepts issues with ### Game title and ### OS in body", () => {
-    expect(
-      isCandidateIssue({
-        title: "Some game test",
-        body: "### Game title\nSome Game\n### OS\nWindows 11\n",
-      }),
-    ).toBe(true);
+  it("rejects issues missing PPSA title ID", () => {
+    const noId = UPSTREAM_BODY.replace(/### Game ID \/ serial\nPPSA01670\n\n/, "");
+    expect(isCandidateIssue({ title: "[GAME STATUS] Stray (windows)", body: noId })).toBe(false);
+    expect(isCandidateIssue({ title: "[GAME STATUS]: Stray" })).toBe(false);
+    expect(isCandidateIssue({ title: "[GAME BUG]: Demon Souls (BOOTS)" })).toBe(false);
+  });
+
+  it("rejects issues missing OS", () => {
+    const noOs = UPSTREAM_BODY.replace(/### OS\nWindows 11\n\n/, "");
+    expect(isCandidateIssue({ title: "[GAME STATUS] Stray", body: noOs })).toBe(false);
+  });
+
+  it("rejects issues missing compatibility status", () => {
+    const noStatus = UPSTREAM_BODY.replace(/### Compatibility status\nIn game\n\n/, "");
+    expect(isCandidateIssue({ title: "[GAME STATUS] Stray (windows)", body: noStatus })).toBe(false);
   });
 
   it("rejects non-compatibility issues", () => {
     expect(isCandidateIssue({ title: "Crash when loading emulator", body: "error log" })).toBe(false);
     expect(isCandidateIssue({ title: "Support for Win 11", body: "Does it work?" })).toBe(false);
+  });
+});
+
+describe("extractStatusFromTitle", () => {
+  it("extracts status from leading bracket prefix", () => {
+    expect(extractStatusFromTitle("[playable]: Bye Sweet carole")).toBe("in-game");
+    expect(extractStatusFromTitle("[In-Game] Stray")).toBe("in-game");
+    expect(extractStatusFromTitle("[boots] Demon Souls")).toBe("logo");
+    expect(extractStatusFromTitle("[Main Menu] Title")).toBe("main-menu");
+    expect(extractStatusFromTitle("[intro] Title")).toBe("logo");
+  });
+
+  it("extracts status from bracketed tokens in title", () => {
+    expect(extractStatusFromTitle("[GAME BUG] Demon Souls (BOOTS)")).toBe("logo");
+    expect(extractStatusFromTitle("[GAME BUG] Demon Souls (In Game) (windows)")).toBe("in-game");
+    expect(extractStatusFromTitle("Demon Souls [Main Menu] [v1.0] [PPSA01234]")).toBe("main-menu");
+  });
+
+  it("ignores OS, PPSA, version, and region tokens", () => {
+    expect(extractStatusFromTitle("[GAME STATUS] Stray [USA] [v1.0] [PPSA01670] (windows)")).toBeUndefined();
+    expect(extractStatusFromTitle("[GAME BUG] Stray (playable) [EUR] (windows)")).toBe("in-game");
+  });
+
+  it("returns undefined when no status is found", () => {
+    expect(extractStatusFromTitle("[GAME BUG] Crash on startup")).toBeUndefined();
+    expect(extractStatusFromTitle("")).toBeUndefined();
+    expect(extractStatusFromTitle(undefined)).toBeUndefined();
+  });
+});
+
+describe("issueTitleId", () => {
+  it("extracts PPSA from Game ID / serial form field", () => {
+    expect(issueTitleId(UPSTREAM_BODY)).toBe("PPSA01670");
+  });
+
+  it("falls back to extracting PPSA from title", () => {
+    expect(issueTitleId("", "[GAME BUG] PPSA-01234 Demon Souls")).toBe("PPSA01234");
+    expect(issueTitleId("", "Stray (PPSA01670)")).toBe("PPSA01670");
+  });
+
+  it("falls back to extracting PPSA from free text body", () => {
+    expect(issueTitleId("Some issue text mentioning PPSA-98765 in logs", "")).toBe("PPSA98765");
+  });
+
+  it("returns undefined when no valid PPSA exists", () => {
+    expect(issueTitleId("### Game ID / serial\nUnknown\n", "Title")).toBeUndefined();
+  });
+});
+
+describe("OS and Status normalization expansions", () => {
+  it("normalizes gaming linux distributions to linux", () => {
+    expect(normalizeOs("CachyOS")).toBe("linux");
+    expect(normalizeOs("cachy")).toBe("linux");
+    expect(normalizeOs("Bazzite")).toBe("linux");
+    expect(normalizeOs("Nobara Linux")).toBe("linux");
+    expect(normalizeOs("Gentoo")).toBe("linux");
+    expect(normalizeOs("NixOS")).toBe("linux");
+    expect(normalizeOs("EndeavourOS")).toBe("linux");
+    expect(normalizeOs("Void Linux")).toBe("linux");
+  });
+
+  it("maps intro to logo", () => {
+    expect(normalizeStatus("intro")).toBe("logo");
+  });
+
+  it("normalizes negative boot verbs to doesnt-boot before boots matches logo", () => {
+    expect(normalizeStatus("crashed on boot")).toBe("doesnt-boot");
+    expect(normalizeStatus("crashing on boot")).toBe("doesnt-boot");
+    expect(normalizeStatus("failed on boot")).toBe("doesnt-boot");
+    expect(normalizeStatus("failing to boot")).toBe("doesnt-boot");
+    expect(normalizeStatus("freezes on boot")).toBe("doesnt-boot");
+    expect(normalizeStatus("freezing on boot")).toBe("doesnt-boot");
+    expect(normalizeStatus("froze on boot")).toBe("doesnt-boot");
+    expect(normalizeStatus("hangs on boot")).toBe("doesnt-boot");
+    expect(normalizeStatus("hanging on boot")).toBe("doesnt-boot");
+    expect(normalizeStatus("black screen on boot")).toBe("doesnt-boot");
+    expect(normalizeStatus("can not boot")).toBe("doesnt-boot");
+    expect(normalizeStatus("cannot boot")).toBe("doesnt-boot");
+    expect(normalizeStatus("could not boot")).toBe("doesnt-boot");
   });
 });
 

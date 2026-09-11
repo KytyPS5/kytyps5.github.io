@@ -125,7 +125,10 @@ async function fetchCandidates() {
           body: JSON.stringify({ query }),
         });
         const issue = res?.data?.repository?.issue;
-        if (issue) return [{ ...issue, html_url: issue.url }];
+        if (issue) {
+          const cand = { ...issue, html_url: issue.url };
+          return isCandidateIssue(cand) ? [cand] : [];
+        }
       } else {
         const all = [];
         let cursor = null;
@@ -172,7 +175,7 @@ async function fetchCandidates() {
   const headers = token ? { authorization: `Bearer ${token}` } : {};
   if (issueNumber) {
     const issue = await api(`https://api.github.com/repos/${upstreamRepo}/issues/${issueNumber}`, { headers });
-    return [issue];
+    return isCandidateIssue(issue) ? [issue] : [];
   }
   const all = [];
   for (let page = 1; page <= 5; page++) {
@@ -219,7 +222,7 @@ async function fetchMirrors() {
       if (issue.pull_request) continue;
       const src = mirrorSource(issue.body);
       const labels = (issue.labels ?? []).map((l) => (typeof l === "string" ? l : l.name));
-      if (src) mirrors.set(src.number, { number: issue.number, state: issue.state, body: issue.body ?? "", labels });
+      if (src) mirrors.set(src.number, { number: issue.number, title: issue.title ?? "", state: issue.state, body: issue.body ?? "", labels });
     }
     if (batch.length < 100) break;
   }
@@ -265,7 +268,7 @@ for (const report of reports.values()) {
 
 const candidateKey = (issue) => {
   const body = issue.body ?? "";
-  const titleId = issueTitleId(body);
+  const titleId = issueTitleId(body, issue.title);
   const os = issueOs(body);
   if (titleId && os) return `${gameKeyFor(titleId, games)}|${os}`;
   const slug = mirrorSlug(body, issue.title);
@@ -295,7 +298,7 @@ for (const issue of candidates) {
       : (byGameOs.get(key) ?? undefined)
     : undefined;
 
-  const candStatus = issueStatus(issue.body);
+  const candStatus = issueStatus(issue.body, issue.title);
   const candVersion = issueVersion(issue.body);
   const isSourceIssue = report?.sourceNumber !== undefined && report.sourceNumber === number;
   const statusChanged = Boolean(isSourceIssue && candStatus && report?.status && candStatus !== report.status);
@@ -303,8 +306,9 @@ for (const issue of candidates) {
   const isNewerEdit = Boolean(
     isSourceIssue && isEdited && lastEditDate && (!report?.testedDate || lastEditDate > report.testedDate),
   );
-  const isUpdate = isNewerEdit && (statusChanged || versionChanged);
+  const isUpdate = Boolean(isNewerEdit && candStatus && (statusChanged || versionChanged));
 
+  const mirrorOverrides = mirror ? readOverrides(mirror.body) : {};
   const baseBody = isUpdate
     ? buildUpdatedMirrorBody(
         issue.body,
@@ -323,12 +327,13 @@ for (const issue of candidates) {
       });
 
   const newBody = isUpdate && mirror?.body
-    ? appendOverrides(baseBody, readOverrides(mirror.body))
+    ? appendOverrides(baseBody, mirrorOverrides)
     : baseBody;
-  const newTitle = mirrorTitle(issue.body, issue.title);
+  const newTitle = mirrorTitle(issue.body, issue.title, mirrorOverrides);
 
   if (mirror) {
     const bodyMatches = mirror.body === newBody;
+    const titleMatches = mirror.title === newTitle;
 
     // Closed mirrors are skipped unless an un-mirrored upstream update arrived,
     // or a maintainer explicitly triggered a manual refresh with --issue-number.
@@ -337,7 +342,6 @@ for (const issue of candidates) {
       continue;
     }
 
-    const mirrorOverrides = readOverrides(mirror.body);
     const existingLabels = new Set(mirror.labels ?? []);
     existingLabels.add(MIRROR_LABEL);
     if (isUpdate) existingLabels.add(UPDATED_LABEL);
@@ -351,12 +355,13 @@ for (const issue of candidates) {
       existingLabels.size === (mirror.labels ?? []).length &&
       (mirror.labels ?? []).every((l) => existingLabels.has(l));
 
-    // Active patch is needed if fields/labels changed, if reopening a closed mirror on update,
-    // or if explicitly requested via --issue-number.
+    // Active patch is needed if fields/labels changed, if title changed on an open mirror,
+    // if reopening a closed mirror on update, or if explicitly requested via --issue-number.
     const needsPatch =
       Boolean(issueNumber) ||
       !bodyMatches ||
       !labelsMatch ||
+      (mirror.state === "open" && !titleMatches) ||
       (mirror.state === "closed" && isUpdate);
 
     // If nothing changed, skip immediately: prevents re-dispatching open mirrors
@@ -367,6 +372,7 @@ for (const issue of candidates) {
     }
 
     const patch = bodyMatches ? {} : { body: newBody };
+    if (!titleMatches && mirror.state === "open") patch.title = newTitle;
     if (mirror.state === "closed") patch.state = "open";
     patch.labels = Array.from(existingLabels);
     await patchIssue(mirror.number, patch);
@@ -387,7 +393,7 @@ for (const issue of candidates) {
 
       // Title & Title ID matching check
       const effectiveCandTitle = mirrorOverrides.title || issueGameTitle(issue.body) || issue.title;
-      const effectiveCandTitleId = mirrorOverrides.titleId || issueTitleId(issue.body);
+      const effectiveCandTitleId = mirrorOverrides.titleId || issueTitleId(issue.body, issue.title);
       const matchResult = isMatchingGame(effectiveCandTitle, effectiveCandTitleId, report?.title, report?.titleId, games);
       if (!matchResult.matches) {
         await postComment(

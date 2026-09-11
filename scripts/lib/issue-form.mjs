@@ -66,7 +66,7 @@ export function cleanField(sections, label) {
 export const OS_ALIASES = [
   [/win(?:dows)?(?: ?10| ?11| server)?|microsoft|^ms/i, "windows"],
   [/mac|os ?x|osx|darwin|apple/i, "macos"],
-  [/linux|ubuntu|debian|arch|fedora|linux mint|mint|pop.?os|manjaro|opensuse|steamos|steam ?deck/i, "linux"],
+  [/linux|ubuntu|debian|arch|fedora|linux mint|mint|pop.?os|manjaro|opensuse|steamos|steam ?deck|cachy(?:os)?|bazzite|nobara|gentoo|void|nixos|endeavour(?:os)?/i, "linux"],
 ];
 
 export function normalizeOs(os) {
@@ -82,6 +82,7 @@ const TEMPLATE_STATUS = {
   "doesnt boot": "doesnt-boot",
   "does not boot": "doesnt-boot",
   logo: "logo",
+  intro: "logo",
   "main menu": "main-menu",
   "in game": "in-game",
   playable: "in-game",
@@ -103,11 +104,12 @@ export function normalizeStatus(status) {
   if (STATUSES.includes(v)) return v;
   if (TEMPLATE_STATUS[v]) return TEMPLATE_STATUS[v];
 
-  // Regex fallback for manual edits / free-form text (e.g. "Demons souls in Main menu")
-  if (/\b(?:doesn'?t\s*boot|does\s*not\s*boot|not\s*boot(?:ing)?|nothing|no\s*boot)\b/i.test(v)) return "doesnt-boot";
+  // Negative boot phrases (crashed on boot, failed on boot, freezes on boot, etc.)
+  // Must run BEFORE the logo regex so "crashed on boot" does not match "boots?" as logo!
+  if (/\b(?:doesn'?t\s*boot|does\s*not\s*boot|not\s*boot(?:ing)?|nothing|no\s*boot|can(?:not|'?t|\s+not)\s*boot|could(?:not|'?t|\s+not)\s*boot|unable\s+to\s+boot|(?:crash(?:es|ed|ing)?|fail(?:s|ed|ing)?|freeze[sd]?|freezing|froze|hang(?:s|ed|ing)?|stuck|black\s*screen)(?:\s+\w+){0,2}\s+(?:on|to|at|during)\s+boot)\b/i.test(v)) return "doesnt-boot";
   if (/\b(?:in[- ]?game|playable|perfect)\b/i.test(v)) return "in-game";
   if (/\b(?:main[- ]?menu|menus?)\b/i.test(v)) return "main-menu";
-  if (/\b(?:logo|splash|boots?)\b/i.test(v)) return "logo";
+  if (/\b(?:logo|splash|intro|boots?)\b/i.test(v)) return "logo";
 
   return undefined;
 }
