@@ -74,10 +74,12 @@ const BODY_CAP = 60_000;
  */
 export function mirrorTitle(upstreamBody, fallbackTitle, overrides = {}) {
   const sections = parseIssueBody(upstreamBody);
-  const title = overrides.title ?? (cleanField(sections, "Game title") || fallbackTitle || "Unknown game");
+  let title = overrides.title ?? (cleanField(sections, "Game title") || fallbackTitle || "Unknown game");
   // The upstream issue title already starts with the [GAME STATUS] prefix;
   // don't double it when the body has no parsable "Game title" field.
   const prefix = /^\[GAME STATUS\]/i.test(title) ? "" : "[GAME STATUS] ";
+  // Strip any existing trailing OS suffix before appending resolved OS
+  title = title.replace(/(?:\s*\((?:windows|linux|macos)\))+$/i, "");
   const os = overrides.os ?? normalizeOs(cleanField(sections, "OS"));
   return os ? `${prefix}${title} (${os})` : `${prefix}${title}`;
 }
@@ -287,12 +289,22 @@ export function titleIdKey(titleId) {
   return String(titleId ?? "").replace(/[\s-]/g, "").toUpperCase();
 }
 
-/** The PPSA-XXXXX in an upstream issue body (new "Game ID / serial" or legacy "Title ID"). */
-export function issueTitleId(body) {
+/** The PPSA-XXXXX in an upstream issue body (new "Game ID / serial" or legacy "Title ID"), with title fallback. */
+export function issueTitleId(body, title) {
   const sections = parseIssueBody(body);
   const raw = cleanField(sections, "Game ID / serial") || cleanField(sections, "Title ID");
-  const m = String(raw ?? "").match(/PPSA[\s-]?\d{5}/i);
-  return m ? titleIdKey(m[0]) : undefined;
+  let m = String(raw ?? "").match(/PPSA[\s-]?\d{5}/i);
+  if (m) return titleIdKey(m[0]);
+
+  // Fallback: title may contain PPSA (e.g. "[GAME BUG] PPSA-01234 Game Title")
+  m = String(title ?? "").match(/PPSA[\s-]?\d{5}/i);
+  if (m) return titleIdKey(m[0]);
+
+  // Fallback: search whole body for PPSA pattern
+  m = String(body ?? "").match(/PPSA[\s-]?\d{5}/i);
+  if (m) return titleIdKey(m[0]);
+
+  return undefined;
 }
 
 /** The OS an upstream issue was tested on (new "OS" or legacy "Operating system"). */
@@ -329,12 +341,55 @@ export function reportVersion(md) {
 }
 
 /**
- * Normalized status ladder: maps template options & legacy statuses to canonical slugs.
+ * Resilient extraction of compatibility status from an issue title.
+ * Used when an issue body uses a bug template or omits the status heading.
  */
-export function issueStatus(body) {
+export function extractStatusFromTitle(title) {
+  if (!title) return undefined;
+  const clean = String(title).trim();
+  if (!clean) return undefined;
+
+  // 1. Strip known category/repo prefixes first
+  let cleaned = clean
+    .replace(/^\s*\[(?:GAME\s+(?:STATUS|BUG)|KytyPS5)\]\s*/i, "")
+    .trim();
+
+  // 2. Check for leading status prefix (e.g. "[In-Game] Game Title", "Playable: Title")
+  const prefixMatch = cleaned.match(/^\[([^\]]+)\]|^([A-Za-z -]+):/);
+  if (prefixMatch) {
+    const candidate = prefixMatch[1] || prefixMatch[2];
+    const status = normalizeStatus(candidate);
+    if (status) return status;
+  }
+
+  // 3. Scan bracketed and parenthetical tokens from right to left
+  const tokens = Array.from(cleaned.matchAll(/[\[(]([^\[\]()]+)[\])]/g)).map((m) => m[1].trim());
+  for (let i = tokens.length - 1; i >= 0; i--) {
+    const token = tokens[i];
+    // Ignore OS tokens
+    if (normalizeOs(token)) continue;
+    // Ignore PPSA serials
+    if (/^PPSA[\s-]?\d{5}$/i.test(token)) continue;
+    // Ignore version tokens (e.g. v1.0, 0.2.0)
+    if (/^v?\d+\.\d+(?:\.\d+)?/i.test(token)) continue;
+    // Ignore common region tags
+    if (/^(?:USA|EUR|JPN|ASIA|US|EU|JP|WORLD)$/i.test(token)) continue;
+
+    const status = normalizeStatus(token);
+    if (status) return status;
+  }
+
+  return undefined;
+}
+
+/**
+ * Normalized status ladder: maps template options & legacy statuses to canonical slugs.
+ * Falls back to extracting status from title if body status is absent or invalid.
+ */
+export function issueStatus(body, title) {
   const sections = parseIssueBody(body);
   const raw = cleanField(sections, "Compatibility status");
-  return normalizeStatus(raw);
+  return normalizeStatus(raw) ?? extractStatusFromTitle(title);
 }
 
 /** The KytyPS5 version from an upstream issue body. */
@@ -427,17 +482,31 @@ export const CANDIDATE_TITLE_REGEX =
   /\[(?:GAME (?:STATUS|BUG)|playable|in[- ]game|boots|intro|logo|main[- ]menu)\]/i;
 
 /**
- * Test whether an upstream GitHub issue represents a compatibility report.
+ * Test whether an upstream GitHub issue qualifies as a valid compatibility report candidate.
+ * Strictly requires a parsable PPSA title ID, valid OS, valid compatibility status, and game title.
  */
 export function isCandidateIssue(issue) {
-  if (issue.pull_request) return false;
-  if (CANDIDATE_TITLE_REGEX.test(issue.title ?? "")) return true;
+  if (!issue || issue.pull_request) return false;
   const body = issue.body ?? "";
-  if (body.includes("### Compatibility status")) return true;
-  if (body.includes("### Game title") && (body.includes("### OS") || body.includes("### Operating system"))) {
-    return true;
-  }
-  return false;
+  const title = issue.title ?? "";
+
+  // 1. Must have a valid PPSA titleId
+  const titleId = issueTitleId(body, title);
+  if (!titleId || !/^PPSA\d{5}$/i.test(titleId)) return false;
+
+  // 2. Must have a valid OS
+  const os = issueOs(body);
+  if (!os) return false;
+
+  // 3. Must have a valid compatibility status
+  const status = issueStatus(body, title);
+  if (!status) return false;
+
+  // 4. Must have a game title (either from form or fallback title)
+  const gameTitle = issueGameTitle(body) || title;
+  if (!gameTitle || !String(gameTitle).trim()) return false;
+
+  return true;
 }
 
 /** The raw Game title from an upstream issue body. */

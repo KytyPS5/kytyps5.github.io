@@ -37,7 +37,15 @@ import { mkdir, readdir, readFile, unlink, writeFile } from "node:fs/promises";
 import { fileURLToPath } from "node:url";
 import path from "node:path";
 import { cleanField, normalizeOs, normalizeStatus, parseIssueBody, STATUSES } from "./lib/issue-form.mjs";
-import { gameKeyFor, readOverrides, reportOs, reportTitleId, reportTrusted } from "./lib/status-issues.mjs";
+import {
+  extractStatusFromTitle,
+  gameKeyFor,
+  issueTitleId,
+  readOverrides,
+  reportOs,
+  reportTitleId,
+  reportTrusted,
+} from "./lib/status-issues.mjs";
 
 const ROOT = path.resolve(path.dirname(fileURLToPath(import.meta.url)), "..");
 const DIR = path.join(ROOT, "src", "content", "compat");
@@ -110,13 +118,45 @@ function readIntake(body, flags) {
   const trustedFlag = flags.trusted !== undefined ? (flags.trusted === "true" || flags.trusted === true) : undefined;
   const trusted = trustedFlag ?? overrides.trusted;
 
+  // Fallbacks derived from flags.issueTitle and body
+  let fallbackTitle = flags.issueTitle ? String(flags.issueTitle).trim() : undefined;
+  if (fallbackTitle) {
+    // Strip leading prefix tags like [GAME STATUS], [GAME BUG], [KytyPS5], [playable], etc.
+    let prev;
+    do {
+      prev = fallbackTitle;
+      fallbackTitle = fallbackTitle
+        .replace(/^\s*\[(?:GAME\s+(?:STATUS|BUG)|KytyPS5|playable|in[- ]game|boots|intro|logo|main[- ]menu|doesnt[- ]boot|nothing)\][:\s-]*/i, "")
+        .trim();
+    } while (fallbackTitle !== prev);
+
+    // Strip trailing parenthetical / bracketed metadata tags like (windows), (In Game), (v1.0), (PPSA01670), etc.
+    do {
+      prev = fallbackTitle;
+      fallbackTitle = fallbackTitle
+        .replace(/\s*\((?:windows|linux|macos|in[- ]game|playable|main[- ]menu|logo|intro|boots?|doesnt[- ]boot|nothing|v?\d+\.\d+(?:\.\d+)?|PPSA[\s-]?\d{5})\)\s*$/i, "")
+        .replace(/\s*\[(?:windows|linux|macos|in[- ]game|playable|main[- ]menu|logo|intro|boots?|doesnt[- ]boot|nothing|v?\d+\.\d+(?:\.\d+)?|PPSA[\s-]?\d{5})\]\s*$/i, "")
+        .trim();
+    } while (fallbackTitle !== prev);
+    if (!fallbackTitle) fallbackTitle = undefined;
+  }
+
+  const rawTitleId = titleId ?? titleIdLegacy;
+  const hasValidPpsa = Boolean(rawTitleId && /PPSA[\s-]?\d{5}/i.test(rawTitleId));
+  const fallbackTitleId = issueTitleId(body, flags.issueTitle);
+  const resolvedTitleId = hasValidPpsa ? rawTitleId : (fallbackTitleId ?? rawTitleId);
+
+  const rawStatus = statusRaw ?? statusLegacy;
+  const fallbackStatus = extractStatusFromTitle(flags.issueTitle);
+  const resolvedStatus = (rawStatus && normalizeStatus(rawStatus)) ? rawStatus : (fallbackStatus ?? rawStatus);
+
   // Explicit flags win over parsed values, except the title (the parsed
   // "Game title" field is more reliable than the issue title) and the date
   // (a legacy "Test date" is the real test date, better than created_at).
   return {
-    title: overrides.title ?? title ?? flags.title,
-    titleId: overrides.titleId ?? flags.titleId ?? titleId ?? titleIdLegacy,
-    statusRaw: overrides.status ?? flags.status ?? statusRaw ?? statusLegacy,
+    title: overrides.title ?? flags.title ?? title ?? fallbackTitle,
+    titleId: overrides.titleId ?? flags.titleId ?? resolvedTitleId,
+    statusRaw: overrides.status ?? flags.status ?? resolvedStatus,
     version: flags.version ?? version ?? versionLegacy,
     date: legacyDate ?? flags.date, // new template has no date — workflow passes issue.created_at
     os: overrides.os ?? flags.os ?? os ?? osLegacy,
@@ -162,6 +202,7 @@ const flags = {
   gameVersion: arg("game-version"),
   slug: arg("slug"),
   issueBodyFile: arg("issue-body-file"),
+  issueTitle: arg("issue-title"),
   trusted: arg("trusted"),
 };
 
