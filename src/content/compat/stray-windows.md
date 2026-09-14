@@ -2,35 +2,29 @@
 title: "Stray"
 titleId: "PPSA02100"
 status: "in-game"
-testedVersion: "KytyPS5-2026-08-09-d7063d0"
-testedDate: "2026-08-10"
+testedVersion: "KytyPS5-2026-09-12-d3d7bd3"
+testedDate: "2026-09-12"
 os: "windows"
-hardware: "Intel Core i3-12100F / AMD Radeon RX 6600 / 16 GB RAM"
+hardware: "Intel Core i5-12400F / NVIDIA GeForce RTX 4070 ,drivers 616.92 / 32 GB DDR4 RAM,12 GB VRAM"
+screenshots: ["https://github.com/user-attachments/assets/c1dec9f0-fc42-422a-a680-e354fa51de52","https://github.com/user-attachments/assets/f7690e82-3668-4f10-9b21-adf8732bf55f","https://github.com/user-attachments/assets/e45252a4-9661-4c3a-9993-ce95c6d2ba70"]
 ---
 
-The game boots and reaches in-game state (~21 FPS, frame 1766, 590+ shaders compiled), but renders a black screen. Shortly after, it crashes with a memory tracker assertion error:
+To launch the game, you must enable Windows SysV red zone crash protection in the launcher settings. If you don't turn it on, the game will crash right after the logo screen.
 
-Error: memory tracker re-entered from upload callback in memoryTracker.h:139
+When starting a new game, it might still crash occasionally. However, if you're lucky, a short cutscene will play. After the cutscene, everything will look normal for a second, but then the screen goes black, leaving only the action icons visible. A few moments later, the game crashes.
+
+When starting a new game, it might still crash occasionally. However, if you're lucky, a short cutscene will play. After the cutscene, everything will look normal for a second, but then the screen goes black, leaving only the action icons visible. A few moments later, the game crashes.
 
 ## Steps to reproduce
 
-1. Open KytyPS5.
-2. Boot Stray (PPSA02100).
-3. Wait through initial shader compilation (~590 shaders) and start a New Game.
-4. On the black screen, intuitively move around towards the interactive circles/prompts.
-5. Press the triangle button on the prompts to interact with the environment.
-6. Observe the crash in memoryTracker.h:139 shortly after interacting.
+1.Open Kyty PS5.
+2.Launch Windows SysV red zone crash protection.
+3.Open the game.
+4.Adjust the brightness (on first launch).
+5.Start a new game.
 
 ## Expected behavior
 
-Graphics should render properly without a black screen, and the memory tracker should handle asynchronous texture/buffer uploads safely without re-entrancy crashes.
+The screen shouldn't go black after the cutscene.
 
-## Last working build / first broken build
-
-Unknown
-
-## Extra notes
-
-Tested on official build KytyPS5-2026-08-09-d7063d0. App version: 01.002.000.
-
-> Source: [KytyPS5 issue #227](https://github.com/KytyPS5/KytyPS5/issues/227)
+> Source: [KytyPS5 issue #595](https://github.com/KytyPS5/KytyPS5/issues/595)
