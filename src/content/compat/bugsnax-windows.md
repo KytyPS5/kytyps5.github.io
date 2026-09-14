@@ -1,26 +1,30 @@
 ---
 title: "Bugsnax"
-titleId: "PPSA-01503"
-status: "main-menu"
-testedVersion: "KytyPS5-2026-08-18-4fb72e9"
-testedDate: "2026-08-18"
+titleId: "PPSA01502"
+status: "in-game"
+testedVersion: "Official build KytyPS5-2026-09-12-d3d7bd3"
+testedDate: "2026-09-14"
 os: "windows"
-hardware: "Intel Core i5-12400F / NVIDIA GeForce RTX 4070 ,drivers 610.88 WHQL / 32 GB DDR4 RAM,12 GB VRAM"
-screenshots: ["https://github.com/user-attachments/assets/16d5b430-8d4c-4471-8dab-c4670487525c","https://github.com/user-attachments/assets/354f7344-75ed-42b9-a3f9-54ab0ade49f8","https://github.com/user-attachments/assets/cb129146-71c5-4b71-951e-a9ed7df233a5"]
+hardware: "AMD Ryzen 9 7900X / RX 7900XTX, Adrenalin driver version 25.8.1 / 32 GB DDR5 RAM / 24 GB VRAM"
+screenshots: ["https://github.com/user-attachments/assets/cc0cc498-619a-4949-ac28-397ad204ef7c","https://github.com/user-attachments/assets/e830ece7-57ae-4717-a884-d0254f471ef1"]
 ---
 
-The game launches but runs at a low frame rate. It crashes after loading a new game.
-
-It's very difficult to do anything because of the low FPS.
+The game reaches the main menu. I am able to create a new save game, play through the intro cutscene and start moving in the world. The framerate (on my machine at least) is a solid 60 FPS and there are few stutters. Lizbert speech works just fine and I can play the start of the game. I have not tested any further than the first 10 minutes right now though.
 
 ## Steps to reproduce
 
-1. Open the emulator.
-2. Launch the game.
-3. Start a new game.
+1. Open KytyPS5
+2. Boot the game
+3. Start a new save
 
 ## Expected behavior
 
-The introductory sequence should play after loading.
+Save should load and the gameplay should go as normal
 
-> Source: [KytyPS5 issue #287](https://github.com/KytyPS5/KytyPS5/issues/287)
+## Extra notes
+
+Note: OBS video recording attached introduces a slight overhead to performance. When not recording, my FPS is largely around 58-60, instead of dropping into the 40s/50s.
+
+Default program settings
+
+> Source: [KytyPS5 issue #611](https://github.com/KytyPS5/KytyPS5/issues/611)
