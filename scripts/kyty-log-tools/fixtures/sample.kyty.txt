@@ -1,0 +1,25 @@
+Build
+  version: Official build KytyPS5-2026-09-09-0b4e78c
+
+Host
+  os:      Windows
+  cpu:     Intel 12th Gen Core i3-12100F
+  threads: 8
+
+Mounted /download0 -> _DownloadData/PPSA10112
+Loading: E:/homebrew/SILENT.HILL.The.Short.Message-PPSA10112-ASIA-Game-v1.001-PS5/PPSA10112-app/eboot.bin
+--- Relocate program: E:/homebrew/SILENT.HILL.The.Short.Message-PPSA10112-ASIA-Game-v1.001-PS5/PPSA10112-app/sce_module/libc.prx ---
+Relocate: unresolved PLT import patched to stub [169] [0000000907b05b88] <- 0000000200000000, kFhuwHrIUqs[PlayerInvitationDialog_v1][PlayerInvitationDialog_v1.1][Func], Func, Global, E:/homebrew/SILENT.HILL.The.Short.Message-PPSA10112-ASIA-Game-v1.001-PS5/PPSA10112-app/eboot.bin
+Relocate: unresolved PLT import patched to stub [170] [0000000907b05b90] <- 00000002000000a5, gDm5a6GSE94[SystemService_v1][SystemService_v1.1][Func], Func, Global, E:/homebrew/SILENT.HILL.The.Short.Message-PPSA10112-ASIA-Game-v1.001-PS5/PPSA10112-app/eboot.bin
+warning: executing wave64 compute shader cs=0x0000002007870000
+0x0000000123456789: UNSUPPORTED ; family=MIMG opcode=0xe6 raw=[0x00000000 0x00000001] reason=MIMG opcode is not implemented
+ShaderRecompiler MS CFG dispatcher fallback: stage=MS hash=0x4e991d9d461f621d phase=BuildGraph failure=UnsupportedInstruction block=3 pc=0x00000008..0x00000020 preds=2 succs=1 blocks=4 loops=0 back_edges=0 reason=unsupported decoded instruction in CFG at pc
+SPIR-V emission failed: stage=PS hash=0xbec4dad884d4b676
+Not implemented (some module): feature X
+This line is completely unknown noise that the parser should ignore.
+
+--- Build ---
+Official build KytyPS5-2026-09-09-0b4e78c
+--- Error ---
+Unhandled host exception: type=1 code=3221225477 pc=0x00007ff963ae3221 access=1 address=0x0000000000000004
+ in D:\a\KytyPS5\KytyPS5\src\loader\runtimeLinker.cpp:843
