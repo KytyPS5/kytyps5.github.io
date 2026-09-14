@@ -7,7 +7,8 @@
  * regenerated from the C++ sources, so it always reflects the emulator build
  * it was generated from.
  */
-import { readFile } from "node:fs/promises";
+import { readFile, stat } from "node:fs/promises";
+import { join } from "node:path";
 
 export interface ExtractedTable {
   /** Canonical family as it appears in `family=` log fields. */
@@ -100,7 +101,9 @@ export interface ExtractedCatalog {
 /**
  * Extract the opcode catalogue from a set of decoder sources.
  */
-export function buildCatalog(files: Array<{ filePath: string; source: string }>): ExtractedCatalog {
+export function buildCatalog(
+  files: Array<{ filePath: string; source: string; commit?: string }>,
+): ExtractedCatalog {
   const familyOpcode: Record<string, Record<string, string>> = {};
   const collisions: ExtractedCatalog["collisions"] = [];
   const tables: ExtractedCatalog["tables"] = [];
@@ -126,20 +129,59 @@ export function buildCatalog(files: Array<{ filePath: string; source: string }>)
     }
   }
 
-  return { source: "KytyPS5 frontend/decode (derived)", familyOpcode, tables, collisions };
+  const commit = files.map((f) => f.commit ?? "").find(Boolean) ?? "";
+
+  return {
+    source: commit
+      ? `KytyPS5 frontend/decode (derived) @ ${commit}`
+      : "KytyPS5 frontend/decode (derived)",
+    familyOpcode,
+    tables,
+    collisions,
+  };
+}
+
+/**
+ * Resolve the exact KytyPS5 commit the decoder sources came from, by reading
+ * the checkout's `.git` metadata (no `git` binary dependency). Returns the
+ * full SHA, or "" when it cannot be determined (e.g. non-repo checkout).
+ */
+export async function resolveCheckoutCommit(kytyRoot: string): Promise<string> {
+  let gitDir = join(kytyRoot, ".git");
+  try {
+    const st = await stat(gitDir);
+    if (!st.isDirectory()) {
+      // Worktree/submodule: `.git` is a file with `gitdir: <path>`.
+      const pointer = await readFile(gitDir, "utf8");
+      const m = pointer.match(/^gitdir:\s*(.+)$/);
+      if (m) gitDir = join(kytyRoot, m[1].trim());
+    }
+    const head = (await readFile(join(gitDir, "HEAD"), "utf8")).replace(/\r\n?/g, "\n");
+    const ref = head.match(/^ref:\s*([^\n]+)/)?.[1];
+    if (ref) {
+      // Direct refs resolve to a loose file; packed refs would need `git` — return "".
+      return (await readFile(join(gitDir, ref), "utf8").catch(() => "")).trim();
+    }
+    return head.split("\n", 1)[0].trim(); // detached HEAD
+  } catch {
+    return "";
+  }
 }
 
 /**
  * Locate and read all decoder table sources from a KytyPS5 checkout.
  */
-export async function loadDecoderSources(kytyRoot: string): Promise<Array<{ filePath: string; source: string }>> {
+export async function loadDecoderSources(
+  kytyRoot: string,
+): Promise<Array<{ filePath: string; source: string; commit: string }>> {
   const dir = `${kytyRoot}/src/graphics/shader/recompiler/frontend/decode`;
   const files = ["MemoryOps.cpp", "ImageOps.cpp", "ScalarAluOps.cpp", "VectorAluOps.cpp", "ExportOps.cpp"];
-  const out: Array<{ filePath: string; source: string }> = [];
+  const commit = await resolveCheckoutCommit(kytyRoot);
+  const out: Array<{ filePath: string; source: string; commit: string }> = [];
   for (const f of files) {
     const filePath = `${dir}/${f}`;
     try {
-      out.push({ filePath: `${filePath}`.replace(/\\/g, "/"), source: await readFile(filePath, "utf8") });
+      out.push({ filePath: `${filePath}`.replace(/\\/g, "/"), source: await readFile(filePath, "utf8"), commit });
     } catch (err) {
       const code = (err as NodeJS.ErrnoException).code;
       if (code === "ENOENT") continue;

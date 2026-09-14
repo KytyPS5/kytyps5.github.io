@@ -1,5 +1,8 @@
 import { describe, expect, it } from "vitest";
-import { extractTablesFromSource, buildCatalog } from "./catalog.ts";
+import { mkdirSync, mkdtempSync, rmSync, writeFileSync } from "node:fs";
+import { join } from "node:path";
+import { tmpdir } from "node:os";
+import { extractTablesFromSource, buildCatalog, resolveCheckoutCommit } from "./catalog.ts";
 
 // Miniature reproduction of the canonical decoder table layout in KytyPS5.
 const MINI_IMAGE_SRC = `
@@ -81,5 +84,38 @@ constexpr ImageOpcodeInfo MIMG_B_OPCODE_LIST[] = { {0x47u, Opcode::IMAGE_B, 0, 3
 `;
     const catalog = buildCatalog([{ filePath: "image.cpp", source: src }]);
     expect(catalog.collisions.some((c) => c.family === "MIMG" && c.opcode === "0x47")).toBe(true);
+  });
+
+  it("embeds the pinned source commit in catalog.source", () => {
+    const sha = "d3d7bd33f8eb4996cf198c430bb2e4fa4bf518eb";
+    const catalog = buildCatalog([{ filePath: "memory.cpp", source: MINI_MEMORY_SRC, commit: sha }]);
+    expect(catalog.source).toContain(sha);
+  });
+});
+
+describe("resolveCheckoutCommit", () => {
+  const SHA = "d3d7bd33f8eb4996cf198c430bb2e4fa4bf518eb";
+
+  it("resolves the SHA from a loose ref with CRLF line endings", async () => {
+    const dir = mkdtempSync(join(tmpdir(), "kyty-checkout-"));
+    try {
+      mkdirSync(join(dir, ".git", "refs", "heads"), { recursive: true });
+      writeFileSync(join(dir, ".git", "HEAD"), "ref: refs/heads/main\r\n");
+      writeFileSync(join(dir, ".git", "refs", "heads", "main"), `${SHA}\r\n`);
+      await expect(resolveCheckoutCommit(dir)).resolves.toBe(SHA);
+    } finally {
+      rmSync(dir, { recursive: true, force: true });
+    }
+  });
+
+  it("resolves a detached HEAD SHA", async () => {
+    const dir = mkdtempSync(join(tmpdir(), "kyty-checkout-"));
+    try {
+      mkdirSync(join(dir, ".git"), { recursive: true });
+      writeFileSync(join(dir, ".git", "HEAD"), `${SHA}\n`);
+      await expect(resolveCheckoutCommit(dir)).resolves.toBe(SHA);
+    } finally {
+      rmSync(dir, { recursive: true, force: true });
+    }
   });
 });
