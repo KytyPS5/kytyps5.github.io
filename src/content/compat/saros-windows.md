@@ -2,7 +2,7 @@
 title: "Saros"
 titleId: "PPSA07631"
 status: "main-menu"
-testedVersion: "KytyPS5-2026-09-09-0b4e78c"
+testedVersion: "KytyPS5-2026-09-12-d3d7bd3"
 testedDate: "2026-08-15"
 os: "windows"
 hardware: "AMD Ryzen 9800X3D / NVIDIA GeForce RTX 5070 / 32 GB DDR5 RAM / 12 GB VRAM"
