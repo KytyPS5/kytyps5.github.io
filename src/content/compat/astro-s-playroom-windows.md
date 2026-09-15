@@ -1,16 +1,29 @@
 ---
-title: "ASTRO's PLAYROOM"
+title: "Astro's Playroom"
 titleId: "PPSA01325"
 status: "doesnt-boot"
-testedVersion: "2026-08-08-87428d7"
-testedDate: "2026-08-08"
+testedVersion: "Official build KytyPS5-2026-09-14-a9ae04c"
+testedDate: "2026-09-14"
 os: "windows"
-hardware: "AMD Ryzen 9 9950X3D / AMD Radeon RX 7900 XT"
+hardware: "AMD Ryzen 9-7900x / Nividia TI RTX 5070 16GB / 32 GB DDR5 6000 MT/S"
 ---
 
-Game Boots but chrashs without opening a Game Window Initialized: Config Initialized: Log Initialized: Timer Initialized: Pthread Initialized: Profiler Initialized: Network Initialized: Memory Initialized: FileSystem Initialized: Controller Initialized: Graphics Initialized: Audio --- Build --- Official build KytyPS5-2026-08-08-87428d7 --- Stack Trace --- [0] 0000000140aa238e [1] 000000090183e9d3 --- Error --- unknown param_id: 400 in D:\a\KytyPS5\KytyPS5\src\libs\libSystemService.cpp:102
+rien n'a fonctionné
 
-**Steps to reproduce:** Boot the Game Nothing
+## Steps to reproduce
 
-> Source: [KytyPS5 issue #205](https://github.com/KytyPS5/KytyPS5/issues/205)
+OUVRIR > CLIQUER SUR LE JEU
 
+## Expected behavior
+
+?
+
+## Last working build / first broken build
+
+Aucune réponse
+
+## Extra notes
+
+Aucune réponse
+
+> Source: [KytyPS5 issue #617](https://github.com/KytyPS5/KytyPS5/issues/617)
