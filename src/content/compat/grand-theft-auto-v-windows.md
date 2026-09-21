@@ -2,35 +2,31 @@
 title: "Grand Theft Auto V"
 titleId: "PPSA04264"
 status: "main-menu"
-testedVersion: "KytyPS5-2026-08-09-d7063d0"
-testedDate: "2026-08-10"
+testedVersion: "v0.3.0"
+testedDate: "2026-09-20"
 os: "windows"
-hardware: "Intel Core i3-12100F / AMD Radeon RX 6600 / 16 GB RAM / 8 GB VRAM"
-screenshots: ["https://github.com/user-attachments/assets/cb33c09d-cdb8-4ad2-b69e-46967b6286f3"]
+hardware: "11th Gen Intel(R) Core(TM) i5-11400F @ 2.60GHZ / NVIDIA GeForce RTX 3060 32.0.16.1692 / DDR4 32 GB RAM"
+screenshots: ["https://github.com/user-attachments/assets/5c8bc7a5-6b44-4287-8a45-67123961bea8"]
 ---
 
-The game successfully reaches the Main Menu. However, upon selecting Story Mode and starting the loading screen, it crashes during shader/image view creation with an unsupported resource error:
+When starting up the game instead of saying Display Calibration it just says Dis  a, Ca ibration After this reaching the main menu works fine but when going to the settings and navigating to Display > Graphics mode these are the options for my Graphics selection:
+Fi     li  y
+f   manc  R
+f   manc
+Another i'd also like to point out is that the game crashes quite frequently when the frames drop in Prolouge
 
-Error: unsupported storage color image resource: kind=11 dimension=3 mip=1 read=0 written=1 atomic=0 depth_compare=0 in imageView.h:137
+<img width="1288" height="760" alt="Image" src="https://github.com/user-attachments/assets/5c8bc7a5-6b44-4287-8a45-67123961bea8" />
 
 ## Steps to reproduce
 
-1. Open KytyPS5.
-2. Boot Grand Theft Auto V (PPSA04264).
-3. Navigate to the Main Menu.
-4. Select "Story Mode".
-5. Observe crash during the loading screen in imageView.h:137.
+These are the steps to reproduce if you have Intel Core i5-11400F or similar
+1. Open KytyPS5
+2. Add GTA V to the game folder.
+3. Enable the Crash prevention and enable Vulkan validation.
+4. Run the game get into prolouge and somewhere in prolouge the game should crash even with the crash prevention on.
 
 ## Expected behavior
 
-The image view subsystem should support 3D storage color image resources (kind=11) to allow the loading screen and gameplay post-processing to initialize properly.
+The game should continue to run and not close / crash due to the cutscene in prolouge.
 
-## Last working build / first broken build
-
-Unknown
-
-## Extra notes
-
-Tested on official build KytyPS5-2026-08-09-d7063d0. App version: 01.005.000 (FW 7.20).
-
-> Source: [KytyPS5 issue #229](https://github.com/KytyPS5/KytyPS5/issues/229)
+> Source: [KytyPS5 issue #729](https://github.com/KytyPS5/KytyPS5/issues/729)
