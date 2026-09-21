@@ -318,7 +318,7 @@
     "reportCounts": {
       "windows": 1
     },
-    "latestTested": "2026-08-08"
+    "latestTested": "2026-09-14"
   },
   {
     "key": "PPSA08601",
@@ -463,14 +463,14 @@
     "title": "Bugsnax",
     "titleId": "PPSA01502",
     "cover": "https://image.api.playstation.com/vulcan/ap/rnd/202006/1917/hGSdG2l6eGt4KyyUozhceMW6.png",
-    "overall": "main-menu",
+    "overall": "in-game",
     "os": {
-      "windows": "main-menu"
+      "windows": "in-game"
     },
     "reportCounts": {
       "windows": 1
     },
-    "latestTested": "2026-08-18"
+    "latestTested": "2026-09-14"
   },
   {
     "key": "PPSA22924",
@@ -726,14 +726,16 @@
     "title": "Demon's Souls",
     "titleId": "PPSA01342",
     "cover": "https://image.api.playstation.com/vulcan/img/rnd/202011/1717/brIXKBE5BqYgBSrsDn6Wo18O.png",
-    "overall": "main-menu",
+    "overall": "doesnt-boot",
     "os": {
-      "windows": "main-menu"
+      "windows": "doesnt-boot",
+      "linux": "doesnt-boot"
     },
     "reportCounts": {
-      "windows": 1
+      "windows": 1,
+      "linux": 1
     },
-    "latestTested": "2026-08-25"
+    "latestTested": "2026-09-15"
   },
   {
     "key": "PPSA15656",
@@ -1081,6 +1083,20 @@
     "latestTested": "2026-09-11"
   },
   {
+    "key": "PPSA01337",
+    "title": "Ghostwire: Tokyo",
+    "titleId": "PPSA01337",
+    "cover": "https://image.api.playstation.com/vulcan/ap/rnd/202202/1619/oSt7wc0HjsHMOFONdVhKLgkV.jpg",
+    "overall": "main-menu",
+    "os": {
+      "linux": "main-menu"
+    },
+    "reportCounts": {
+      "linux": 1
+    },
+    "latestTested": "2026-09-12"
+  },
+  {
     "key": "PPSA04159",
     "title": "Goat Simulator 3",
     "titleId": "PPSA04159",
@@ -1260,6 +1276,20 @@
       "windows": 1
     },
     "latestTested": "2026-08-08"
+  },
+  {
+    "key": "PPSA04072",
+    "title": "Horizon Forbidden West",
+    "titleId": "PPSA04072",
+    "cover": "https://image.api.playstation.com/vulcan/ap/rnd/202010/2915/SqRcyLjZbpK26ej6TnWf43xp.jpg",
+    "overall": "doesnt-boot",
+    "os": {
+      "windows": "doesnt-boot"
+    },
+    "reportCounts": {
+      "windows": 1
+    },
+    "latestTested": "2026-09-13"
   },
   {
     "key": "PPSA02688",
@@ -1442,6 +1472,20 @@
     "latestTested": "2026-08-19"
   },
   {
+    "key": "PPSA03774",
+    "title": "Lost Judgment",
+    "titleId": "PPSA03774",
+    "cover": "https://image.api.playstation.com/vulcan/ap/rnd/202107/0218/ar9wx12cFKTk8yejzfF7QHbz.jpg",
+    "overall": "doesnt-boot",
+    "os": {
+      "linux": "doesnt-boot"
+    },
+    "reportCounts": {
+      "linux": 1
+    },
+    "latestTested": "2026-09-12"
+  },
+  {
     "key": "PPSA06960",
     "title": "Mandragora: Whispers of the Witch Tree",
     "titleId": "PPSA06960",
@@ -1467,6 +1511,20 @@
       "windows": 1
     },
     "latestTested": "2026-08-20"
+  },
+  {
+    "key": "PPSA03016",
+    "title": "Marvel’s Spider-Man 2",
+    "titleId": "PPSA03016",
+    "cover": "https://image.api.playstation.com/vulcan/ap/rnd/202306/1219/97e9f5fa6e50c185d249956c6f198a2652a9217e69a59ecd.jpg",
+    "overall": "doesnt-boot",
+    "os": {
+      "windows": "doesnt-boot"
+    },
+    "reportCounts": {
+      "windows": 1
+    },
+    "latestTested": "2026-09-12"
   },
   {
     "key": "PPSA01411",
@@ -1551,6 +1609,19 @@
       "windows": 1
     },
     "latestTested": "2026-09-05"
+  },
+  {
+    "key": "PPSA28068",
+    "title": "Mortal Kombat: Legacy Kollection",
+    "titleId": "PPSA28068",
+    "overall": "in-game",
+    "os": {
+      "windows": "in-game"
+    },
+    "reportCounts": {
+      "windows": 1
+    },
+    "latestTested": "2026-09-15"
   },
   {
     "key": "PPSA02868",
@@ -1887,14 +1958,14 @@
     "title": "R-Type® Final 2",
     "titleId": "PPSA08394",
     "cover": "https://image.api.playstation.com/vulcan/ap/rnd/202103/1000/JL4zTKk5ohB4DxDOt9a8PzE9.png",
-    "overall": "logo",
+    "overall": "doesnt-boot",
     "os": {
-      "windows": "logo"
+      "windows": "doesnt-boot"
     },
     "reportCounts": {
       "windows": 1
     },
-    "latestTested": "2026-07-18"
+    "latestTested": "2026-09-14"
   },
   {
     "key": "PPSA13356",
@@ -1951,6 +2022,20 @@
       "windows": 1
     },
     "latestTested": "2026-08-07"
+  },
+  {
+    "key": "PPSA16509",
+    "title": "Red Matter",
+    "titleId": "PPSA16509",
+    "cover": "https://image.api.playstation.com/vulcan/ap/rnd/202305/1321/8ef827f7209cc9d089104aafbf3218995a6b5a9a49fce929.png",
+    "overall": "doesnt-boot",
+    "os": {
+      "windows": "doesnt-boot"
+    },
+    "reportCounts": {
+      "windows": 1
+    },
+    "latestTested": "2026-09-13"
   },
   {
     "key": "PPSA04288",
@@ -2023,9 +2108,24 @@
     "latestTested": "2026-07-19"
   },
   {
+    "key": "PPSA09162",
+    "title": "Rez Infinite",
+    "titleId": "PPSA09162",
+    "cover": "https://image.api.playstation.com/vulcan/ap/rnd/202302/1507/9c81cb48e634ad6359111f50b462dceb6985df2173e940c0.png",
+    "overall": "main-menu",
+    "os": {
+      "windows": "main-menu"
+    },
+    "reportCounts": {
+      "windows": 1
+    },
+    "latestTested": "2026-09-14"
+  },
+  {
     "key": "PPSA16959",
     "title": "Richman 11",
     "titleId": "PPSA16959",
+    "cover": "https://image.api.playstation.com/vulcan/ap/rnd/202403/2004/f09dbea91f0cf128507d794caf8ad3cc37ea708dfab778b7.png",
     "overall": "in-game",
     "os": {
       "windows": "in-game"
@@ -2203,6 +2303,20 @@
     "latestTested": "2026-09-04"
   },
   {
+    "key": "PPSA03831",
+    "title": "Sonic Frontiers PS4 & PS5",
+    "titleId": "PPSA03831",
+    "cover": "https://image.api.playstation.com/vulcan/ap/rnd/202208/1716/dxgDgttaTe0ejLqoVtZyHwhH.png",
+    "overall": "logo",
+    "os": {
+      "linux": "logo"
+    },
+    "reportCounts": {
+      "linux": 1
+    },
+    "latestTested": "2026-09-12"
+  },
+  {
     "key": "PPSA08804",
     "title": "Sonic Racing: CrossWorlds",
     "titleId": "PPSA08804",
@@ -2215,6 +2329,19 @@
       "windows": 1
     },
     "latestTested": "2026-08-19"
+  },
+  {
+    "key": "PPSA17337",
+    "title": "Space Adventure Cobra - The Awakening",
+    "titleId": "PPSA17337",
+    "overall": "in-game",
+    "os": {
+      "windows": "in-game"
+    },
+    "reportCounts": {
+      "windows": 1
+    },
+    "latestTested": "2026-09-14"
   },
   {
     "key": "PPSA26893",
@@ -2283,7 +2410,7 @@
     "reportCounts": {
       "windows": 1
     },
-    "latestTested": "2026-08-10"
+    "latestTested": "2026-09-12"
   },
   {
     "key": "PPSA02452",
@@ -2415,12 +2542,14 @@
     "cover": "https://image.api.playstation.com/vulcan/ap/rnd/202206/0400/NahZPZuHBjZddMIrR200McSk.jpg",
     "overall": "doesnt-boot",
     "os": {
-      "windows": "doesnt-boot"
+      "windows": "doesnt-boot",
+      "linux": "doesnt-boot"
     },
     "reportCounts": {
-      "windows": 1
+      "windows": 1,
+      "linux": 1
     },
-    "latestTested": "2026-07-18"
+    "latestTested": "2026-09-12"
   },
   {
     "key": "PPSA03746",
@@ -2508,8 +2637,9 @@
   },
   {
     "key": "PPSA16617",
-    "title": "The Lord of the Rings: Return to Moria",
+    "title": "The Lord of the Rings: Return to Moria™",
     "titleId": "PPSA16617",
+    "cover": "https://image.api.playstation.com/vulcan/ap/rnd/202308/3016/217ebca2d5f428da8034883ce43d39d2462fe4a560f4edf2.jpg",
     "overall": "in-game",
     "os": {
       "windows": "in-game"
@@ -2805,6 +2935,20 @@
     "latestTested": "2026-09-09"
   },
   {
+    "key": "PPSA02775",
+    "title": "XIII",
+    "titleId": "PPSA02775",
+    "cover": "https://image.api.playstation.com/vulcan/ap/rnd/202208/0512/iadts6x0cDLBGE6RQoNlhX2C.png",
+    "overall": "in-game",
+    "os": {
+      "windows": "in-game"
+    },
+    "reportCounts": {
+      "windows": 1
+    },
+    "latestTested": "2026-09-15"
+  },
+  {
     "key": "PPSA32456",
     "title": "Ys X: Proud Nordics",
     "titleId": "PPSA32456",
@@ -2816,6 +2960,19 @@
       "windows": 1
     },
     "latestTested": "2026-08-29"
+  },
+  {
+    "key": "PPSA22624",
+    "title": "Zombie Cure Lab",
+    "titleId": "PPSA22624",
+    "overall": "doesnt-boot",
+    "os": {
+      "windows": "doesnt-boot"
+    },
+    "reportCounts": {
+      "windows": 1
+    },
+    "latestTested": "2026-09-13"
   },
   {
     "key": "PPSA33096",
