@@ -2,29 +2,35 @@
 title: "Stray"
 titleId: "PPSA02100"
 status: "in-game"
-testedVersion: "KytyPS5-2026-09-12-d3d7bd3"
-testedDate: "2026-09-12"
+testedVersion: "KytyPS5-2026-09-18-5b7d334"
+testedDate: "2026-09-18"
 os: "windows"
-hardware: "Intel Core i5-12400F / NVIDIA GeForce RTX 4070 ,drivers 616.92 / 32 GB DDR4 RAM,12 GB VRAM"
-screenshots: ["https://github.com/user-attachments/assets/c1dec9f0-fc42-422a-a680-e354fa51de52","https://github.com/user-attachments/assets/f7690e82-3668-4f10-9b21-adf8732bf55f","https://github.com/user-attachments/assets/e45252a4-9661-4c3a-9993-ce95c6d2ba70"]
+hardware: "AMD Ryzen 7 7700 / NVIDIA GeForce RTX 4070 Ti Super, driver 616.92 (Studio) / 32GB DDR5 RAM / 16GB VRAM"
+screenshots: ["https://github.com/user-attachments/assets/08311051-300d-4c20-88ab-eff24eec2459","https://github.com/user-attachments/assets/f73ab0aa-6dda-4d79-8b19-0d8173891038"]
 ---
 
-To launch the game, you must enable Windows SysV red zone crash protection in the launcher settings. If you don't turn it on, the game will crash right after the logo screen.
-
-When starting a new game, it might still crash occasionally. However, if you're lucky, a short cutscene will play. After the cutscene, everything will look normal for a second, but then the screen goes black, leaving only the action icons visible. A few moments later, the game crashes.
-
-When starting a new game, it might still crash occasionally. However, if you're lucky, a short cutscene will play. After the cutscene, everything will look normal for a second, but then the screen goes black, leaving only the action icons visible. A few moments later, the game crashes.
+The game loads successfully.
+The working version of the emulator uses standard textures. They are missing in the current version, appearing as black (which might be affecting the lighting).
+Issues with the black screen appearing (from the previous Stray game status) - none.
 
 ## Steps to reproduce
 
-1.Open Kyty PS5.
-2.Launch Windows SysV red zone crash protection.
-3.Open the game.
-4.Adjust the brightness (on first launch).
-5.Start a new game.
+1. Open Kyty PS5.
+2. Enable AMD CPU patch.
+3. Open the game.
+4. Adjust the brightness (on first launch).
+5. Start a new game.
 
 ## Expected behavior
 
-The screen shouldn't go black after the cutscene.
+Textures should render correctly as they did in build 1d2f59d, without turning black or breaking the lighting.
 
-> Source: [KytyPS5 issue #595](https://github.com/KytyPS5/KytyPS5/issues/595)
+## Last working build / first broken build
+
+Last worked in KytyPS5-2026-09-18-1d2f59d, First broke in KytyPS5-2026-09-18-394e638
+
+## Extra notes
+
+The AMD CPU patch has no effect on this issue.
+
+> Source: [KytyPS5 issue #698](https://github.com/KytyPS5/KytyPS5/issues/698)
