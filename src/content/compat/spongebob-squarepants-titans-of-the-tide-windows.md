@@ -1,24 +1,21 @@
 ---
-title: "SpongeBob SquarePants Titans of the Tide"
+title: "SpongeBob SquarePants: Titans Of The Tide"
 titleId: "PPSA26893"
-status: "doesnt-boot"
-testedVersion: "0.2.2 / KytyPS5-2026-08-28-c52bf45"
-testedDate: "2026-08-28"
+status: "main-menu"
+testedVersion: "0.3.0 2026-9-20"
+testedDate: "2026-09-21"
 os: "windows"
-hardware: "AMD Ryzen 9 3900X / NVIDIA GeForce RTX 3070 / 32 GB DDR4 RAM / 8 GB VRAM"
+hardware: "AMD Ryzen 5 7600X3D / NVIDIA RTX 3070 (Game Ready Driver 616.92) / 16Gb@5600 DRAM 8Gb GDDR6 VRAM"
 ---
 
-The game starts and KytyPS5 begins loading the executable, but the game does not reach the main menu or playable gameplay. It remains stuck during startup and does not progress further. No other major visual or audio issues could be tested because gameplay is not reached.
+it crashes at the "later" screen after selecting new game
 
 ## Steps to reproduce
 
-1. Start KytyPS5.
-2. Launch SpongeBob SquarePants: Titans of the Tide.
-3. Wait for the game to initialize.
-4. The game starts loading but does not reach the main menu or playable gameplay and remains stuck during startup.
+Open, boot, select new game
 
 ## Expected behavior
 
-The game should continue past the startup sequence, reach the main menu, and allow the player to start and enter playable gameplay.
+Crashes on new game And Runs Like Sh*t
 
-> Source: [KytyPS5 issue #331](https://github.com/KytyPS5/KytyPS5/issues/331)
+> Source: [KytyPS5 issue #755](https://github.com/KytyPS5/KytyPS5/issues/755)
