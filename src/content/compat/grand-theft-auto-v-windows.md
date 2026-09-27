@@ -1,32 +1,27 @@
 ---
 title: "Grand Theft Auto V"
 titleId: "PPSA04264"
-status: "main-menu"
-testedVersion: "v0.3.0"
-testedDate: "2026-09-20"
+status: "in-game"
+testedVersion: "KytyPS5-2026-09-25-7e1c2d1"
+testedDate: "2026-09-25"
 os: "windows"
-hardware: "11th Gen Intel(R) Core(TM) i5-11400F @ 2.60GHZ / NVIDIA GeForce RTX 3060 32.0.16.1692 / DDR4 32 GB RAM"
-screenshots: ["https://github.com/user-attachments/assets/5c8bc7a5-6b44-4287-8a45-67123961bea8"]
+hardware: "Intel(R) Core(TM) Ultra 7 265K (3.90 GHz) / NVIDIA GeForce RTX 5050, driver Game Ready 616.92 / 32 GB DDR5 RAM, 8GB VRAM"
 ---
 
-When starting up the game instead of saying Display Calibration it just says Dis  a, Ca ibration After this reaching the main menu works fine but when going to the settings and navigating to Display > Graphics mode these are the options for my Graphics selection:
-Fi     li  y
-f   manc  R
-f   manc
-Another i'd also like to point out is that the game crashes quite frequently when the frames drop in Prolouge
-
-<img width="1288" height="760" alt="Image" src="https://github.com/user-attachments/assets/5c8bc7a5-6b44-4287-8a45-67123961bea8" />
+Game boots, letters are missing from the menu and the settings but does not prevent going further into the game. When starting a new save, the games crashes at a specific moment in the Prologue. After killing the guard and crouching, a robber goes to put a bomb and the game crashes.
 
 ## Steps to reproduce
 
-These are the steps to reproduce if you have Intel Core i5-11400F or similar
-1. Open KytyPS5
-2. Add GTA V to the game folder.
-3. Enable the Crash prevention and enable Vulkan validation.
-4. Run the game get into prolouge and somewhere in prolouge the game should crash even with the crash prevention on.
+1. Open KytyPS5,
+2. Edit game configuration,
+3. Enable all compatibility options, readback and tesselation support, disable all debug and log options (even VK Validation and shaders).
+4. Run the game,
+5. Get past the guard killing scene,
+6. Crouch near the robber,
+7. Game crashes
 
 ## Expected behavior
 
-The game should continue to run and not close / crash due to the cutscene in prolouge.
+The robber should put the bomb on the door and bomb it, but the game crashes.
 
-> Source: [KytyPS5 issue #729](https://github.com/KytyPS5/KytyPS5/issues/729)
+> Source: [KytyPS5 issue #829](https://github.com/KytyPS5/KytyPS5/issues/829)
