@@ -2,26 +2,32 @@
 title: "Grand Theft Auto V"
 titleId: "PPSA04264"
 status: "in-game"
-testedVersion: "KytyPS5-2026-09-25-7e1c2d1"
-testedDate: "2026-09-25"
+testedVersion: "KytyPS5-2026-09-28-0791f92-Windows-x64"
+testedDate: "2026-09-28"
 os: "windows"
-hardware: "Intel(R) Core(TM) Ultra 7 265K (3.90 GHz) / NVIDIA GeForce RTX 5050, driver Game Ready 616.92 / 32 GB DDR5 RAM, 8GB VRAM"
+hardware: "AMD Ryzen 7 5700 / NVIDIA GEForce RTX 4060 / 32GB RAM 8GB VRAM"
+screenshots: ["https://github.com/user-attachments/assets/11b7f9a9-4c11-485f-be49-edbf5f2ca09e"]
 ---
 
-Game boots, letters are missing from the menu and the settings but does not prevent going further into the game. When starting a new save, the games crashes at a specific moment in the Prologue. After killing the guard and crouching, a robber goes to put a bomb and the game crashes.
+The game launches, Text is glitched, not rendering properly. Set to performance mode, start story. Go through the whole prologue, opening the shutter and I actually manage to play the game finally! Shoot all the cops, Trevor runs, escaping through the snow, it fades to black. Then it crashes with error: Buffercache download exceeds 64 MiB staging buffer capacity. Tested multiple times, exact same result. Around 11 minutes of fairly stable gameplay
 
 ## Steps to reproduce
 
-1. Open KytyPS5,
-2. Edit game configuration,
-3. Enable all compatibility options, readback and tesselation support, disable all debug and log options (even VK Validation and shaders).
-4. Run the game,
-5. Get past the guard killing scene,
-6. Crouch near the robber,
-7. Game crashes
+1. Open KytyPS5
+2. Launch the game.
+3. Go to settings > display, change mode to performance
+4. Start game and play
 
 ## Expected behavior
 
-The robber should put the bomb on the door and bomb it, but the game crashes.
+The fade to black should instead of crashing, transition to the funeral scene, then show the GTA V logo, etc
 
-> Source: [KytyPS5 issue #829](https://github.com/KytyPS5/KytyPS5/issues/829)
+## Last working build / first broken build
+
+In previous builds the game crashed a few seconds after first cutscene starts, only rendering a few laggy frames before crashing.
+
+## Extra notes
+
+I am using a single GPU passthrough VM to run Windows. (Previous Kyty Linux version runs resulted in crash, so for the new version i decided to use Windows.) I reduced VM RAM to 28GB
+
+> Source: [KytyPS5 issue #888](https://github.com/KytyPS5/KytyPS5/issues/888)
