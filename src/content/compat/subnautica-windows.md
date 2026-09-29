@@ -2,14 +2,40 @@
 title: "Subnautica"
 titleId: "PPSA02453"
 status: "main-menu"
-testedVersion: "KytyPS5-2026-08-27-ade32e7"
+testedVersion: "KytyPS5-2026-09-28-8e61798"
 testedDate: "2026-08-28"
 os: "windows"
 hardware: "AMD Ryzen 7 7840hs / Nvidia RTX 4050 / 16GB DDR5 RAM/ 6GB GDDR6 VRAM"
-screenshots: ["https://github.com/user-attachments/assets/681046b3-638e-4d81-80ab-36dd6ad34bd0","https://github.com/user-attachments/assets/49dbedae-1637-40f1-a53c-7fa799ac3b4a"]
+screenshots: ["https://github.com/user-attachments/assets/681046b3-638e-4d81-80ab-36dd6ad34bd0","https://github.com/user-attachments/assets/49dbedae-1637-40f1-a53c-7fa799ac3b4a","https://github.com/user-attachments/assets/386e8abb-cdaa-42dd-aadb-05b47863d4dc","https://github.com/user-attachments/assets/3bfd884e-b093-4f07-b44d-14c85f428fd7","https://github.com/user-attachments/assets/239b72ff-7237-4727-816b-26a774af256a"]
 ---
 
-boots the main menu when you click play a loading screen shows up then crashes with no errors in console. very bad performance 0.4 fps in menus.
+--- Guest fault context ---
+thread: StreamingThread
+rax=0000000202615151 rbx=00000002780ba550 rcx=0000000000002000 rdx=000000000202b11a
+rsi=0000000202615310 rdi=0000000000000000 rbp=00000007ebe9fba0 rsp=00000007ebe9fb80
+r8 =7ffffffffffffffc r9 =00000101049c8a28 r10=00007ffacdec0000 r11=00000100e62b7ac8
+r12=000000020df23cf0 r13=0000000000000000 r14=0000000295a6d240 r15=000000027809d180
+code (pc-48 .. pc+48, fault at byte 48):
+ 87 b8 00 00 00 48 8b 35 2c a9 1b 02 4c 8b 38 48
+ 8b 03 0f b7 88 26 01 00 00 48 85 c9 74 21 48 8b
+ 90 b0 00 00 00 48 c1 e1 04 31 ff 0f 1f 44 00 00
+ 48 39 34 3a 74 18 48 83 c7 10 48 39 f9 75 f1 48
+ 89 df ba 02 00 00 00 e8 54 a2 1f 01 eb 13 8b 4c
+ 3a 08 83 c1 02 48 c1 e1 04 48 8d 84 08 30 01 00
+stack:
+  00000002023832f0 00000007ebe9fbe8 0000000000000000 0000000950dced00
+  00000007ebe9fc20 00000009503fd6ee 0000000295a6d230 fffffffffffffff0
+  0000000000000001 000000027809d180 0000000295a6d240 00000007ebe9fbe8
+  0000000000000000 000000027809d180 deadbeef00000007 00000007ebe9fc60
+  0000000141540558 0000000000000006 00000007ebe9fc60 00000002780ba550
+  00000007ebe9fc40 0000000950bc0c44 00000000000037ec 00000007ebe9fc60
+  00000007ebe9fcb0 0000000950de2a30 003f9db193dc8361 0000000000001010
+  000000027809d180 0000000295a6d240 0000000000000000 0000000000000000
+--- Build ---
+Official build KytyPS5-2026-09-28-8e61798
+--- Error ---
+Unhandled host exception: type=1 code=3221225477 pc=0x0000000950dcec70 access=1 address=0x000000000202b11a
+ in D:\a\KytyPS5\KytyPS5\src\loader\runtimeLinker.cpp:719
 
 ## Steps to reproduce
 
@@ -19,6 +45,32 @@ boots the main menu when you click play a loading screen shows up then crashes w
 
 ## Expected behavior
 
-boots the main menu when you click play a loading screen shows up then crashes with no errors in console. very bad performance 0.4 fps in menus.
+--- Guest fault context ---
+thread: StreamingThread
+rax=0000000202615151 rbx=00000002780ba550 rcx=0000000000002000 rdx=000000000202b11a
+rsi=0000000202615310 rdi=0000000000000000 rbp=00000007ebe9fba0 rsp=00000007ebe9fb80
+r8 =7ffffffffffffffc r9 =00000101049c8a28 r10=00007ffacdec0000 r11=00000100e62b7ac8
+r12=000000020df23cf0 r13=0000000000000000 r14=0000000295a6d240 r15=000000027809d180
+code (pc-48 .. pc+48, fault at byte 48):
+ 87 b8 00 00 00 48 8b 35 2c a9 1b 02 4c 8b 38 48
+ 8b 03 0f b7 88 26 01 00 00 48 85 c9 74 21 48 8b
+ 90 b0 00 00 00 48 c1 e1 04 31 ff 0f 1f 44 00 00
+ 48 39 34 3a 74 18 48 83 c7 10 48 39 f9 75 f1 48
+ 89 df ba 02 00 00 00 e8 54 a2 1f 01 eb 13 8b 4c
+ 3a 08 83 c1 02 48 c1 e1 04 48 8d 84 08 30 01 00
+stack:
+  00000002023832f0 00000007ebe9fbe8 0000000000000000 0000000950dced00
+  00000007ebe9fc20 00000009503fd6ee 0000000295a6d230 fffffffffffffff0
+  0000000000000001 000000027809d180 0000000295a6d240 00000007ebe9fbe8
+  0000000000000000 000000027809d180 deadbeef00000007 00000007ebe9fc60
+  0000000141540558 0000000000000006 00000007ebe9fc60 00000002780ba550
+  00000007ebe9fc40 0000000950bc0c44 00000000000037ec 00000007ebe9fc60
+  00000007ebe9fcb0 0000000950de2a30 003f9db193dc8361 0000000000001010
+  000000027809d180 0000000295a6d240 0000000000000000 0000000000000000
+--- Build ---
+Official build KytyPS5-2026-09-28-8e61798
+--- Error ---
+Unhandled host exception: type=1 code=3221225477 pc=0x0000000950dcec70 access=1 address=0x000000000202b11a
+ in D:\a\KytyPS5\KytyPS5\src\loader\runtimeLinker.cpp:719
 
 > Source: [KytyPS5 issue #337](https://github.com/KytyPS5/KytyPS5/issues/337)
