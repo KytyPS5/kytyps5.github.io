@@ -1,27 +1,25 @@
 ---
 title: "Neptunia ReVerse"
 titleId: "PPSA02721"
-status: "logo"
-testedVersion: "KytyPS5-2026-08-25-663b524"
-testedDate: "2026-08-25"
+status: "in-game"
+testedVersion: "KytyPS5-2026-09-29-59a1760"
+testedDate: "2026-09-29"
 os: "windows"
-hardware: "Intel Ultra 5 225F / Intel Ultra 7 268V / RTX 4060 610.88 / Intel Arc 140V iGPU / 32GB Ram on both devices / 8GB VRAM on RTX 4060 and 18GB VRAM on a 140V GPU"
+hardware: "AMD Ryzen 7 5800X3D / NVIDIA GeForce RTX 5070, driver 610.88 / 64 GB DDR4 RAM / 12 GB VRAM"
+screenshots: ["https://github.com/user-attachments/assets/5bb17ad8-c4d3-4480-bbfd-fb93a5c42a4c","https://github.com/user-attachments/assets/2dbfff08-5fdc-4e05-8166-1ea45782f5ae"]
 ---
 
-This Game does launch, but crashes outright after 5 frames, sometimes more and less at idea factory logo. So not what it shows on the github page, which shows the Menu Screen.
+Gameplay is now stable without visual issues. Still suffers a consistent crash exiting the character view on the equipment screen caused by a BufferCache download exceeding the 64 MiB staging buffer capacity.
 
 ## Steps to reproduce
 
-1. Open KytyPS5
-2. Launch The Game
-3. Even with tweaking settings or default, same issue
+1. Open the game's pause menu whenever possible, usually after prologue.
+2. Enter Equipment.
+3. Select a character.
+4. Leave the equipment screen after the character model loads.
 
 ## Expected behavior
 
-The logo animation shouldnt be crashed but goes past of that, so it should be normally goes in the title menu. This used to be on ealier versions (which you can see on the github startpage), so there is a regression there?
+The equipment screen should exit gracefully with no crash.
 
-## Extra notes
-
-Default settings and anything like that. Even with Vulkan Pointer, Shader, same thing.
-
-> Source: [KytyPS5 issue #317](https://github.com/KytyPS5/KytyPS5/issues/317)
+> Source: [KytyPS5 issue #929](https://github.com/KytyPS5/KytyPS5/issues/929)
