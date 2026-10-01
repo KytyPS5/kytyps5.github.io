@@ -1,24 +1,46 @@
 ---
-title: "Choo-Choo Charles"
+title: "CHOO CHOO CHARLES"
 titleId: "PPSA17313"
-status: "in-game"
-testedVersion: "v0.0,3"
-testedDate: "2026-09-11"
+status: "doesnt-boot"
+testedVersion: "LATEST VERSION CAF LATEST WORD"
+testedDate: "2026-09-30"
 os: "windows"
-hardware: "AMD Ryzen 5, 5600X / NVIDIA GeForce RTX 4060Ti, Driver 616.64 / 16 GB RAM DDR4, 8GB VRAM"
-screenshots: ["https://github.com/user-attachments/assets/3d4d02ef-456d-42e5-93ac-622c4edfee40"]
+hardware: "I7 9700 / GTX 1060 6GB / 24GB RAM DDR4"
+screenshots: ["https://github.com/user-attachments/assets/2e636c45-f670-47c6-a4c1-560201852d93"]
 ---
 
-Game reaches ingame, with Flickering, and texture issues
+NOT OPENING
 
 ## Steps to reproduce
 
-1. Open KytyPS5
-2. Boot Game
-3. At Main Menu, Start Game
+?
 
 ## Expected behavior
 
-Game should load into gameplay normally, while the cutscenes might have some flickering, once ingame, textures are very glitchy
+NOT OPENING
 
-> Source: [KytyPS5 issue #571](https://github.com/KytyPS5/KytyPS5/issues/571)
+## Extra notes
+
+Initialized: Config
+Initialized: Log
+Initialized: Timer
+Initialized: Pthread
+Tracy profiler enabled: client 0.14.1, protocol 82, broadcast 3, connect to 127.0.0.1:8086
+Initialized: Profiler
+Initialized: Network
+Initialized: Memory
+Initialized: FileSystem
+Initialized: Controller
+Initialized: Audio
+--- Build ---
+Official build KytyPS5-2026-09-30-8ba2caf
+--- Error ---
+Could not find suitable device:
+  NVIDIA GeForce GTX 1060 6GB: fragmentShaderBarycentric is not supported in D:\a\KytyPS5\KytyPS5\src\graphics\presentation\window\vulkanWindow.cpp:933
+
+E:\PROGRAMS\KytyPS5-2026-09-30-8ba2caf-Windows-x64>
+ 
+
+HOW TO FIX IM GTX 1060 6GB
+
+> Source: [KytyPS5 issue #944](https://github.com/KytyPS5/KytyPS5/issues/944)
