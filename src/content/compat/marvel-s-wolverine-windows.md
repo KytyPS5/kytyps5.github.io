@@ -2,66 +2,22 @@
 title: "Marvel's Wolverine"
 titleId: "PPSA03671"
 status: "doesnt-boot"
-testedVersion: "KytyPS5-2026-09-29-05057c9"
-testedDate: "2026-09-29"
+testedVersion: "KytyPS5-2026-10-05-dc3cd2d"
+testedDate: "2026-10-05"
 os: "windows"
-hardware: "AMD Ryzen 5 5600X 6-Core Processor, 3701 Mhz, 6 Core(s), 12 Logical Processor(s) / Nvidia RTX 3050 8GB - 617.14 / 16GB DDR4 RAM / 8GB VRAM"
+hardware: "Intel(R) Core(TM) i5-14600KF / NVIDIA GeForce RTX 5070 / 32 GB DDR5 RAM"
+screenshots: ["https://github.com/user-attachments/assets/b86689b7-2268-4e62-92fb-3efdc445e47d"]
 ---
 
-Initialized: Config
-Initialized: Log
-Initialized: Timer
-Initialized: Pthread
-Initialized: Profiler
-Initialized: Network
-Initialized: Memory
-Initialized: FileSystem
-Initialized: Controller
-Initialized: Audio
-Vulkan pipeline cache: initializing _PipelineCache\PPSA03671.bin
-Vulkan pipeline cache: initialized empty
-Initialized: Graphics
-Title ID: PPSA03671
-Unresolved import stub called: juWbTNM+8hw[Posix_v1][libkernel_v1.1][Func]
-Unresolved import stub called: juWbTNM+8hw[Posix_v1][libkernel_v1.1][Func]
-Unresolved import stub called: juWbTNM+8hw[Posix_v1][libkernel_v1.1][Func]
-version = 13
-Unresolved import stub called: w7Ipp9Xl7hg[VideoOut_v1][VideoOut_v1.1][Func]
-Unresolved import stub called: w7Ipp9Xl7hg[VideoOut_v1][VideoOut_v1.1][Func]
-Shaders: VS 0 | PS 0 | CS 1 | GS 0 | LS 0 | HS 0 | TES 0
-Unresolved import stub called: juWbTNM+8hw[Posix_v1][libkernel_v1.1][Func]
-AJM codec=1, name=ATRAC9 decoder
-Unresolved import stub called: 9030RnBDoh4[PngEnc_v1][PngEnc_v1.1][Func]
-Unresolved import stub called: 7aGTPfrqT9s[PngEnc_v1][PngEnc_v1.1][Func]
-Shaders: VS 0 | PS 0 | CS 2 | GS 0 | LS 0 | HS 0 | TES 0
-Shaders: VS 0 | PS 0 | CS 3 | GS 0 | LS 0 | HS 0 | TES 0
-Shaders: VS 0 | PS 0 | CS 4 | GS 0 | LS 0 | HS 0 | TES 0
-Shaders: VS 0 | PS 0 | CS 5 | GS 0 | LS 0 | HS 0 | TES 0
-Shaders: VS 0 | PS 0 | CS 6 | GS 0 | LS 0 | HS 0 | TES 0
-Shaders: VS 0 | PS 0 | CS 7 | GS 0 | LS 0 | HS 0 | TES 0
-Shaders: VS 0 | PS 0 | CS 8 | GS 0 | LS 0 | HS 0 | TES 0
-Shaders: VS 0 | PS 0 | CS 9 | GS 0 | LS 0 | HS 0 | TES 0
-Shaders: VS 0 | PS 0 | CS 10 | GS 0 | LS 0 | HS 0 | TES 0
-Shader: emitted zero-position clip guard
-Shaders: VS 1 | PS 0 | CS 10 | GS 0 | LS 0 | HS 0 | TES 0
-Shaders: VS 1 | PS 1 | CS 10 | GS 0 | LS 0 | HS 0 | TES 0
-Shaders: VS 2 | PS 1 | CS 10 | GS 0 | LS 0 | HS 0 | TES 0
-Shaders: VS 2 | PS 2 | CS 10 | GS 0 | LS 0 | HS 0 | TES 0
-Shaders: VS 3 | PS 2 | CS 10 | GS 0 | LS 0 | HS 0 | TES 0
-Shaders: VS 3 | PS 2 | CS 11 | GS 0 | LS 0 | HS 0 | TES 0
-Shaders: VS 3 | PS 2 | CS 12 | GS 0 | LS 0 | HS 0 | TES 0
-Shaders: VS 3 | PS 2 | CS 13 | GS 0 | LS 0 | HS 0 | TES 0
---- Build ---
-Official build KytyPS5-2026-09-29-05057c9
---- Error ---
-shader resource tracking: hash=0xade1bef389644fa5 stage=compute pc=0x0000114c GetImageResource dword 0 is not a valid runtime value in D:\a\KytyPS5\KytyPS5\src\graphics\shader\recompiler\ir\passes\ResourceTracking.cpp:338
+The game was detected by KytyPS5 but crashed when launched
 
 ## Steps to reproduce
 
-Open Kytyps5
+1. Open KytyPS5
+2. Boot the game
 
 ## Expected behavior
 
-does not boot
+Launch the game
 
-> Source: [KytyPS5 issue #932](https://github.com/KytyPS5/KytyPS5/issues/932)
+> Source: [KytyPS5 issue #1079](https://github.com/KytyPS5/KytyPS5/issues/1079)
