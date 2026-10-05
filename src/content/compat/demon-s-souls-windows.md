@@ -1,30 +1,65 @@
 ---
 title: "Demon's Souls"
-titleId: "PPSA01342"
+titleId: "PPSA01341"
 status: "doesnt-boot"
-testedVersion: "KytyPS5-2026-09-28-539c0f7"
-testedDate: "2026-09-29"
+testedVersion: "KytyPS5-2026-10-03-e6cb880"
+testedDate: "2026-10-03"
 os: "windows"
-hardware: "i9 12900 / RADEON RX 9070 XT 16GB / 16GB"
+hardware: "9800x3d / 9070 XT (gpu driver 26.9.2) / 32 GB DDR5 RAM 6400"
 ---
 
-Game is not starting:
-Shaders: VS 2 | PS 8 | CS 117 | GS 0 | LS 0 | HS 0 | TES 0
-Shaders: VS 2 | PS 8 | CS 118 | GS 0 | LS 0 | HS 0 | TES 0
+Black screen then crashes.
+
+Error code:
+Warning: format Bc5UnormBlock does not support storage access; block-compressed textures written by the guest will not render.
 --- Build ---
-Official build KytyPS5-2026-09-28-539c0f7
+Official build KytyPS5-2026-10-03-e6cb880
 --- Error ---
 depth attachment feedback loop is not supported by the host
- in D:\a\KytyPS5\KytyPS5\src\graphics\host_gpu\renderer\renderDraw.cpp:532
+ in D:\a\KytyPS5\KytyPS5\src\graphics\host_gpu\renderer\renderDraw.cpp:536
+
+D:\Emulators\KytyPS5-2026-10-03-e6cb880-Windows-x64>
 
 ## Steps to reproduce
 
-1. Open KytyPS5
-2. Start the game
-3.
+Black screen then crashes.
+
+Error code:
+Warning: format Bc5UnormBlock does not support storage access; block-compressed textures written by the guest will not render.
+--- Build ---
+Official build KytyPS5-2026-10-03-e6cb880
+--- Error ---
+depth attachment feedback loop is not supported by the host
+ in D:\a\KytyPS5\KytyPS5\src\graphics\host_gpu\renderer\renderDraw.cpp:536
+
+D:\Emulators\KytyPS5-2026-10-03-e6cb880-Windows-x64>
 
 ## Expected behavior
 
-Game should start.
+Black screen then crashes.
 
-> Source: [KytyPS5 issue #904](https://github.com/KytyPS5/KytyPS5/issues/904)
+Error code:
+Warning: format Bc5UnormBlock does not support storage access; block-compressed textures written by the guest will not render.
+--- Build ---
+Official build KytyPS5-2026-10-03-e6cb880
+--- Error ---
+depth attachment feedback loop is not supported by the host
+ in D:\a\KytyPS5\KytyPS5\src\graphics\host_gpu\renderer\renderDraw.cpp:536
+
+D:\Emulators\KytyPS5-2026-10-03-e6cb880-Windows-x64>
+
+## Extra notes
+
+Black screen then crashes.
+
+Error code:
+Warning: format Bc5UnormBlock does not support storage access; block-compressed textures written by the guest will not render.
+--- Build ---
+Official build KytyPS5-2026-10-03-e6cb880
+--- Error ---
+depth attachment feedback loop is not supported by the host
+ in D:\a\KytyPS5\KytyPS5\src\graphics\host_gpu\renderer\renderDraw.cpp:536
+
+D:\Emulators\KytyPS5-2026-10-03-e6cb880-Windows-x64>
+
+> Source: [KytyPS5 issue #997](https://github.com/KytyPS5/KytyPS5/issues/997)
