@@ -114,6 +114,20 @@
     "latestTested": "2026-09-09"
   },
   {
+    "key": "PPSA02571",
+    "title": "Alan Wake 2",
+    "titleId": "PPSA02571",
+    "cover": "https://image.api.playstation.com/vulcan/ap/rnd/202305/2420/2b117db6108244a85769f8009df39f8006b226d8a2831b3a.jpg",
+    "overall": "doesnt-boot",
+    "os": {
+      "windows": "doesnt-boot"
+    },
+    "reportCounts": {
+      "windows": 1
+    },
+    "latestTested": "2026-09-30"
+  },
+  {
     "key": "PPSA01924",
     "title": "Alan Wake Remastered",
     "titleId": "PPSA01924",
@@ -154,6 +168,20 @@
       "windows": 1
     },
     "latestTested": "2026-09-09"
+  },
+  {
+    "key": "PPSA08240",
+    "title": "Alone in the Dark",
+    "titleId": "PPSA08240",
+    "cover": "https://image.api.playstation.com/vulcan/ap/rnd/202308/1716/313939119e4f414b879d24caeddaaea50c7b39f55e7ad8f2.jpg",
+    "overall": "in-game",
+    "os": {
+      "windows": "in-game"
+    },
+    "reportCounts": {
+      "windows": 1
+    },
+    "latestTested": "2026-10-01"
   },
   {
     "key": "PPSA03595",
@@ -215,6 +243,7 @@
     "key": "PPSA19015",
     "title": "Arcade Game Zone",
     "titleId": "PPSA19015",
+    "cover": "https://image.api.playstation.com/vulcan/ap/rnd/202401/1910/a5dd1d0770d5045ee1033340eba2f376732f93857bee2731.jpg",
     "overall": "in-game",
     "os": {
       "windows": "in-game"
@@ -308,6 +337,20 @@
     "latestTested": "2026-08-28"
   },
   {
+    "key": "PPSA07499",
+    "title": "Asterix & Obelix XXL3",
+    "titleId": "PPSA07499",
+    "cover": "https://image.api.playstation.com/gs2-sec/appkgo/prod/CUSA16983_00/3/i_13136380b52b20252483f51e79978558efa09c438d088d8b1e33741b5b3c69e9/i/pic0.png",
+    "overall": "in-game",
+    "os": {
+      "windows": "in-game"
+    },
+    "reportCounts": {
+      "windows": 1
+    },
+    "latestTested": "2026-09-27"
+  },
+  {
     "key": "PPSA21564",
     "title": "ASTRO BOT",
     "titleId": "PPSA21564",
@@ -315,13 +358,13 @@
     "overall": "in-game",
     "os": {
       "windows": "in-game",
-      "linux": "doesnt-boot"
+      "linux": "in-game"
     },
     "reportCounts": {
       "windows": 1,
       "linux": 1
     },
-    "latestTested": "2026-09-21"
+    "latestTested": "2026-09-28"
   },
   {
     "key": "PPSA01325",
@@ -330,12 +373,14 @@
     "cover": "https://image.api.playstation.com/vulcan/ap/rnd/202502/1908/2aaf69d013904134c1ad9eeba2680e8421ebb411b00da2a3.png",
     "overall": "in-game",
     "os": {
-      "windows": "in-game"
+      "windows": "in-game",
+      "macos": "doesnt-boot"
     },
     "reportCounts": {
-      "windows": 1
+      "windows": 1,
+      "macos": 1
     },
-    "latestTested": "2026-09-20"
+    "latestTested": "2026-09-28"
   },
   {
     "key": "PPSA08601",
@@ -363,7 +408,7 @@
     "reportCounts": {
       "windows": 1
     },
-    "latestTested": "2026-09-22"
+    "latestTested": "2026-10-02"
   },
   {
     "key": "PPSA10696",
@@ -475,6 +520,20 @@
     "latestTested": "2026-07-19"
   },
   {
+    "key": "PPSA05972",
+    "title": "BloodRayne 2: ReVamped",
+    "titleId": "PPSA05972",
+    "cover": "https://image.api.playstation.com/vulcan/ap/rnd/202110/2619/B4LpaegqGhRs9zNOLvN8jX8j.jpg",
+    "overall": "in-game",
+    "os": {
+      "windows": "in-game"
+    },
+    "reportCounts": {
+      "windows": 1
+    },
+    "latestTested": "2026-09-28"
+  },
+  {
     "key": "PPSA03364",
     "title": "BloodRayne Betrayal: Fresh Bites",
     "titleId": "PPSA03364",
@@ -487,6 +546,20 @@
       "windows": 1
     },
     "latestTested": "2026-07-21"
+  },
+  {
+    "key": "PPSA05915",
+    "title": "BloodRayne: ReVamped",
+    "titleId": "PPSA05915",
+    "cover": "https://image.api.playstation.com/vulcan/ap/rnd/202110/2619/nlnY9BT1MXAOwEyqIx9I9Rtu.jpg",
+    "overall": "in-game",
+    "os": {
+      "windows": "in-game"
+    },
+    "reportCounts": {
+      "windows": 1
+    },
+    "latestTested": "2026-09-28"
   },
   {
     "key": "PPSA04242",
@@ -606,14 +679,27 @@
     "title": "Choo-Choo Charles",
     "titleId": "PPSA17313",
     "cover": "https://image.api.playstation.com/vulcan/ap/rnd/202309/0516/b72557c9c8aeb20d2d047ae7ddae688bd9de8f742d6e1035.jpg",
-    "overall": "in-game",
+    "overall": "doesnt-boot",
     "os": {
-      "windows": "in-game"
+      "windows": "doesnt-boot"
     },
     "reportCounts": {
       "windows": 1
     },
-    "latestTested": "2026-09-11"
+    "latestTested": "2026-09-30"
+  },
+  {
+    "key": "PPSA26528",
+    "title": "Code Violet",
+    "titleId": "PPSA26528",
+    "overall": "doesnt-boot",
+    "os": {
+      "windows": "doesnt-boot"
+    },
+    "reportCounts": {
+      "windows": 1
+    },
+    "latestTested": "2026-09-30"
   },
   {
     "key": "PPSA04379",
@@ -641,7 +727,7 @@
     "reportCounts": {
       "windows": 1
     },
-    "latestTested": "2026-09-20"
+    "latestTested": "2026-09-28"
   },
   {
     "key": "PPSA01949",
@@ -810,7 +896,7 @@
       "windows": 1,
       "linux": 1
     },
-    "latestTested": "2026-09-26"
+    "latestTested": "2026-09-29"
   },
   {
     "key": "PPSA01918",
@@ -896,6 +982,20 @@
     "latestTested": "2026-08-20"
   },
   {
+    "key": "PPSA08084",
+    "title": "DRAGON BALL Z: KAKAROT",
+    "titleId": "PPSA08084",
+    "cover": "https://image.api.playstation.com/vulcan/img/rnd/202010/0613/ZzehOQTSSTpBRaUta653LZf6.jpg",
+    "overall": "in-game",
+    "os": {
+      "windows": "in-game"
+    },
+    "reportCounts": {
+      "windows": 1
+    },
+    "latestTested": "2026-09-28"
+  },
+  {
     "key": "PPSA17730",
     "title": "DRAGON QUEST VII Reimagined",
     "titleId": "PPSA17730",
@@ -935,6 +1035,20 @@
       "windows": 1
     },
     "latestTested": "2026-08-18"
+  },
+  {
+    "key": "PPSA15482",
+    "title": "DreamWorks All-Star Kart Racing",
+    "titleId": "PPSA15482",
+    "cover": "https://image.api.playstation.com/vulcan/ap/rnd/202309/2010/2da03c299c2c14c356d175ec8050b67c0b786a59364543d7.jpg",
+    "overall": "in-game",
+    "os": {
+      "windows": "in-game"
+    },
+    "reportCounts": {
+      "windows": 1
+    },
+    "latestTested": "2026-09-30"
   },
   {
     "key": "PPSA09077",
@@ -1193,9 +1307,9 @@
     "title": "Ghostrunner",
     "titleId": "PPSA03682",
     "cover": "https://image.api.playstation.com/vulcan/img/rnd/202101/2502/vqZqtaeHQ5B3boqNn95dARtP.jpg",
-    "overall": "doesnt-boot",
+    "overall": "main-menu",
     "os": {
-      "windows": "doesnt-boot"
+      "windows": "main-menu"
     },
     "reportCounts": {
       "windows": 1
@@ -1302,21 +1416,23 @@
       "windows": 1,
       "linux": 1
     },
-    "latestTested": "2026-09-25"
+    "latestTested": "2026-09-28"
   },
   {
     "key": "PPSA03524",
     "title": "Grand Theft Auto: San Andreas – The Definitive Edition",
     "titleId": "PPSA03524",
     "cover": "https://image.api.playstation.com/vulcan/ap/rnd/202110/2914/BukTyjMYxWu94IqaaXVzDlBo.jpg",
-    "overall": "main-menu",
+    "overall": "in-game",
     "os": {
-      "windows": "main-menu"
+      "windows": "main-menu",
+      "linux": "in-game"
     },
     "reportCounts": {
-      "windows": 1
+      "windows": 1,
+      "linux": 1
     },
-    "latestTested": "2026-08-07"
+    "latestTested": "2026-09-27"
   },
   {
     "key": "PPSA03530",
@@ -1375,6 +1491,20 @@
     "latestTested": "2026-08-07"
   },
   {
+    "key": "PPSA03355",
+    "title": "Hades",
+    "titleId": "PPSA03355",
+    "cover": "https://image.api.playstation.com/vulcan/ap/rnd/202106/0714/pYyqTYA34U1a7hv6BCrqgc24.png",
+    "overall": "in-game",
+    "os": {
+      "windows": "in-game"
+    },
+    "reportCounts": {
+      "windows": 1
+    },
+    "latestTested": "2026-09-27"
+  },
+  {
     "key": "PPSA05617",
     "title": "Hello Neighbor 2",
     "titleId": "PPSA05617",
@@ -1431,6 +1561,20 @@
       "windows": 1
     },
     "latestTested": "2026-08-08"
+  },
+  {
+    "key": "PPSA12544",
+    "title": "Hollow Knight: Silksong",
+    "titleId": "PPSA12544",
+    "cover": "https://image.api.playstation.com/vulcan/ap/rnd/202508/2503/9396dc04cc0161e5a17f8775402f2c3afdcb5d8043a7ebf8.png",
+    "overall": "in-game",
+    "os": {
+      "windows": "in-game"
+    },
+    "reportCounts": {
+      "windows": 1
+    },
+    "latestTested": "2026-09-30"
   },
   {
     "key": "PPSA04072",
@@ -1503,6 +1647,20 @@
       "linux": 1
     },
     "latestTested": "2026-09-21"
+  },
+  {
+    "key": "PPSA02739",
+    "title": "Judgment",
+    "titleId": "PPSA02739",
+    "cover": "https://image.api.playstation.com/vulcan/img/rnd/202011/0204/qUbwz5SArvwupY94spjUI5pW.png",
+    "overall": "in-game",
+    "os": {
+      "windows": "in-game"
+    },
+    "reportCounts": {
+      "windows": 1
+    },
+    "latestTested": "2026-09-29"
   },
   {
     "key": "PPSA19268",
@@ -1659,6 +1817,19 @@
     "latestTested": "2026-08-18"
   },
   {
+    "key": "PPSA23885",
+    "title": "Little Big Adventure – Twinsen’s Quest",
+    "titleId": "PPSA23885",
+    "overall": "in-game",
+    "os": {
+      "windows": "in-game"
+    },
+    "reportCounts": {
+      "windows": 1
+    },
+    "latestTested": "2026-09-27"
+  },
+  {
     "key": "PPSA02200",
     "title": "Little Nightmares II",
     "titleId": "PPSA02200",
@@ -1767,6 +1938,20 @@
       "windows": 1
     },
     "latestTested": "2026-08-08"
+  },
+  {
+    "key": "PPSA03671",
+    "title": "Marvel’s Wolverine",
+    "titleId": "PPSA03671",
+    "cover": "https://image.api.playstation.com/vulcan/ap/rnd/202510/0721/0f8097282863ccd07abf4485a2bc733111127e628552207e.jpg",
+    "overall": "doesnt-boot",
+    "os": {
+      "windows": "doesnt-boot"
+    },
+    "reportCounts": {
+      "windows": 1
+    },
+    "latestTested": "2026-09-29"
   },
   {
     "key": "PPSA03858",
@@ -1928,14 +2113,14 @@
     "title": "Neptunia ReVerse",
     "titleId": "PPSA02721",
     "cover": "https://image.api.playstation.com/vulcan/ap/rnd/202105/2414/1EejsoGWUbS2zTMcD4oLejcV.jpg",
-    "overall": "logo",
+    "overall": "in-game",
     "os": {
-      "windows": "logo"
+      "windows": "in-game"
     },
     "reportCounts": {
       "windows": 1
     },
-    "latestTested": "2026-08-25"
+    "latestTested": "2026-09-29"
   },
   {
     "key": "PPSA02804",
@@ -2074,6 +2259,20 @@
       "windows": 1
     },
     "latestTested": "2026-09-22"
+  },
+  {
+    "key": "PPSA07641",
+    "title": "Pistol Whip",
+    "titleId": "PPSA07641",
+    "cover": "https://image.api.playstation.com/vulcan/ap/rnd/202312/1121/4a0243f100dab75c00484a1599f620bb05d332e423c071c1.jpg",
+    "overall": "doesnt-boot",
+    "os": {
+      "windows": "doesnt-boot"
+    },
+    "reportCounts": {
+      "windows": 1
+    },
+    "latestTested": "2026-09-27"
   },
   {
     "key": "PPSA01736",
@@ -2267,6 +2466,20 @@
       "windows": 1
     },
     "latestTested": "2026-07-19"
+  },
+  {
+    "key": "PPSA15366",
+    "title": "RAIDOU Remastered: The Mystery of the Soulless Army",
+    "titleId": "PPSA15366",
+    "cover": "https://image.api.playstation.com/vulcan/ap/rnd/202501/2822/634e1a6dcf45bcc9dae0617c18903bf72fa19d57de8abf0b.jpg",
+    "overall": "in-game",
+    "os": {
+      "windows": "in-game"
+    },
+    "reportCounts": {
+      "windows": 1
+    },
+    "latestTested": "2026-09-27"
   },
   {
     "key": "PPSA01473",
@@ -2589,6 +2802,19 @@
     "latestTested": "2026-08-08"
   },
   {
+    "key": "PPSA21159",
+    "title": "SILENT HILL f",
+    "titleId": "PPSA21159",
+    "overall": "logo",
+    "os": {
+      "linux": "logo"
+    },
+    "reportCounts": {
+      "linux": 1
+    },
+    "latestTested": "2026-09-28"
+  },
+  {
     "key": "PPSA04877",
     "title": "SILENT HILL: The Short Message",
     "titleId": "PPSA04877",
@@ -2657,6 +2883,19 @@
       "windows": 1
     },
     "latestTested": "2026-08-19"
+  },
+  {
+    "key": "PPSA29642",
+    "title": "South of Midnight",
+    "titleId": "PPSA29642",
+    "overall": "main-menu",
+    "os": {
+      "windows": "main-menu"
+    },
+    "reportCounts": {
+      "windows": 1
+    },
+    "latestTested": "2026-10-01"
   },
   {
     "key": "PPSA17337",
@@ -2831,6 +3070,7 @@
     "key": "PPSA18571",
     "title": "Teenage Mutant Ninja Turtles Arcade: Wrath of the Mutants",
     "titleId": "PPSA18571",
+    "cover": "https://image.api.playstation.com/vulcan/ap/rnd/202402/2812/dd215322e3a0aebd453d302a717fb83a47b6e1387a9860ba.png",
     "overall": "in-game",
     "os": {
       "windows": "in-game"
@@ -2880,6 +3120,20 @@
       "windows": 1
     },
     "latestTested": "2026-07-20"
+  },
+  {
+    "key": "PPSA10595",
+    "title": "TEKKEN 8",
+    "titleId": "PPSA10595",
+    "cover": "https://image.api.playstation.com/vulcan/ap/rnd/202308/0312/1a7c7392295e02a8fa688fdadde8e75799526881f990ad2a.jpg",
+    "overall": "logo",
+    "os": {
+      "windows": "logo"
+    },
+    "reportCounts": {
+      "windows": 1
+    },
+    "latestTested": "2026-09-28"
   },
   {
     "key": "PPSA25872",
@@ -3242,18 +3496,32 @@
     "latestTested": "2026-07-25"
   },
   {
-    "key": "PPSA03540",
-    "title": "UFC® 5",
-    "titleId": "PPSA03540",
-    "cover": "https://image.api.playstation.com/vulcan/ap/rnd/202309/0421/8e258029459b8e7bb2e2f18cff54e8fcebdcc5a84833a767.png",
-    "overall": "doesnt-boot",
+    "key": "PPSA03645",
+    "title": "Two Point Campus",
+    "titleId": "PPSA03645",
+    "cover": "https://image.api.playstation.com/vulcan/ap/rnd/202203/3011/3E5WfUjWlynhASE8O0ilPigG.jpg",
+    "overall": "in-game",
     "os": {
-      "windows": "doesnt-boot"
+      "windows": "in-game"
     },
     "reportCounts": {
       "windows": 1
     },
-    "latestTested": "2026-07-27"
+    "latestTested": "2026-09-27"
+  },
+  {
+    "key": "PPSA03540",
+    "title": "UFC® 5",
+    "titleId": "PPSA03540",
+    "cover": "https://image.api.playstation.com/vulcan/ap/rnd/202309/0421/8e258029459b8e7bb2e2f18cff54e8fcebdcc5a84833a767.png",
+    "overall": "main-menu",
+    "os": {
+      "windows": "main-menu"
+    },
+    "reportCounts": {
+      "windows": 1
+    },
+    "latestTested": "2026-09-29"
   },
   {
     "key": "PPSA20798",
