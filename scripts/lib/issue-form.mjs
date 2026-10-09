@@ -65,7 +65,7 @@ export function cleanField(sections, label) {
 /** The new template's OS field is free text — fold it into windows/linux/macos. */
 export const OS_ALIASES = [
   [/win(?:dows)?(?: ?10| ?11| server)?|microsoft|^ms/i, "windows"],
-  [/mac|os ?x|osx|darwin|apple/i, "macos"],
+  [/\b(?:mac(?:os|book)?|os\s*x|osx|darwin|apple)\b/i, "macos"],
   [/linux|ubuntu|debian|arch|fedora|linux mint|mint|pop.?os|manjaro|opensuse|steamos|steam ?deck|cachy(?:os)?|bazzite|nobara|gentoo|void|nixos|endeavour(?:os)?/i, "linux"],
 ];
 

@@ -4,7 +4,7 @@ titleId: "PPSA26344"
 status: "doesnt-boot"
 testedVersion: "KytyPS5-2026-10-05-cdb64bf"
 testedDate: "2026-10-06"
-os: "macos"
+os: "linux"
 hardware: "AMD Ryzen 7 5800H / NVIDIA GeForce RTX 2070 / 32 GB DDR4 RAM"
 ---
 

@@ -673,6 +673,8 @@ describe("OS and Status normalization expansions", () => {
     expect(normalizeOs("NixOS")).toBe("linux");
     expect(normalizeOs("EndeavourOS")).toBe("linux");
     expect(normalizeOs("Void Linux")).toBe("linux");
+    expect(normalizeOs("Linux 7.2.8-2-cachyos x86_64")).toBe("linux");
+    expect(normalizeOs("MacBook Pro")).toBe("macos");
   });
 
   it("maps intro to logo", () => {
