@@ -1,35 +1,24 @@
 ---
 title: "Zombie Cure Lab"
 titleId: "PPSA22623"
-status: "doesnt-boot"
-testedVersion: "KytyPS5-2026-09-12-d3d7bd3"
-testedDate: "2026-09-13"
+status: "in-game"
+testedVersion: "0.0.3 (5a88080)"
+testedDate: "2026-10-08"
 os: "windows"
-hardware: "AMD Ryzen 7 7700X 8-Core Processor / NVIDIA GeForce RTX 5070 Ti, driver 616.92 / 64 GB DDR5 RAM / 16 GB VRAM"
-screenshots: ["https://github.com/user-attachments/assets/1435c822-f494-40cc-acab-88d17052aae4"]
+hardware: "AMD Ryzen 5 8600G / AMD Radeon 780m, driver 26.7.1 / 16GB DDR5 RAM / Shared VRAM"
+screenshots: ["https://github.com/user-attachments/assets/2166cdc5-89c8-4238-badb-fd46c2f19c21","https://github.com/user-attachments/assets/f99e4a73-d784-430c-b187-d3e3e82f5a7a"]
 ---
 
-Initialized: Config
-Initialized: Log
-Initialized: Timer
-Initialized: Pthread
-Initialized: Profiler
-Initialized: Network
---- Build ---
-Source build 1d28d3a
---- Error ---
-could not reserve 13824 MB for guest direct memory. Windows commits
-this up front, so the paging file is usually what needs to be larger.
-KytyPS5\KytyPS5\src\kernel\memoryAddressSpace.inc:666
+works fine
 
 ## Steps to reproduce
 
-1. Open KytyPS5.
-2. Boot the game.
-3. If open normally then close it and try to re launch the game.
+1. Open kyty
+2. Boot the game
+3. Play the game
 
 ## Expected behavior
 
-When you launch the game, then the intro cinematic begins. and show main menu.
+No known issue
 
-> Source: [KytyPS5 issue #604](https://github.com/KytyPS5/KytyPS5/issues/604)
+> Source: [KytyPS5 issue #1193](https://github.com/KytyPS5/KytyPS5/issues/1193)
