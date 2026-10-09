@@ -1,20 +1,32 @@
 ---
 title: "Silent Hill 2"
-titleId: "PPSA08710"
+titleId: "PPSA08709"
 status: "logo"
-testedVersion: "7ff9e49"
-testedDate: "2026-08-08"
+testedVersion: "KytyPS5-2026-10-08-58978d1"
+testedDate: "2026-10-08"
 os: "windows"
-hardware: "AMD Ryzen 7 7700X / AMD Radeon 7900XTX"
+hardware: "AMD RYZEN7 3700X / RTX2080 TI / 32GB / DDR4"
 ---
 
-Attempt to boot game, then emulator crashes.
+--- Build ---
+Official build KytyPS5-2026-10-08-58978d1
+--- Fatal Error ---
+Not implemented (result != vk::Result::eSuccess) in D:\a\KytyPS5\KytyPS5\src\graphics\host_gpu\renderer\masterSemaphore.cpp:53
 
-**Steps to reproduce:** Open emulator Boot game.
+C:\Users\K\Downloads\KytyPS5-2026-10-08-58978d1-Windows-x64>
 
-**Extra notes:** Default settings
+## Steps to reproduce
 
-**Retest (build 7ff9e49):** Now boots to splash screens before crashing.
+--- Build ---
+Official build KytyPS5-2026-10-08-58978d1
+--- Fatal Error ---
+Not implemented (result != vk::Result::eSuccess) in D:\a\KytyPS5\KytyPS5\src\graphics\host_gpu\renderer\masterSemaphore.cpp:53
 
-> Source: [KytyPS5 issue #77](https://github.com/KytyPS5/KytyPS5/issues/77)
+## Expected behavior
 
+--- Build ---
+Official build KytyPS5-2026-10-08-58978d1
+--- Fatal Error ---
+Not implemented (result != vk::Result::eSuccess) in D:\a\KytyPS5\KytyPS5\src\graphics\host_gpu\renderer\masterSemaphore.cpp:53
+
+> Source: [KytyPS5 issue #1215](https://github.com/KytyPS5/KytyPS5/issues/1215)
