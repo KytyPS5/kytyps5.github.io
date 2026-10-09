@@ -1,23 +1,23 @@
 ---
 title: "The Last of Us Part I"
-titleId: "PPSA-07642"
+titleId: "PPSA03396"
 status: "doesnt-boot"
-testedVersion: "KytyPS5-2026-08-16-bc2f077"
-testedDate: "2026-08-17"
+testedVersion: "KytyPS5-2026-10-05-cdb64bf"
+testedDate: "2026-10-06"
 os: "windows"
-hardware: "Intel Core i5-12400F / NVIDIA GeForce RTX 4070 ,drivers 610.88 WHQL / 32 GB DDR4 RAM,12 GB VRAM"
-screenshots: ["https://github.com/user-attachments/assets/43a93d56-1a25-46d1-a70d-9fc283e0065d"]
+hardware: "Intel(R) Core(TM) i5-14600KF / NVIDIA GeForce RTX 5070 / 32 GB DDR5 RAM"
+screenshots: ["https://github.com/user-attachments/assets/9e253a9b-cbc6-4519-a1af-34b1d77de946"]
 ---
 
-The game crashes immediately upon launching.
+The game was detected by KytyPS5 but crashed when launched
 
 ## Steps to reproduce
 
-1. Launch the emulator.
-2. Open the game.
+Open KytyPS5
+Boot the game
 
 ## Expected behavior
 
-After launch, the PlayStation Studios intro screen appears, followed by prompts to adjust brightness, sound, language, and accessibility settings. Finally, the main menu opens, showing an abandoned country house at sunset.
+Launch the game
 
-> Source: [KytyPS5 issue #273](https://github.com/KytyPS5/KytyPS5/issues/273)
+> Source: [KytyPS5 issue #1091](https://github.com/KytyPS5/KytyPS5/issues/1091)
