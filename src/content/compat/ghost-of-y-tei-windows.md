@@ -2,15 +2,23 @@
 title: "Ghost of Yōtei"
 titleId: "PPSA26344"
 status: "doesnt-boot"
-testedVersion: "v0.2.2"
-testedDate: "2026-07-25"
+testedVersion: "5a88080"
+testedDate: "2026-10-08"
 os: "windows"
-hardware: "AMD Ryzen 7 7800 X3D / RTX 5070 Ti"
+hardware: "Intel i7-14700k / RTX 4070ti Super OC / 32GB DDR5"
+screenshots: ["https://github.com/user-attachments/assets/924e17a3-1727-44a8-a41d-5da577a3f721"]
 ---
 
-Console just stops and nothing happens
+<img width="2083" height="514" alt="Image" src="https://github.com/user-attachments/assets/924e17a3-1727-44a8-a41d-5da577a3f721" />
 
-**Steps to reproduce:** 1. Open KytyPS5 2. Boot the game
+## Steps to reproduce
 
-> Source: [KytyPS5 issue #108](https://github.com/KytyPS5/KytyPS5/issues/108)
+Open KYTY
+Boot Game
+Game Crashes.
 
+## Expected behavior
+
+It should run.
+
+> Source: [KytyPS5 issue #1191](https://github.com/KytyPS5/KytyPS5/issues/1191)
