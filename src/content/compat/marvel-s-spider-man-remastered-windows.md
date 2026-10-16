@@ -1,48 +1,37 @@
 ---
 title: "Marvel's Spider-Man Remastered"
 titleId: "PPSA01467"
-status: "doesnt-boot"
-testedVersion: "KytyPS5-2026-09-18-5b7d334-Windows-x64"
-testedDate: "2026-09-18"
+status: "logo"
+testedVersion: "Build df5b9b9 Windows x64"
+testedDate: "2026-10-14"
 os: "windows"
-hardware: "AMD Ryzen 5 3600 / NVIDIA GTX 1660 Super 6GO / 619.92 / 24Go ddr4 / 6Go"
+hardware: "Intel(R) Core(TM) Ultra 7 265K / NVIDIA GeForce RTX 5050 (8 Go) / 32 GB DDR5 RAM / 8 GB VRAM"
 ---
 
-Initialized: Config
-Initialized: Log
-Initialized: Timer
-Initialized: Pthread
-Initialized: Profiler
-Initialized: Network
-Initialized: Memory
-Initialized: FileSystem
-Initialized: Controller
-Initialized: Audio
-Vulkan pipeline cache: initializing _PipelineCache\PPSA01467.bin
-Vulkan pipeline cache: initialized empty
-Initialized: Graphics
-Title ID: PPSA01467
-Unresolved import stub called: juWbTNM+8hw[Posix_v1][libkernel_v1.1][Func]
-Unresolved import stub called: juWbTNM+8hw[Posix_v1][libkernel_v1.1][Func]
-version = 7
-Unresolved import stub called: kP2L8t3j-aM[VideoOutVrrStatus_v1][VideoOut_v1.1][Func]
-Unresolved import stub called: juWbTNM+8hw[Posix_v1][libkernel_v1.1][Func]
-Unresolved import stub called: juWbTNM+8hw[Posix_v1][libkernel_v1.1][Func]
-Shaders: VS 0 | PS 0 | CS 1 | GS 0 | LS 0 | HS 0 | TES 0
-AJM codec=1, name=ATRAC9 decoder
---- Build ---
-Official build KytyPS5-2026-09-18-5b7d334
---- Error ---
-unknown event type
- in D:\a\KytyPS5\KytyPS5\src\graphics\guest_gpu\graphicsRun.cpp:1397
+Crashes after Sony's boot cinematic.
 
 ## Steps to reproduce
 
 1. Open KytyPS5
-2. Boot the Game
+2. Boot the game
 
 ## Expected behavior
 
-No known issue
+The game should boot up to Menu
 
-> Source: [KytyPS5 issue #701](https://github.com/KytyPS5/KytyPS5/issues/701)
+## Extra notes
+
+Some Errors : 
+
+AMD CPU compatibility: libc.prx no matching instructions (VRSQRTPS: native=0, trapped=0, skipped=0; EXTRQ: native=0, trapped=0, skipped=0; INSERTQ: native=0, trapped=0, skipped=0; RDPID: native=0, trapped=0, skipped=0; CLWB: native=0, trapped=0, skipped=0)
+
+Unresolved import stub called: juWbTNM+8hw[Posix_v1][libkernel_v1.1][Func]
+
+Warning: HDR output is unavailable; HDR-to-SDR conversion is not implemented, displaying PQ video-out pixels unchanged.
+
+--- Build ---
+Official build KytyPS5-2026-10-12-df5b9b9
+--- Fatal Error ---
+Not implemented (source.call.has_value() || options.stage != ShaderType::Compute) in D:\a\KytyPS5\KytyPS5\src\graphics\shader\recompiler\ShaderRecompiler.cpp:488
+
+> Source: [KytyPS5 issue #1509](https://github.com/KytyPS5/KytyPS5/issues/1509)
