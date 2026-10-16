@@ -1,24 +1,24 @@
 ---
 title: "Ghost of Yōtei"
 titleId: "PPSA26344"
-status: "doesnt-boot"
-testedVersion: "5a88080"
-testedDate: "2026-10-08"
+status: "logo"
+testedVersion: "0.3.0"
+testedDate: "2026-10-13"
 os: "windows"
-hardware: "Intel i7-14700k / RTX 4070ti Super OC / 32GB DDR5"
-screenshots: ["https://github.com/user-attachments/assets/924e17a3-1727-44a8-a41d-5da577a3f721"]
+hardware: "AMD Ryzen 9700X / NVIDA Geforce 2070 Super / 32gb of ram, 8gb of vram"
 ---
 
-<img width="2083" height="514" alt="Image" src="https://github.com/user-attachments/assets/924e17a3-1727-44a8-a41d-5da577a3f721" />
+Shows a launch screen and the logo flashes before it crashes
 
 ## Steps to reproduce
 
-Open KYTY
-Boot Game
-Game Crashes.
+1. Open KytyPS5
+2. Boot game
+3. Reach logo screen
+4. crash
 
 ## Expected behavior
 
-It should run.
+The Game should've launched to a title screen
 
-> Source: [KytyPS5 issue #1191](https://github.com/KytyPS5/KytyPS5/issues/1191)
+> Source: [KytyPS5 issue #1489](https://github.com/KytyPS5/KytyPS5/issues/1489)
