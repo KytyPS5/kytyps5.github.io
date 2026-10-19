@@ -1,5 +1,18 @@
 [
   {
+    "key": "PPSA24249",
+    "title": "1348 Ex Voto",
+    "titleId": "PPSA24249",
+    "overall": "main-menu",
+    "os": {
+      "windows": "main-menu"
+    },
+    "reportCounts": {
+      "windows": 1
+    },
+    "latestTested": "2026-10-18"
+  },
+  {
     "key": "PPSA02800",
     "title": "3D Billiards - Pool & Snooker",
     "titleId": "PPSA02800",
@@ -42,6 +55,20 @@
       "windows": 1
     },
     "latestTested": "2026-08-31"
+  },
+  {
+    "key": "PPSA05265",
+    "title": "A Memoir Blue",
+    "titleId": "PPSA05265",
+    "cover": "https://image.api.playstation.com/vulcan/ap/rnd/202112/1521/SCxV4ysE2V2wLATPmDJxDsqg.png",
+    "overall": "in-game",
+    "os": {
+      "windows": "in-game"
+    },
+    "reportCounts": {
+      "windows": 1
+    },
+    "latestTested": "2026-10-17"
   },
   {
     "key": "PPSA02388",
@@ -297,6 +324,7 @@
     "key": "PPSA21405",
     "title": "ArcRunner",
     "titleId": "PPSA21405",
+    "cover": "https://image.api.playstation.com/vulcan/ap/rnd/202211/0810/iUWtKrNT8Oaw20jOOeZ1NtvY.jpg",
     "overall": "main-menu",
     "os": {
       "windows": "main-menu"
@@ -427,6 +455,19 @@
     "latestTested": "2026-08-04"
   },
   {
+    "key": "PPSA25468",
+    "title": "Atelier Yumia: The Alchemist of Memories & the Envisioned Land",
+    "titleId": "PPSA25468",
+    "overall": "doesnt-boot",
+    "os": {
+      "windows": "doesnt-boot"
+    },
+    "reportCounts": {
+      "windows": 1
+    },
+    "latestTested": "2026-10-17"
+  },
+  {
     "key": "PPSA15493",
     "title": "Atomfall",
     "titleId": "PPSA15493",
@@ -472,6 +513,7 @@
     "key": "PPSA21401",
     "title": "Balatro",
     "titleId": "PPSA21401",
+    "cover": "https://image.api.playstation.com/vulcan/ap/rnd/202402/1416/081d7231762c748a7c25becc18d90ec8fa18360311e1f453.png",
     "overall": "in-game",
     "os": {
       "linux": "in-game"
@@ -661,6 +703,20 @@
     "latestTested": "2026-07-24"
   },
   {
+    "key": "PPSA15930",
+    "title": "Bud Spencer & Terence Hill - Slaps And Beans 2",
+    "titleId": "PPSA15930",
+    "cover": "https://image.api.playstation.com/vulcan/ap/rnd/202308/1810/53a47e5f319afb45aa8e4b830b00f8681eccc34e7467fce9.jpg",
+    "overall": "in-game",
+    "os": {
+      "windows": "in-game"
+    },
+    "reportCounts": {
+      "windows": 1
+    },
+    "latestTested": "2026-10-17"
+  },
+  {
     "key": "PPSA01502",
     "title": "Bugsnax",
     "titleId": "PPSA01502",
@@ -704,6 +760,19 @@
     "latestTested": "2026-08-01"
   },
   {
+    "key": "PPSA23012",
+    "title": "Call of Duty® Modern Warfare 2",
+    "titleId": "PPSA23012",
+    "overall": "main-menu",
+    "os": {
+      "windows": "main-menu"
+    },
+    "reportCounts": {
+      "windows": 1
+    },
+    "latestTested": "2026-10-15"
+  },
+  {
     "key": "PPSA34501",
     "title": "Call of Duty®: Black Ops",
     "titleId": "PPSA34501",
@@ -720,14 +789,14 @@
     "key": "PPSA34502",
     "title": "Call of Duty®: Black Ops II",
     "titleId": "PPSA34502",
-    "overall": "logo",
+    "overall": "in-game",
     "os": {
-      "windows": "logo"
+      "windows": "in-game"
     },
     "reportCounts": {
       "windows": 1
     },
-    "latestTested": "2026-10-09"
+    "latestTested": "2026-10-13"
   },
   {
     "key": "PPSA01545",
@@ -786,6 +855,20 @@
     "latestTested": "2026-09-30"
   },
   {
+    "key": "PPSA17599",
+    "title": "Clair Obscur: Expedition 33",
+    "titleId": "PPSA17599",
+    "cover": "https://image.api.playstation.com/vulcan/ap/rnd/202406/0917/96d5b955f3833beb4e0be99c8699fa0abe83b81e2eb2a59e.jpg",
+    "overall": "main-menu",
+    "os": {
+      "windows": "main-menu"
+    },
+    "reportCounts": {
+      "windows": 1
+    },
+    "latestTested": "2026-10-14"
+  },
+  {
     "key": "PPSA26528",
     "title": "Code Violet",
     "titleId": "PPSA26528",
@@ -824,7 +907,7 @@
     "reportCounts": {
       "windows": 1
     },
-    "latestTested": "2026-09-28"
+    "latestTested": "2026-10-10"
   },
   {
     "key": "PPSA01949",
@@ -922,7 +1005,7 @@
     "reportCounts": {
       "windows": 1
     },
-    "latestTested": "2026-08-11"
+    "latestTested": "2026-10-13"
   },
   {
     "key": "PPSA03845",
@@ -937,6 +1020,20 @@
       "windows": 1
     },
     "latestTested": "2026-08-07"
+  },
+  {
+    "key": "PPSA02015",
+    "title": "DEATH STRANDING 2: ON THE BEACH",
+    "titleId": "PPSA02015",
+    "cover": "https://image.api.playstation.com/vulcan/ap/rnd/202511/2115/de9f11555daa455139d109c07b854880740167e531c376ab.png",
+    "overall": "doesnt-boot",
+    "os": {
+      "windows": "doesnt-boot"
+    },
+    "reportCounts": {
+      "windows": 1
+    },
+    "latestTested": "2026-10-11"
   },
   {
     "key": "PPSA01969",
@@ -986,14 +1083,14 @@
     "cover": "https://image.api.playstation.com/vulcan/img/rnd/202011/1717/brIXKBE5BqYgBSrsDn6Wo18O.png",
     "overall": "in-game",
     "os": {
-      "windows": "doesnt-boot",
+      "windows": "main-menu",
       "linux": "in-game"
     },
     "reportCounts": {
       "windows": 1,
       "linux": 1
     },
-    "latestTested": "2026-10-05"
+    "latestTested": "2026-10-14"
   },
   {
     "key": "PPSA01918",
@@ -1083,6 +1180,7 @@
     "key": "PPSA21444",
     "title": "DOOM + DOOM II",
     "titleId": "PPSA21444",
+    "cover": "https://image.api.playstation.com/vulcan/ap/rnd/202407/2516/32c76a9f4b4212c695f45364a485529192a92c893147b610.jpg",
     "overall": "in-game",
     "os": {
       "windows": "in-game"
@@ -1105,6 +1203,20 @@
       "windows": 1
     },
     "latestTested": "2026-08-20"
+  },
+  {
+    "key": "PPSA06764",
+    "title": "DORAEMON STORY OF SEASONS: Friends of the Great Kingdom",
+    "titleId": "PPSA06764",
+    "cover": "https://image.api.playstation.com/vulcan/ap/rnd/202210/0712/TMNxtZuZU5QBKiQ4Kyak1RGj.jpg",
+    "overall": "in-game",
+    "os": {
+      "windows": "in-game"
+    },
+    "reportCounts": {
+      "windows": 1
+    },
+    "latestTested": "2026-10-16"
   },
   {
     "key": "PPSA08084",
@@ -1187,7 +1299,7 @@
     "reportCounts": {
       "windows": 1
     },
-    "latestTested": "2026-07-19"
+    "latestTested": "2026-10-17"
   },
   {
     "key": "PPSA02261",
@@ -1244,18 +1356,45 @@
     "latestTested": "2026-10-04"
   },
   {
-    "key": "PPSA25380",
-    "title": "ELDEN RING NIGHTREIGN",
-    "titleId": "PPSA25380",
-    "cover": "https://image.api.playstation.com/vulcan/ap/rnd/202412/1301/9d6830c7fe7d599c0e9e610ee83f3fd442b00657e6d8d1fe.jpg",
-    "overall": "doesnt-boot",
+    "key": "PPSA06093",
+    "title": "EA SPORTS™ WRC",
+    "titleId": "PPSA06093",
+    "cover": "https://image.api.playstation.com/vulcan/ap/rnd/202404/0511/742f7ebc9840036c7e4b3230d84563f97eabbf488c7f22b5.png",
+    "overall": "in-game",
     "os": {
-      "windows": "doesnt-boot"
+      "windows": "in-game"
     },
     "reportCounts": {
       "windows": 1
     },
-    "latestTested": "2026-08-01"
+    "latestTested": "2026-10-13"
+  },
+  {
+    "key": "PPSA22969",
+    "title": "Echoes of Aincrad",
+    "titleId": "PPSA22969",
+    "overall": "main-menu",
+    "os": {
+      "windows": "main-menu"
+    },
+    "reportCounts": {
+      "windows": 1
+    },
+    "latestTested": "2026-10-17"
+  },
+  {
+    "key": "PPSA25380",
+    "title": "ELDEN RING NIGHTREIGN",
+    "titleId": "PPSA25380",
+    "cover": "https://image.api.playstation.com/vulcan/ap/rnd/202412/1301/9d6830c7fe7d599c0e9e610ee83f3fd442b00657e6d8d1fe.jpg",
+    "overall": "in-game",
+    "os": {
+      "windows": "in-game"
+    },
+    "reportCounts": {
+      "windows": 1
+    },
+    "latestTested": "2026-10-19"
   },
   {
     "key": "PPSA02507",
@@ -1330,6 +1469,7 @@
     "key": "PPSA21783",
     "title": "FINAL FANTASY TACTICS - The Ivalice Chronicles",
     "titleId": "PPSA21783",
+    "cover": "https://image.api.playstation.com/vulcan/ap/rnd/202505/0808/eded07ee4188e86b221e3367f245f18d522ef7094a36d4c3.jpg",
     "overall": "in-game",
     "os": {
       "windows": "in-game"
@@ -1455,16 +1595,16 @@
     "title": "Ghost of Yōtei",
     "titleId": "PPSA26344",
     "cover": "https://image.api.playstation.com/vulcan/ap/rnd/202410/2119/b24e2f43d30ad645c9ac50e749bdb839b1942c9a76e68de6.png",
-    "overall": "doesnt-boot",
+    "overall": "logo",
     "os": {
-      "windows": "doesnt-boot",
+      "windows": "logo",
       "linux": "doesnt-boot"
     },
     "reportCounts": {
       "windows": 1,
       "linux": 1
     },
-    "latestTested": "2026-10-08"
+    "latestTested": "2026-10-13"
   },
   {
     "key": "PPSA09233",
@@ -1586,14 +1726,14 @@
     "title": "Grand Theft Auto III – The Definitive Edition",
     "titleId": "PPSA03527",
     "cover": "https://image.api.playstation.com/vulcan/ap/rnd/202110/2914/LRd5LiIFOgY8oi9GdaGC8dmC.jpg",
-    "overall": "main-menu",
+    "overall": "in-game",
     "os": {
-      "windows": "main-menu"
+      "windows": "in-game"
     },
     "reportCounts": {
       "windows": 1
     },
-    "latestTested": "2026-10-06"
+    "latestTested": "2026-10-15"
   },
   {
     "key": "PPSA03420",
@@ -1634,14 +1774,16 @@
     "title": "Grand Theft Auto: Vice City – The Definitive Edition",
     "titleId": "PPSA03530",
     "cover": "https://image.api.playstation.com/vulcan/ap/rnd/202110/2914/pxlcIuxDXdH9EsNMP8taG3Zc.jpg",
-    "overall": "main-menu",
+    "overall": "in-game",
     "os": {
-      "windows": "main-menu"
+      "windows": "main-menu",
+      "linux": "in-game"
     },
     "reportCounts": {
-      "windows": 1
+      "windows": 1,
+      "linux": 1
     },
-    "latestTested": "2026-09-06"
+    "latestTested": "2026-10-16"
   },
   {
     "key": "PPSA09613",
@@ -1730,6 +1872,19 @@
     "latestTested": "2026-08-19"
   },
   {
+    "key": "PPSA30094",
+    "title": "High On Life 2",
+    "titleId": "PPSA30094",
+    "overall": "main-menu",
+    "os": {
+      "windows": "main-menu"
+    },
+    "reportCounts": {
+      "windows": 1
+    },
+    "latestTested": "2026-10-14"
+  },
+  {
     "key": "PPSA04181",
     "title": "Hoa",
     "titleId": "PPSA04181",
@@ -1772,6 +1927,21 @@
     "latestTested": "2026-09-30"
   },
   {
+    "key": "PPSA34970",
+    "title": "Hollow Knight: Voidheart Edition",
+    "titleId": "PPSA34970",
+    "overall": "in-game",
+    "os": {
+      "windows": "in-game",
+      "linux": "in-game"
+    },
+    "reportCounts": {
+      "windows": 1,
+      "linux": 1
+    },
+    "latestTested": "2026-10-17"
+  },
+  {
     "key": "PPSA04072",
     "title": "Horizon Forbidden West",
     "titleId": "PPSA04072",
@@ -1786,6 +1956,20 @@
       "linux": 1
     },
     "latestTested": "2026-09-26"
+  },
+  {
+    "key": "PPSA22207",
+    "title": "INAZUMA ELEVEN: Victory Road",
+    "titleId": "PPSA22207",
+    "cover": "https://image.api.playstation.com/vulcan/ap/rnd/202511/0110/6b22a72a882886401a80c69e300de8ea1d8e3e621734cfbf.png",
+    "overall": "in-game",
+    "os": {
+      "windows": "in-game"
+    },
+    "reportCounts": {
+      "windows": 1
+    },
+    "latestTested": "2026-10-12"
   },
   {
     "key": "PPSA02688",
@@ -1830,6 +2014,19 @@
     "latestTested": "2026-08-18"
   },
   {
+    "key": "PPSA34438",
+    "title": "Jay and Silent Bob: Chronic Blunt Punch",
+    "titleId": "PPSA34438",
+    "overall": "in-game",
+    "os": {
+      "linux": "in-game"
+    },
+    "reportCounts": {
+      "linux": 1
+    },
+    "latestTested": "2026-10-12"
+  },
+  {
     "key": "PPSA04220",
     "title": "JoJo's Bizarre Adventure: All-Star Battle R",
     "titleId": "PPSA04220",
@@ -1872,6 +2069,20 @@
       "windows": 1
     },
     "latestTested": "2026-07-19"
+  },
+  {
+    "key": "PPSA10263",
+    "title": "Jusant",
+    "titleId": "PPSA10263",
+    "cover": "https://image.api.playstation.com/vulcan/ap/rnd/202306/0107/078d5d219cca56c4edf9497e5fb8d0793373f8237b6df755.jpg",
+    "overall": "in-game",
+    "os": {
+      "windows": "in-game"
+    },
+    "reportCounts": {
+      "windows": 1
+    },
+    "latestTested": "2026-10-16"
   },
   {
     "key": "PPSA01746",
@@ -1920,14 +2131,14 @@
     "title": "LEGO® 2K Drive",
     "titleId": "PPSA04048",
     "cover": "https://image.api.playstation.com/vulcan/ap/rnd/202303/0918/993bf17561f1efee17dbad02781742c16d00546b46cc6f78.jpg",
-    "overall": "logo",
+    "overall": "in-game",
     "os": {
-      "windows": "logo"
+      "windows": "in-game"
     },
     "reportCounts": {
       "windows": 1
     },
-    "latestTested": "2026-08-28"
+    "latestTested": "2026-10-12"
   },
   {
     "key": "PPSA16833",
@@ -1956,6 +2167,20 @@
       "windows": 1
     },
     "latestTested": "2026-10-04"
+  },
+  {
+    "key": "PPSA07431",
+    "title": "LEGO® Bricktales",
+    "titleId": "PPSA07431",
+    "cover": "https://image.api.playstation.com/vulcan/ap/rnd/202209/1314/hhsQN8Wy0E8WaglFqZ1HuXOA.jpg",
+    "overall": "in-game",
+    "os": {
+      "windows": "in-game"
+    },
+    "reportCounts": {
+      "windows": 1
+    },
+    "latestTested": "2026-10-10"
   },
   {
     "key": "PPSA14632",
@@ -2058,6 +2283,7 @@
     "key": "PPSA21837",
     "title": "LOLLIPOP CHAINSAW RePOP",
     "titleId": "PPSA21837",
+    "cover": "https://image.api.playstation.com/vulcan/ap/rnd/202407/0911/2dfe535acdccdc993ac33e309ebb0fdf5778c214e5cb87ad.jpg",
     "overall": "main-menu",
     "os": {
       "windows": "main-menu"
@@ -2123,6 +2349,33 @@
     "latestTested": "2026-10-10"
   },
   {
+    "key": "PPSA34356",
+    "title": "Marsupilami 2 - Salsa Palombia",
+    "titleId": "PPSA34356",
+    "overall": "in-game",
+    "os": {
+      "windows": "in-game"
+    },
+    "reportCounts": {
+      "windows": 1
+    },
+    "latestTested": "2026-10-12"
+  },
+  {
+    "key": "PPSA08243",
+    "title": "Marsupilami: Hoobadventure",
+    "titleId": "PPSA08243",
+    "cover": "https://image.api.playstation.com/vulcan/ap/rnd/202211/0414/dtOst53D2Gs6iL6lxJ1tLUt0.png",
+    "overall": "in-game",
+    "os": {
+      "windows": "in-game"
+    },
+    "reportCounts": {
+      "windows": 1
+    },
+    "latestTested": "2026-10-12"
+  },
+  {
     "key": "PPSA29629",
     "title": "MARVEL Cosmic Invasion",
     "titleId": "PPSA29629",
@@ -2154,14 +2407,14 @@
     "title": "Marvel's Spider-Man",
     "titleId": "PPSA01467",
     "cover": "https://image.api.playstation.com/vulcan/img/rnd/202010/2122/19xis9VT5XfnXsLSMkxUjvVd.png",
-    "overall": "doesnt-boot",
+    "overall": "logo",
     "os": {
-      "windows": "doesnt-boot"
+      "windows": "logo"
     },
     "reportCounts": {
       "windows": 1
     },
-    "latestTested": "2026-09-18"
+    "latestTested": "2026-10-14"
   },
   {
     "key": "PPSA03016",
@@ -2196,14 +2449,14 @@
     "title": "Marvel’s Wolverine",
     "titleId": "PPSA03671",
     "cover": "https://image.api.playstation.com/vulcan/ap/rnd/202510/0721/0f8097282863ccd07abf4485a2bc733111127e628552207e.jpg",
-    "overall": "doesnt-boot",
+    "overall": "logo",
     "os": {
-      "windows": "doesnt-boot"
+      "windows": "logo"
     },
     "reportCounts": {
       "windows": 1
     },
-    "latestTested": "2026-10-05"
+    "latestTested": "2026-10-12"
   },
   {
     "key": "PPSA03858",
@@ -2248,6 +2501,20 @@
     "latestTested": "2026-10-09"
   },
   {
+    "key": "PPSA20642",
+    "title": "Metal Slug Tactics",
+    "titleId": "PPSA20642",
+    "cover": "https://image.api.playstation.com/vulcan/ap/rnd/202407/1516/690419bda3f070aaf147092399e7f209b280dba3fd2ed9a9.png",
+    "overall": "in-game",
+    "os": {
+      "windows": "in-game"
+    },
+    "reportCounts": {
+      "windows": 1
+    },
+    "latestTested": "2026-10-16"
+  },
+  {
     "key": "PPSA17221",
     "title": "Minecraft",
     "titleId": "PPSA17221",
@@ -2262,6 +2529,20 @@
       "linux": 1
     },
     "latestTested": "2026-09-18"
+  },
+  {
+    "key": "PPSA16064",
+    "title": "Minecraft Dungeons II",
+    "titleId": "PPSA16064",
+    "cover": "https://image.api.playstation.com/vulcan/ap/rnd/202606/0718/e32e82761a5b9ac214518f2b73f9c341b1835806d037a724.png",
+    "overall": "main-menu",
+    "os": {
+      "windows": "main-menu"
+    },
+    "reportCounts": {
+      "windows": 1
+    },
+    "latestTested": "2026-10-18"
   },
   {
     "key": "PPSA05509",
@@ -2347,6 +2628,19 @@
     "latestTested": "2026-07-19"
   },
   {
+    "key": "PPSA30839",
+    "title": "MXGP 26: The Official Game",
+    "titleId": "PPSA30839",
+    "overall": "logo",
+    "os": {
+      "windows": "logo"
+    },
+    "reportCounts": {
+      "windows": 1
+    },
+    "latestTested": "2026-10-11"
+  },
+  {
     "key": "PPSA24156",
     "title": "My First Gran Turismo®",
     "titleId": "PPSA24156",
@@ -2430,6 +2724,33 @@
     "latestTested": "2026-09-04"
   },
   {
+    "key": "PPSA26785",
+    "title": "NHL 26",
+    "titleId": "PPSA26785",
+    "overall": "logo",
+    "os": {
+      "windows": "logo"
+    },
+    "reportCounts": {
+      "windows": 1
+    },
+    "latestTested": "2026-10-11"
+  },
+  {
+    "key": "PPSA05659",
+    "title": "NHL® 23 PS5™",
+    "titleId": "PPSA05659",
+    "cover": "https://image.api.playstation.com/vulcan/ap/rnd/202208/1119/EIcWqXFxuu2uZH4VqSC3wssL.png",
+    "overall": "main-menu",
+    "os": {
+      "windows": "main-menu"
+    },
+    "reportCounts": {
+      "windows": 1
+    },
+    "latestTested": "2026-10-16"
+  },
+  {
     "key": "PPSA34063",
     "title": "NHL® 27",
     "titleId": "PPSA34063",
@@ -2467,7 +2788,7 @@
     "reportCounts": {
       "windows": 1
     },
-    "latestTested": "2026-08-26"
+    "latestTested": "2026-10-17"
   },
   {
     "key": "PPSA01590",
@@ -2487,6 +2808,7 @@
     "key": "PPSA21906",
     "title": "Once Upon A KATAMARI",
     "titleId": "PPSA21906",
+    "cover": "https://image.api.playstation.com/vulcan/ap/rnd/202507/1614/0cb76acc237ad3ee550dfa0470b9280c01a812bb1a8c89d9.jpg",
     "overall": "doesnt-boot",
     "os": {
       "windows": "doesnt-boot"
@@ -2537,6 +2859,20 @@
       "windows": 1
     },
     "latestTested": "2026-08-30"
+  },
+  {
+    "key": "PPSA02798",
+    "title": "Panda Hero",
+    "titleId": "PPSA02798",
+    "cover": "https://image.api.playstation.com/vulcan/img/rnd/202101/2013/qxuELbb3woOV950RbVGjGOdQ.jpg",
+    "overall": "in-game",
+    "os": {
+      "windows": "in-game"
+    },
+    "reportCounts": {
+      "windows": 1
+    },
+    "latestTested": "2026-10-11"
   },
   {
     "key": "PPSA09189",
@@ -2653,6 +2989,7 @@
     "key": "PPSA21631",
     "title": "Poppy Playtime: Chapter 2",
     "titleId": "PPSA21631",
+    "cover": "https://image.api.playstation.com/vulcan/ap/rnd/202408/2820/e7f0613cb56aee4ab462a2066f4771653fd1c7f18e7e1a24.png",
     "overall": "in-game",
     "os": {
       "windows": "in-game"
@@ -2666,6 +3003,7 @@
     "key": "PPSA22380",
     "title": "Poppy Playtime: Chapter 3",
     "titleId": "PPSA22380",
+    "cover": "https://image.api.playstation.com/vulcan/ap/rnd/202409/1323/7a328b456dabbb5d287ceb306b2c44f29316ab50c9a0f5ce.png",
     "overall": "in-game",
     "os": {
       "windows": "in-game"
@@ -2784,6 +3122,20 @@
       "windows": 1
     },
     "latestTested": "2026-09-19"
+  },
+  {
+    "key": "PPSA03712",
+    "title": "Puzzle Bobble 3D: Vacation Odyssey",
+    "titleId": "PPSA03712",
+    "cover": "https://image.api.playstation.com/vulcan/img/rnd/202110/0119/A5gVo9b3YGfYMHoURHldEdG6.jpg",
+    "overall": "logo",
+    "os": {
+      "windows": "logo"
+    },
+    "reportCounts": {
+      "windows": 1
+    },
+    "latestTested": "2026-10-13"
   },
   {
     "key": "PPSA01880",
@@ -2929,14 +3281,16 @@
     "title": "RESIDENT EVIL 2",
     "titleId": "PPSA04288",
     "cover": "https://image.api.playstation.com/vulcan/ap/rnd/202206/0204/LHCbcu3PEOdWPN3htTlo9M43.png",
-    "overall": "logo",
+    "overall": "in-game",
     "os": {
-      "windows": "logo"
+      "windows": "logo",
+      "linux": "in-game"
     },
     "reportCounts": {
-      "windows": 1
+      "windows": 1,
+      "linux": 1
     },
-    "latestTested": "2026-09-25"
+    "latestTested": "2026-10-11"
   },
   {
     "key": "PPSA03952",
@@ -2985,14 +3339,14 @@
     "title": "Resident Evil Village",
     "titleId": "PPSA01556",
     "cover": "https://image.api.playstation.com/vulcan/ap/rnd/202101/0812/fqYIgLso71CzAFjqJOAyNs9V.png",
-    "overall": "doesnt-boot",
+    "overall": "main-menu",
     "os": {
-      "windows": "doesnt-boot"
+      "windows": "main-menu"
     },
     "reportCounts": {
       "windows": 1
     },
-    "latestTested": "2026-07-19"
+    "latestTested": "2026-10-14"
   },
   {
     "key": "PPSA01284",
@@ -3037,6 +3391,19 @@
     "latestTested": "2026-08-28"
   },
   {
+    "key": "PPSA31372",
+    "title": "RIDGE RACER™",
+    "titleId": "PPSA31372",
+    "overall": "in-game",
+    "os": {
+      "windows": "in-game"
+    },
+    "reportCounts": {
+      "windows": 1
+    },
+    "latestTested": "2026-10-17"
+  },
+  {
     "key": "PPSA07287",
     "title": "Road of Death",
     "titleId": "PPSA07287",
@@ -3063,6 +3430,19 @@
       "windows": 1
     },
     "latestTested": "2026-08-28"
+  },
+  {
+    "key": "PPSA23396",
+    "title": "Rugrats: Adventure in Gameland",
+    "titleId": "PPSA23396",
+    "overall": "in-game",
+    "os": {
+      "windows": "in-game"
+    },
+    "reportCounts": {
+      "windows": 1
+    },
+    "latestTested": "2026-10-17"
   },
   {
     "key": "PPSA26677",
@@ -3243,6 +3623,19 @@
       "windows": 1
     },
     "latestTested": "2026-09-09"
+  },
+  {
+    "key": "PPSA33286",
+    "title": "SILENT HILL: Townfall",
+    "titleId": "PPSA33286",
+    "overall": "doesnt-boot",
+    "os": {
+      "windows": "doesnt-boot"
+    },
+    "reportCounts": {
+      "windows": 1
+    },
+    "latestTested": "2026-10-10"
   },
   {
     "key": "PPSA15536",
@@ -3510,6 +3903,20 @@
     "latestTested": "2026-08-28"
   },
   {
+    "key": "PPSA18305",
+    "title": "Suikoden I&II HD Remaster Gate Rune and Dunan Unification Wars",
+    "titleId": "PPSA18305",
+    "cover": "https://image.api.playstation.com/vulcan/ap/rnd/202406/1109/eef7db41005db9a152214f0e534947dbf27ef26d499ad345.png",
+    "overall": "in-game",
+    "os": {
+      "linux": "in-game"
+    },
+    "reportCounts": {
+      "linux": 1
+    },
+    "latestTested": "2026-10-15"
+  },
+  {
     "key": "PPSA01668",
     "title": "Super Monkey Ball Banana Mania",
     "titleId": "PPSA01668",
@@ -3557,14 +3964,14 @@
     "cover": "https://image.api.playstation.com/vulcan/ap/rnd/202308/1509/b176559d2883c11f1aabb300a1b494ac5c02f5d70ca2c475.png",
     "overall": "logo",
     "os": {
-      "windows": "doesnt-boot",
+      "windows": "logo",
       "linux": "logo"
     },
     "reportCounts": {
       "windows": 1,
       "linux": 1
     },
-    "latestTested": "2026-09-24"
+    "latestTested": "2026-10-13"
   },
   {
     "key": "PPSA18571",
@@ -3626,14 +4033,28 @@
     "title": "TEKKEN 8",
     "titleId": "PPSA10595",
     "cover": "https://image.api.playstation.com/vulcan/ap/rnd/202308/0312/1a7c7392295e02a8fa688fdadde8e75799526881f990ad2a.jpg",
-    "overall": "logo",
+    "overall": "main-menu",
     "os": {
-      "windows": "logo"
+      "windows": "main-menu"
     },
     "reportCounts": {
       "windows": 1
     },
-    "latestTested": "2026-09-28"
+    "latestTested": "2026-10-17"
+  },
+  {
+    "key": "PPSA02020",
+    "title": "Tennis World Tour 2",
+    "titleId": "PPSA02020",
+    "cover": "https://image.api.playstation.com/vulcan/ap/rnd/202009/3014/LHGnaCETROwxivgtOIXe4Eq5.jpg",
+    "overall": "main-menu",
+    "os": {
+      "windows": "main-menu"
+    },
+    "reportCounts": {
+      "windows": 1
+    },
+    "latestTested": "2026-10-16"
   },
   {
     "key": "PPSA25872",
@@ -3761,6 +4182,19 @@
     "latestTested": "2026-09-09"
   },
   {
+    "key": "PPSA34959",
+    "title": "The King is Watching",
+    "titleId": "PPSA34959",
+    "overall": "in-game",
+    "os": {
+      "windows": "in-game"
+    },
+    "reportCounts": {
+      "windows": 1
+    },
+    "latestTested": "2026-10-12"
+  },
+  {
     "key": "PPSA09347",
     "title": "The Last Faith",
     "titleId": "PPSA09347",
@@ -3856,6 +4290,19 @@
       "windows": 1
     },
     "latestTested": "2026-08-24"
+  },
+  {
+    "key": "PPSA26223",
+    "title": "The Mound: Omen of Cthulhu",
+    "titleId": "PPSA26223",
+    "overall": "logo",
+    "os": {
+      "windows": "logo"
+    },
+    "reportCounts": {
+      "windows": 1
+    },
+    "latestTested": "2026-10-13"
   },
   {
     "key": "PPSA01916",
@@ -3954,6 +4401,20 @@
     "latestTested": "2026-10-09"
   },
   {
+    "key": "PPSA18010",
+    "title": "Tony Hawk's™ Pro Skater™ 3 + 4",
+    "titleId": "PPSA18010",
+    "cover": "https://image.api.playstation.com/vulcan/ap/rnd/202502/2100/5a082446577b5f38ca04bf9bac67726fcbe0bc61baf6de7b.png",
+    "overall": "in-game",
+    "os": {
+      "windows": "in-game"
+    },
+    "reportCounts": {
+      "windows": 1
+    },
+    "latestTested": "2026-10-14"
+  },
+  {
     "key": "PPSA02525",
     "title": "Tormented Souls",
     "titleId": "PPSA02525",
@@ -4019,6 +4480,19 @@
       "windows": 1
     },
     "latestTested": "2026-08-24"
+  },
+  {
+    "key": "PPSA04906",
+    "title": "Treasures of the Aegean",
+    "titleId": "PPSA04906",
+    "overall": "in-game",
+    "os": {
+      "windows": "in-game"
+    },
+    "reportCounts": {
+      "windows": 1
+    },
+    "latestTested": "2026-10-17"
   },
   {
     "key": "PPSA10513",
@@ -4160,6 +4634,19 @@
     "latestTested": "2026-09-17"
   },
   {
+    "key": "PPSA30703",
+    "title": "Vampire Crawlers",
+    "titleId": "PPSA30703",
+    "overall": "in-game",
+    "os": {
+      "windows": "in-game"
+    },
+    "reportCounts": {
+      "windows": 1
+    },
+    "latestTested": "2026-10-17"
+  },
+  {
     "key": "PPSA10249",
     "title": "Viewfinder",
     "titleId": "PPSA10249",
@@ -4214,6 +4701,19 @@
       "windows": 1
     },
     "latestTested": "2026-09-08"
+  },
+  {
+    "key": "PPSA29413",
+    "title": "Wobbly Life",
+    "titleId": "PPSA29413",
+    "overall": "in-game",
+    "os": {
+      "windows": "in-game"
+    },
+    "reportCounts": {
+      "windows": 1
+    },
+    "latestTested": "2026-10-12"
   },
   {
     "key": "PPSA20053",
@@ -4317,6 +4817,7 @@
     "key": "PPSA22624",
     "title": "Zombie Cure Lab",
     "titleId": "PPSA22624",
+    "cover": "https://image.api.playstation.com/vulcan/ap/rnd/202501/2810/38c9ba30c5c0ac016ef23b7a0582b96d1785ba610bbfd073.jpg",
     "overall": "in-game",
     "os": {
       "windows": "in-game"
