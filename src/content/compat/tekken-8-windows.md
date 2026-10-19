@@ -1,24 +1,36 @@
 ---
 title: "Tekken 8"
 titleId: "PPSA10594"
-status: "logo"
-testedVersion: "KytyPS5-2026-09-28-4b0de1b-Windows-x64"
-testedDate: "2026-09-28"
+status: "main-menu"
+testedVersion: "KytyPS5-2026-10-17-6aa3846"
+testedDate: "2026-10-17"
 os: "windows"
 hardware: "AMD Ryzen 9800X3D / NVIDIA GeForce RTX 5080 / 32 GB DDR5 RAM / 16 GB VRAM"
-screenshots: ["https://github.com/user-attachments/assets/cc1e0606-643e-423d-8f14-914cac90fb94","https://github.com/user-attachments/assets/8e301be1-c9ca-4ac7-8564-dfc036ea8ebb"]
+screenshots: ["https://github.com/user-attachments/assets/c3cf0792-09c0-4820-a004-36578bccdfe8","https://github.com/user-attachments/assets/b08067e5-1296-454a-88c1-81406145b4a6"]
 ---
 
-The game crashes at the first Bandai logo.
-BUT
-After 10 or 20 attempts, it plays the intro (without sound) then at the end of the intro, it crashes.
+I managed to go to the main menu and to the side selector.
+It's difficult to get there as the game's crashing randomly most of the time during : 
+- The Bandai logo
+- Before the main menu
+- After the main menu
+- During the side select
 
 ## Steps to reproduce
 
 Boot
+Dodge the crashes :)
+Enter menu
+Dodge the crashes :o
+Choose a mode
+Select the side
 
 ## Expected behavior
 
 No crash
 
-> Source: [KytyPS5 issue #898](https://github.com/KytyPS5/KytyPS5/issues/898)
+## Extra notes
+
+I put the compatibility status to main menu even if it's crashing most of the time before it, still it's reachable.
+
+> Source: [KytyPS5 issue #1601](https://github.com/KytyPS5/KytyPS5/issues/1601)
