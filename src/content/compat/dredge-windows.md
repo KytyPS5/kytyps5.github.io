@@ -2,17 +2,23 @@
 title: "DREDGE"
 titleId: "PPSA09076"
 status: "in-game"
-testedVersion: "0.2.2"
-testedDate: "2026-07-19"
+testedVersion: "KytyPS5-2026-10-17-6aa3846"
+testedDate: "2026-10-17"
 os: "windows"
-hardware: "AMD 7600X / RTX 4070super"
+hardware: "13th Gen Intel(R) Core(TM) i7-13700K (3.40 GHz) / NVIDIA GeForce RTX 4070 Ti (12 GB), 617.42 / 32 GB DDR5 RAM / 12 GB VRAM"
+screenshots: ["https://github.com/user-attachments/assets/f771c932-fed4-484c-bedd-36cb32662eef","https://github.com/user-attachments/assets/b4d416d1-ec6d-4dfe-bec6-66528df80849"]
 ---
 
-fully in game untill you put in dock camera - ship it crashes
+The game runs perfectly with a high, stable frame rate
 
-**Steps to reproduce:** Open KytyPS5 boot the game main menu new game skip cutsence camera in ship = crash ` sometimes `
+## Steps to reproduce
 
-**Extra notes:** fully playable if it gets better fps Visual bugs just random crashes and bad fps
+1. Open KytyOS5
+2. Run the Game
+3. Play
 
-> Source: [KytyPS5 issue #65](https://github.com/KytyPS5/KytyPS5/issues/65)
+## Expected behavior
 
+No known issue
+
+> Source: [KytyPS5 issue #1607](https://github.com/KytyPS5/KytyPS5/issues/1607)
