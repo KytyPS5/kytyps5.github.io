@@ -1,6 +1,29 @@
 {
   "version": 1,
   "issueNumber": 932,
-  "lastCommentId": 6297527398,
-  "forks": []
+  "lastCommentId": 6297786363,
+  "forks": [
+    {
+      "repositoryId": 1367956395,
+      "repository": "chenxiao07/KytyPS5",
+      "url": "https://github.com/chenxiao07/KytyPS5",
+      "description": "PlayStation 5 emulator for Windows, Linux and MacOS",
+      "targetTitleIds": [
+        "PPSA01339",
+        "PPSA01340",
+        "PPSA01341",
+        "PPSA01342",
+        "PPSA01678",
+        "PPSA01689",
+        "PPSA01690",
+        "PPSA01691"
+      ],
+      "archived": false,
+      "addedAt": "2026-10-20T18:08:51Z",
+      "updatedAt": "2026-10-20T18:08:51Z",
+      "addedBy": "DistantMyth",
+      "sourceCommentId": 6297776611,
+      "sourceUrl": "https://github.com/KytyPS5/kytyps5.github.io/issues/932#issuecomment-6297776611"
+    }
+  ]
 }
