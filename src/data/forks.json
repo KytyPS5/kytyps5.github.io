@@ -1,7 +1,7 @@
 {
   "version": 1,
   "issueNumber": 932,
-  "lastCommentId": 6298852826,
+  "lastCommentId": 6299064759,
   "forks": [
     {
       "repositoryId": 1367956395,
@@ -24,6 +24,27 @@
       "addedBy": "DistantMyth",
       "sourceCommentId": 6298852826,
       "sourceUrl": "https://github.com/KytyPS5/kytyps5.github.io/issues/932#issuecomment-6298852826",
+      "lineageOverride": true
+    },
+    {
+      "repositoryId": 1396737693,
+      "repository": "Jetsku/KytyPS5",
+      "url": "https://github.com/Jetsku/KytyPS5",
+      "description": "Experimental KytyPS5 U59 with merged shader and renderer fixes; complete sanitized main history and Windows releases.",
+      "targetTitleIds": [
+        "PPSA21559",
+        "PPSA21564",
+        "PPSA21567",
+        "PPSA21568",
+        "PPSA23060",
+        "PPSA23687"
+      ],
+      "archived": false,
+      "addedAt": "2026-10-20T19:11:36Z",
+      "updatedAt": "2026-10-20T19:11:36Z",
+      "addedBy": "DistantMyth",
+      "sourceCommentId": 6299064759,
+      "sourceUrl": "https://github.com/KytyPS5/kytyps5.github.io/issues/932#issuecomment-6299064759",
       "lineageOverride": true
     }
   ]
