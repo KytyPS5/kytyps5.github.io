@@ -1,18 +1,29 @@
 ---
 title: "The Callisto Protocol"
-titleId: "PPSA03351"
-status: "doesnt-boot"
-testedVersion: "0.0.7"
-testedDate: "2026-07-18"
+titleId: "PPSA03352"
+status: "main-menu"
+testedVersion: "0.3.0 cd4eab9"
+testedDate: "2026-10-19"
 os: "windows"
-hardware: "AMd Ryzen 7 7700X / AMD Radeon 7900XTX"
+hardware: "AMD Ryzen 7 7700X / AMD Radeon RX 9070XT / 32GB DDR5 RAM/ 16GB VRAM"
+screenshots: ["https://github.com/user-attachments/assets/2c657b60-ebf0-4314-855f-fb942d2f4a07","https://github.com/user-attachments/assets/401ddb7b-3ac1-45f0-a653-27328f516898","https://github.com/user-attachments/assets/c3d2b773-3efc-46b8-a302-d1c01b7b1def"]
 ---
 
---- Error --- TextureCache: invalid sampled color view, image=0x5e8e6600 swizzle=0xf2e view_format=41 mip=0+1 layer=0+1 type=1 image_levels=1 image_layers=1 in D:\a\KytyPS5\KytyPS5\src\graphics\host_gpu\renderer\imageView.cpp:254
+Game reaches main menu, then can start a new game, then it loads then crashes.
 
-**Steps to reproduce:** Open emulator Boot game Emulator crashes
+## Steps to reproduce
 
-**Extra notes:** Default settings.
+Open Translator
+Boot Game
+Start New Experience.
+Choose difficulty.
 
-> Source: [KytyPS5 issue #41](https://github.com/KytyPS5/KytyPS5/issues/41)
+## Expected behavior
 
+Cutscene would play then go ingame.
+
+## Extra notes
+
+Performance mode ON
+
+> Source: [KytyPS5 issue #1711](https://github.com/KytyPS5/KytyPS5/issues/1711)
