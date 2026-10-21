@@ -1,25 +1,27 @@
 ---
 title: "Tony Hawk's Pro Skater 1 + 2"
-titleId: "PPSA02177"
-status: "logo"
-testedVersion: "v0.3.0"
-testedDate: "2026-10-09"
+titleId: "PPSA02176"
+status: "in-game"
+testedVersion: "2026-10-19-0cad467-Linux-x86_64 / 2026-10-19 Windows Version"
+testedDate: "2026-10-19"
 os: "windows"
-hardware: "Intel(R) Core(TM) i7-12700KF / Nvidia GeForce RTX 3060 - Driver: 617.14 / 32 GB DDR4 RAM / 12 GB VRAM"
-screenshots: ["https://github.com/user-attachments/assets/6701ff60-a280-46b0-bd7f-eca5e352e70b"]
+hardware: "AMD Ryzen 9 5950X / NVIDIA Geforce RTX 5070 TI / 64GB DDR4 RAM / 16GB VRAM"
+screenshots: ["https://github.com/user-attachments/assets/81978da8-c959-4010-8585-3dde08013c87"]
 ---
 
-Plays the intro videos and makes it to the first loading screen then crashes.
-
-Unhandled host exception: type=1 code=3221225477 pc=0x00000009a000db73 access=2 address=0x0000000000000010
- in D:\a\KytyPS5\KytyPS5\src\loader\runtimeLinker.cpp:720
+Works as expected. I played 4 Levels. Occasional hiccups and stuttering.
+Some shadowtextures are wrong, lighting slightly off.
 
 ## Steps to reproduce
 
-1. Boot the game
+Start Vanilla and enjoy the game. No config modificaions
 
 ## Expected behavior
 
-Should boot into the main menu.
+must run smoother because it is a game with low reaction tolerances
 
-> Source: [KytyPS5 issue #1336](https://github.com/KytyPS5/KytyPS5/issues/1336)
+## Extra notes
+
+Like i said, works on Windows 11 and Linux. I tested both. Also already worked for 2026-10-13 but i have no proof of that. Cheers
+
+> Source: [KytyPS5 issue #1734](https://github.com/KytyPS5/KytyPS5/issues/1734)
