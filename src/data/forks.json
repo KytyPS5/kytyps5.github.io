@@ -1,7 +1,7 @@
 {
   "version": 1,
   "issueNumber": 932,
-  "lastCommentId": 6368618757,
+  "lastCommentId": 6386512260,
   "forks": [
     {
       "repositoryId": 1367956395,
@@ -27,6 +27,22 @@
       "lineageOverride": true
     },
     {
+      "repositoryId": 1422714717,
+      "repository": "Cozmaaa/KytyPS5",
+      "url": "https://github.com/Cozmaaa/KytyPS5",
+      "description": "PlayStation 5 translation layer for Windows, Linux and macOS",
+      "targetTitleIds": [
+        "PPSA03540"
+      ],
+      "archived": false,
+      "addedAt": "2026-10-24T16:13:13Z",
+      "updatedAt": "2026-10-24T16:13:13Z",
+      "addedBy": "DistantMyth",
+      "sourceCommentId": 6386494232,
+      "sourceUrl": "https://github.com/KytyPS5/kytyps5.github.io/issues/932#issuecomment-6386494232",
+      "lineageOverride": true
+    },
+    {
       "repositoryId": 1396737693,
       "repository": "Jetsku/KytyPS5",
       "url": "https://github.com/Jetsku/KytyPS5",
@@ -45,6 +61,22 @@
       "addedBy": "DistantMyth",
       "sourceCommentId": 6299064759,
       "sourceUrl": "https://github.com/KytyPS5/kytyps5.github.io/issues/932#issuecomment-6299064759",
+      "lineageOverride": true
+    },
+    {
+      "repositoryId": 1424666497,
+      "repository": "mn3ema/KytyPS5-Frank",
+      "url": "https://github.com/mn3ema/KytyPS5-Frank",
+      "description": "Experimental KytyPS5 build tuned for Marvel's Wolverine. No support promised.",
+      "targetTitleIds": [
+        "PPSA03671"
+      ],
+      "archived": false,
+      "addedAt": "2026-10-24T16:14:52Z",
+      "updatedAt": "2026-10-24T16:14:52Z",
+      "addedBy": "DistantMyth",
+      "sourceCommentId": 6386512260,
+      "sourceUrl": "https://github.com/KytyPS5/kytyps5.github.io/issues/932#issuecomment-6386512260",
       "lineageOverride": true
     },
     {
