@@ -2,15 +2,16 @@ name: Convert compat issue to report PR
 
 # `/compat` comment command on a compat mirror issue (created by the "Mirror
 # game-status issues" poller): converts the mirror's upstream game-status
-# report into src/content/compat/<game>-<os>.md and opens ONE PR for that game
-# (branch compat/<game>-<os>). One game per PR keeps reviews separate — the
+# report into src/content/compat/<game>-<os>.md and opens a PR for that mirror
+# (branch compat/<game>-<os>-issue-<mirror>). Isolated source branches prevent
+# an older mirror from rewriting a newer mirror's pending report/attribution. The
 # old flow dumped every converted game into a single standing report PR.
 #
 # The mirror body's `## Source` footer records the upstream KytyPS5 issue
 # number / URL / creation date (see scripts/lib/status-issues.mjs); the rest
 # of the body is the upstream issue form, parsed by scripts/issue-to-compat.mjs.
 # Re-running `/compat` (e.g. after the upstream issue was fixed) overwrites
-# that game's report and updates the same PR in place. On success the comment
+# that source's report and updates its PR in place. On success the comment
 # gets a 👀 reaction and the mirror issue is closed — closed mirror = converted.
 #
 # Fields the issue can't express correctly can be fixed first with the /setos /
@@ -165,7 +166,7 @@ jobs:
           add-paths: |
             src/content/compat/
           commit-message: "${{ steps.convert.outputs.pr_title }}"
-          branch: compat/${{ steps.convert.outputs.slug }}
+          branch: compat/${{ steps.convert.outputs.slug }}-issue-${{ steps.issue_context.outputs.mirror_number }}
           title: ${{ steps.convert.outputs.pr_title }}
           body: |
             Auto-converted from ${{ steps.issue_context.outputs.mirror_url }} via `/compat`.
@@ -178,9 +179,9 @@ jobs:
       - name: Fail the job if the report PR could not be opened
         if: steps.cpr.outcome == 'failure'
         env:
-          SLUG: ${{ steps.convert.outputs.slug }}
+          REPORT_BRANCH: compat/${{ steps.convert.outputs.slug }}-issue-${{ steps.issue_context.outputs.mirror_number }}
         run: |
-          printf 'Failed to open or update the report PR (branch compat/%s) — the branch may already exist without a PR. See the workflow log for the create-pull-request error.' "$SLUG" > /tmp/compat-failure.txt
+          printf 'Failed to open or update the report PR (branch %s) — the branch may already exist without a PR. See the workflow log for the create-pull-request error.' "$REPORT_BRANCH" > /tmp/compat-failure.txt
           exit 1
 
       - name: Enable auto-merge on the report PR
@@ -190,12 +191,12 @@ jobs:
           GH_TOKEN: ${{ secrets.ACTIONS_BOT_TOKEN || secrets.GITHUB_TOKEN }}
           CPR_NUMBER: ${{ steps.cpr.outputs.pull-request-number }}
           CPR_URL: ${{ steps.cpr.outputs.pull-request-url }}
-          SLUG: ${{ steps.convert.outputs.slug }}
+          REPORT_BRANCH: compat/${{ steps.convert.outputs.slug }}-issue-${{ steps.issue_context.outputs.mirror_number }}
         run: |
           PR_NUMBER="$CPR_NUMBER"
           PR_URL="$CPR_URL"
           if [ -z "$PR_NUMBER" ]; then
-            PR_NUMBER="$(gh pr list --head "compat/${SLUG}" --state open --json number --jq '.[0].number // empty')"
+            PR_NUMBER="$(gh pr list --head "$REPORT_BRANCH" --state open --json number --jq '.[0].number // empty')"
             if [ -n "$PR_NUMBER" ]; then
               PR_URL="$(gh pr view "$PR_NUMBER" --json url --jq '.url // empty')"
             fi

@@ -48,12 +48,11 @@ console.log(
 
 // These operational workflows/scripts must remain byte-identical to the original
 // migration baseline. CI and catalog-PR gates have separate, additive UI checks.
-// The converter, poller and status-issues helper intentionally differ only for
-// source-scoped trust. trust-pipeline.test.mjs exercises both actual CLIs;
-// status-issues.test.mjs covers maintainer overrides and the trust boundary.
+// The converter, poller and status-issues helper include reviewed trust/freshness
+// fixes covered by actual CLI regression tests. The conversion workflow's
+// source-isolated branches are checked structurally against its baseline below.
 const unchanged = [
   ".github/workflows/compat-issues.yml",
-  ".github/workflows/compat-convert.yml",
   ".github/workflows/compat-set-fields.yml",
   ".github/workflows/refresh-data.yml",
   ".github/workflows/deploy.yml",
@@ -75,6 +74,35 @@ for (const file of unchanged) {
     file,
   );
 }
+const conversionPath = ".github/workflows/compat-convert.yml";
+const expectedConversion = parseYaml(
+  execFileSync("git", ["show", `8adc056:${conversionPath}`], {
+    encoding: "utf8",
+  }),
+);
+const conversionSteps = expectedConversion.jobs.convert.steps;
+const reportBranch =
+  "compat/${{ steps.convert.outputs.slug }}-issue-${{ steps.issue_context.outputs.mirror_number }}";
+conversionSteps.find((step) => step.id === "cpr").with.branch = reportBranch;
+const prFailure = conversionSteps.find(
+  (step) => step.name === "Fail the job if the report PR could not be opened",
+);
+prFailure.env = { REPORT_BRANCH: reportBranch };
+prFailure.run = prFailure.run
+  .replace("branch compat/%s", "branch %s")
+  .replace('"$SLUG"', '"$REPORT_BRANCH"');
+const autoMerge = conversionSteps.find((step) => step.id === "auto_merge");
+delete autoMerge.env.SLUG;
+autoMerge.env.REPORT_BRANCH = reportBranch;
+autoMerge.run = autoMerge.run.replace(
+  '--head "compat/${SLUG}"',
+  '--head "$REPORT_BRANCH"',
+);
+assert.deepEqual(
+  parseYaml(await readFile(conversionPath, "utf8")),
+  expectedConversion,
+  "conversion workflow differs beyond the reviewed source-isolated branch change",
+);
 for (const file of await readdir(".github/workflows")) {
   const workflow = parseYaml(
     await readFile(`.github/workflows/${file}`, "utf8"),
