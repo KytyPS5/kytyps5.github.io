@@ -14,6 +14,34 @@ const context = await browser.newContext({
   reducedMotion: "reduce",
   permissions: ["clipboard-read", "clipboard-write"],
 });
+const releaseTag = "browser-check";
+const releaseRoot = "https://github.com/KytyPS5/KytyPS5/releases";
+const platformAssets = [
+  "Windows-x64.zip",
+  "Linux-x86_64.tar.gz",
+  "macOS-x86_64.zip",
+].map((platform) => ({
+  name: `KytyPS5-${platform}`,
+  size: 1048576,
+  browser_download_url: `${releaseRoot}/download/${releaseTag}/KytyPS5-${platform}`,
+}));
+let releaseFixture = {
+  ...JSON.parse(await fs.readFile("src/data/github.json", "utf8")).release,
+  tag_name: releaseTag,
+  html_url: `${releaseRoot}/tag/${releaseTag}`,
+  assets: [
+    {
+      ...platformAssets[0],
+      name: `${platformAssets[0].name}.sha256`,
+      browser_download_url: `${platformAssets[0].browser_download_url}.sha256`,
+    },
+    ...platformAssets,
+  ],
+};
+await context.route(
+  "https://api.github.com/repos/KytyPS5/KytyPS5/releases/latest",
+  (route) => route.fulfill({ json: releaseFixture }),
+);
 const page = await context.newPage();
 const errors = [];
 page.on("pageerror", (e) => errors.push(e.message));
@@ -36,6 +64,23 @@ async function noOverflow() {
     ),
     false,
     `Horizontal overflow at ${page.url()}`,
+  );
+}
+async function downloadLinks(expected) {
+  await page.waitForFunction(
+    (urls) =>
+      JSON.stringify(
+        [...document.querySelectorAll(".download-platform .button")].map(
+          (link) => link.getAttribute("href"),
+        ),
+      ) === JSON.stringify(urls),
+    expected,
+  );
+  assert.deepEqual(
+    await page
+      .locator(".download-platform .button")
+      .evaluateAll((links) => links.map((link) => link.getAttribute("href"))),
+    expected,
   );
 }
 
@@ -133,11 +178,9 @@ try {
     "Build tabs change commands; code clipboard contains usable commands",
     async () => {
       await visit("/download");
-      const downloads = await page
-        .locator(".download-platform .button")
-        .evaluateAll((links) => links.map((l) => l.getAttribute("href")));
-      assert.equal(downloads.length, 3);
-      assert(downloads.every((l) => l.includes("/releases/download/")));
+      await downloadLinks(
+        platformAssets.map((asset) => asset.browser_download_url),
+      );
       await page.getByRole("tab", { name: "Linux", exact: true }).click();
       await page.getByText("sudo apt-get install", { exact: false }).waitFor();
       await page.getByRole("button", { name: "Copy code" }).click();
@@ -150,6 +193,45 @@ try {
       await page
         .getByText("CMAKE_OSX_ARCHITECTURES=x86_64", { exact: false })
         .waitFor();
+    },
+  );
+  await check(
+    "Missing platform archives use the release browser and refresh when an archive becomes available",
+    async () => {
+      releaseFixture = { ...releaseFixture, assets: [platformAssets[0]] };
+      await page
+        .getByRole("button", { name: "Refresh latest release" })
+        .click();
+      await downloadLinks([
+        platformAssets[0].browser_download_url,
+        `${releaseRoot}/latest`,
+        `${releaseRoot}/latest`,
+      ]);
+      assert.equal(
+        await page
+          .getByRole("link", { name: "Browse release assets", exact: true })
+          .count(),
+        2,
+      );
+      assert.equal(
+        await page
+          .getByRole("link", { name: "Download for Windows", exact: true })
+          .count(),
+        1,
+      );
+      releaseFixture = { ...releaseFixture, assets: platformAssets };
+      await page
+        .getByRole("button", { name: "Refresh latest release" })
+        .click();
+      await downloadLinks(
+        platformAssets.map((asset) => asset.browser_download_url),
+      );
+      assert.equal(
+        await page
+          .getByRole("link", { name: "Browse release assets", exact: true })
+          .count(),
+        0,
+      );
     },
   );
   await check("FAQ search and keyboard-operable accordion", async () => {
