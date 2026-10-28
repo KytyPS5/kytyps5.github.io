@@ -1,7 +1,7 @@
 {
   "version": 1,
   "issueNumber": 932,
-  "lastCommentId": 6416860618,
+  "lastCommentId": 6467762816,
   "forks": [
     {
       "repositoryId": 1429901071,
@@ -93,6 +93,22 @@
       "addedBy": "DistantMyth",
       "sourceCommentId": 6386512260,
       "sourceUrl": "https://github.com/KytyPS5/kytyps5.github.io/issues/932#issuecomment-6386512260",
+      "lineageOverride": true
+    },
+    {
+      "repositoryId": 1329192466,
+      "repository": "Senaxx/KytyPS5",
+      "url": "https://github.com/Senaxx/KytyPS5",
+      "description": "PlayStation 5 emulator for Windows, Linux and MacOS",
+      "targetTitleIds": [
+        "PPSA03671"
+      ],
+      "archived": false,
+      "addedAt": "2026-10-28T11:26:26Z",
+      "updatedAt": "2026-10-28T11:26:26Z",
+      "addedBy": "DistantMyth",
+      "sourceCommentId": 6467762816,
+      "sourceUrl": "https://github.com/KytyPS5/kytyps5.github.io/issues/932#issuecomment-6467762816",
       "lineageOverride": true
     },
     {
