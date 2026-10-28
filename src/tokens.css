@@ -1,27 +1,27 @@
 :root {
-  /* CORE — perceptual palette (OKLCH, shared lightness scale, generated in expressive mode; hand-tuned tones are marked below) */
-  --core-color-teal-50: #F7F9F8;
-  --core-color-teal-100: #E4ECE7;
-  --core-color-teal-200: #D4E3DA;
-  --core-color-teal-300: #BACCC1;
-  --core-color-teal-400: #9BB0A3;
-  --core-color-teal-500: #7D9086;
-  --core-color-teal-600: #59726A;
-  --core-color-teal-700: #2E584D;
-  --core-color-teal-800: #073F3B;
-  --core-color-teal-900: #132E29;  /* hand-tuned, generated: #0B2A24 */
-  --core-color-teal-950: #0A1C18;
-  --core-color-lime-50: #F1FDE4;
-  --core-color-lime-100: #D4F5AB;
-  --core-color-lime-200: #B7F258;
-  --core-color-lime-300: #9CDA1D;
-  --core-color-lime-400: #86BB17;
-  --core-color-lime-500: #6C9911;
-  --core-color-lime-600: #54770A;
-  --core-color-lime-700: #3D5906;
-  --core-color-lime-800: #293E03;
-  --core-color-lime-900: #1B2901;
-  --core-color-lime-950: #111C01;
+  /* CORE — console-shell blue/silver ramps; semantic status ramps remain distinct. */
+  --core-color-blue-50: #F5F7FC;
+  --core-color-blue-100: #E8EEF8;
+  --core-color-blue-200: #D3DEF0;
+  --core-color-blue-300: #B8CAE8;
+  --core-color-blue-400: #94ADD3;
+  --core-color-blue-500: #718CB4;
+  --core-color-blue-600: #526C96;
+  --core-color-blue-700: #2C4F83;
+  --core-color-blue-800: #12366B;
+  --core-color-blue-900: #0F2343;
+  --core-color-blue-950: #080F20;
+  --core-color-sky-50: #EEF6FF;
+  --core-color-sky-100: #B8D9FF;
+  --core-color-sky-200: #8BC0FF;
+  --core-color-sky-300: #5AA3FF;
+  --core-color-sky-400: #308AFF;
+  --core-color-sky-500: #0070D1;
+  --core-color-sky-600: #0057B8;
+  --core-color-sky-700: #004998;
+  --core-color-sky-800: #003A79;
+  --core-color-sky-900: #062B59;
+  --core-color-sky-950: #061B38;
   --core-color-green-50: #F4FAF4;
   --core-color-green-100: #DCEFDE;
   --core-color-green-200: #C5E9C8;
@@ -57,83 +57,86 @@
   --core-color-red-950: #271411;
   --core-color-neutral-0: #FFFFFF;
   --core-color-neutral-1000: #000000;
-  /* Hand-tuned half-steps (not generated): original muted text and status foregrounds */
-  --core-color-teal-650: #4D6460;  /* hand-tuned half-step */
+  /* Intermediate text and semantic status foreground tones. */
+  --core-color-blue-650: #486080;
   --core-color-amber-650: #815218;  /* hand-tuned half-step */
   --core-color-red-650: #91463E;  /* hand-tuned half-step */
 
-  /* SEMANTIC — role-based names (light) */
-  --color-bg-page: var(--core-color-teal-50);
-  --color-bg-surface: var(--core-color-teal-100);
-  --color-text-primary: var(--core-color-teal-800);
-  --color-text-primary-hover: var(--core-color-teal-700);
-  --color-text-secondary: var(--core-color-teal-650);
-  --color-accent: var(--core-color-lime-100);
-  --color-accent-strong: var(--core-color-green-300);
-  --color-focus-ring: var(--core-color-green-600);
-  --color-border-default: var(--core-color-teal-200);
-  --color-field-text-muted: var(--core-color-teal-300);
-  --color-field-bg: var(--core-color-teal-900);
-  --color-field-border: var(--core-color-teal-700);
-  --color-code-bg: var(--core-color-teal-900);
-  --color-code-header-bg: var(--core-color-teal-800);
-  --color-code-text-muted: var(--core-color-teal-300);
-  --color-bg-subtle: var(--core-color-teal-200);
+  /* SEMANTIC — PlayStation-inspired blue, silver and midnight surfaces. */
+  --color-action-bg: var(--core-color-sky-500);
+  --color-action-hover: var(--core-color-sky-600);
+  --color-action-text: var(--core-color-neutral-0);
+  --color-bg-page: var(--core-color-blue-50);
+  --color-bg-surface: var(--core-color-blue-100);
+  --color-text-primary: var(--core-color-blue-800);
+  --color-text-primary-hover: var(--core-color-blue-700);
+  --color-text-secondary: var(--core-color-blue-650);
+  --color-accent: var(--core-color-sky-100);
+  --color-accent-strong: var(--core-color-sky-300);
+  --color-focus-ring: var(--core-color-sky-600);
+  --color-border-default: var(--core-color-blue-200);
+  --color-field-text-muted: var(--core-color-blue-200);
+  --color-field-bg: var(--core-color-blue-900);
+  --color-field-border: var(--core-color-blue-700);
+  --color-code-bg: var(--core-color-blue-900);
+  --color-code-header-bg: var(--core-color-blue-800);
+  --color-code-text-muted: var(--core-color-blue-300);
+  --color-bg-subtle: var(--core-color-blue-200);
   --color-status-success-bg: var(--core-color-green-100);
   --color-status-success-fg: var(--core-color-green-700);
   --color-status-warning-bg: var(--core-color-amber-100);
   --color-status-warning-fg: var(--core-color-amber-650);
   --color-status-danger-bg: var(--core-color-red-100);
   --color-status-danger-fg: var(--core-color-red-650);
-  --color-status-neutral-bg: var(--core-color-teal-100);
-  --color-status-neutral-fg: var(--core-color-teal-650);
-  --color-on-accent: var(--core-color-teal-800);
-  --color-field-bg-strong: var(--core-color-teal-800);
-  --color-field-text: var(--core-color-teal-50);
+  --color-status-neutral-bg: var(--core-color-blue-100);
+  --color-status-neutral-fg: var(--core-color-blue-650);
+  --color-on-accent: var(--core-color-blue-800);
+  --color-field-bg-strong: var(--core-color-sky-600);
+  --color-field-text: var(--core-color-blue-50);
   --color-chart-success: var(--core-color-green-500);
   --color-chart-warning: var(--core-color-amber-400);
   --color-chart-danger: var(--core-color-red-500);
-  --color-chart-neutral: var(--core-color-teal-500);
-  --color-chart-untested: var(--core-color-teal-300);
-  --color-overlay: color-mix(in srgb, var(--core-color-teal-900) 91%, transparent);
-  --color-shadow-cover: color-mix(in srgb, var(--core-color-teal-950) 19%, transparent);
+  --color-chart-neutral: var(--core-color-blue-500);
+  --color-chart-untested: var(--core-color-blue-300);
+  --color-overlay: color-mix(in srgb, var(--core-color-blue-900) 91%, transparent);
+  --color-shadow-cover: color-mix(in srgb, var(--core-color-blue-950) 19%, transparent);
   --color-veil-light: color-mix(in srgb, var(--core-color-neutral-0) 8%, transparent);
-  --color-veil-dark: color-mix(in srgb, var(--core-color-teal-800) 5%, transparent);
+  --color-veil-dark: color-mix(in srgb, var(--core-color-blue-800) 5%, transparent);
   --font-display: "Big Shoulders Variable", "Arial Narrow", sans-serif;
   --font-body: "Public Sans Variable", sans-serif;
   --gutter: clamp(28px, 5vw, 80px);
-  --control-radius: 7px;
+  --control-radius: 10px;
   color-scheme: light;
 }
 
 :root[data-theme="dark"] {
   color-scheme: dark;
-  --color-bg-page: var(--core-color-teal-950);
-  --color-bg-surface: var(--core-color-teal-900);
-  --color-text-primary: var(--core-color-teal-100);
-  --color-text-primary-hover: var(--core-color-green-200);
-  --color-text-secondary: var(--core-color-teal-400);
-  --color-accent-strong: var(--core-color-green-500);
-  --color-focus-ring: var(--core-color-lime-100);
-  --color-border-default: var(--core-color-teal-700);
-  --color-field-bg: var(--core-color-teal-950);
-  --color-code-bg: var(--core-color-teal-950);
-  --color-code-header-bg: var(--core-color-teal-900);
-  --color-bg-subtle: var(--core-color-teal-800);
+  --color-bg-page: var(--core-color-blue-950);
+  --color-bg-surface: var(--core-color-blue-900);
+  --color-text-primary: var(--core-color-blue-100);
+  --color-text-primary-hover: var(--core-color-sky-200);
+  --color-text-secondary: var(--core-color-blue-400);
+  --color-accent-strong: var(--core-color-sky-500);
+  --color-focus-ring: var(--core-color-sky-100);
+  --color-border-default: var(--core-color-blue-700);
+  --color-field-bg: var(--core-color-blue-950);
+  --color-code-bg: var(--core-color-blue-950);
+  --color-code-header-bg: var(--core-color-blue-900);
+  --color-bg-subtle: var(--core-color-blue-800);
   --color-status-success-bg: var(--core-color-green-800);
   --color-status-success-fg: var(--core-color-green-200);
   --color-status-warning-bg: var(--core-color-amber-800);
   --color-status-warning-fg: var(--core-color-amber-300);
   --color-status-danger-bg: var(--core-color-red-800);
   --color-status-danger-fg: var(--core-color-red-300);
-  --color-status-neutral-bg: var(--core-color-teal-800);
-  --color-status-neutral-fg: var(--core-color-teal-300);
-  --color-field-bg-strong: var(--core-color-teal-900);
-  --color-field-text: var(--core-color-teal-100);
+  --color-status-neutral-bg: var(--core-color-blue-800);
+  --color-status-neutral-fg: var(--core-color-blue-300);
+  --color-field-bg-strong: var(--core-color-blue-900);
+  --color-field-text: var(--core-color-blue-100);
   --color-chart-success: var(--core-color-green-400);
   --color-chart-danger: var(--core-color-red-400);
-  --color-chart-neutral: var(--core-color-teal-400);
-  --color-chart-untested: var(--core-color-teal-700);
-  --color-overlay: color-mix(in srgb, var(--core-color-teal-950) 95%, transparent);
-  --color-veil-dark: color-mix(in srgb, var(--core-color-lime-100) 8%, transparent);
+  --color-chart-neutral: var(--core-color-blue-400);
+  --color-chart-untested: var(--core-color-blue-700);
+  --color-overlay: color-mix(in srgb, var(--core-color-blue-950) 95%, transparent);
+  --color-veil-dark: color-mix(in srgb, var(--core-color-sky-100) 8%, transparent);
 }

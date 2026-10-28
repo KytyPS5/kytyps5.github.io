@@ -154,8 +154,8 @@ p {
   min-height: 54px;
   padding: 15px 23px;
   border-radius: var(--control-radius);
-  background: var(--color-text-primary);
-  color: var(--color-bg-page);
+  background: var(--color-action-bg);
+  color: var(--color-action-text);
   font-size: 14px;
   font-weight: 600;
   line-height: 1.4;
@@ -167,7 +167,7 @@ p {
   border: 1px solid transparent;
 }
 .button:hover {
-  background: var(--color-text-primary-hover);
+  background: var(--color-action-hover);
   transform: translateY(-2px);
 }
 .button:active {
@@ -268,9 +268,11 @@ p {
   letter-spacing: -0.06em;
   line-height: 1;
 }
-.wordmark svg {
-  width: 32px;
-  height: 32px;
+.wordmark .project-icon {
+  width: 48px;
+  height: 48px;
+  flex-shrink: 0;
+  object-fit: contain;
 }
 .logo-ps {
   font-weight: 450;
@@ -441,6 +443,16 @@ p {
   height: 530px;
   margin-top: -10px;
   isolation: isolate;
+}
+.hero-project-icon {
+  position: absolute;
+  top: 0;
+  right: 8px;
+  width: clamp(52px, 6vw, 80px);
+  height: auto;
+  z-index: 4;
+  transform: rotate(10deg);
+  pointer-events: none;
 }
 .visual-orbit {
   position: absolute;
@@ -3054,9 +3066,9 @@ pre {
   .wordmark {
     font-size: 28px;
   }
-  .wordmark svg {
-    width: 29px;
-    height: 29px;
+  .wordmark .project-icon {
+    width: 42px;
+    height: 42px;
   }
   .hero {
     padding-top: 40px;
@@ -3435,9 +3447,9 @@ pre {
   .wordmark {
     font-size: 28px;
   }
-  .wordmark svg {
-    width: 28px;
-    height: 28px;
+  .wordmark .project-icon {
+    width: 40px;
+    height: 40px;
   }
   .hero {
     display: flex;
@@ -4355,9 +4367,9 @@ pre {
     padding: 25px;
     margin-top: 28px;
   }
-  .about-logomark > svg {
-    width: 75px;
-    height: 75px;
+  .about-logomark > img {
+    width: 120px;
+    height: 120px;
   }
   .about-story p {
     font-size: 13px;

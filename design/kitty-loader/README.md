@@ -2,6 +2,8 @@
 
 Original artwork generated with the built-in image-generation tool, then packaged into a transparent, two-color GIF palette (teal plus transparency). No third-party stock asset is used. The sprite sheet is a build source; it is not downloaded by the website.
 
+The shared `.kitty-loader-art` CSS in `index.html` tints both exported assets blue in light mode and icy blue in dark mode, including startup before JavaScript loads. The original artwork, frame timing and transparency are preserved.
+
 Run `npm run generate:kitty` to reproduce the GIF and static reduced-motion PNG. Twelve frames, 80ms each, 960ms per loop. A common scale, nose anchor and foot baseline align the frames.
 
 ## Generation prompt

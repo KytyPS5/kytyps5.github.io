@@ -662,7 +662,7 @@ export function About() {
             THE BEGINNING.
           </h2>
           <div className="about-logomark" aria-hidden="true">
-            <Code2 size={100} strokeWidth={1} />
+            <img src="/images/project-icon.svg" width="160" height="160" alt="" />
             <span>C++ / Vulkan 1.3</span>
           </div>
         </div>

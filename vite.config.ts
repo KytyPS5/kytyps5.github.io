@@ -17,6 +17,7 @@ function offlineShell(): Plugin {
       const precache = [
         "/index.html",
         "/favicon.svg",
+        "/images/project-icon.svg",
         "/images/kitty-running-v2.gif",
         "/images/kitty-still-v2.png",
         ...assets
@@ -28,6 +29,8 @@ function offlineShell(): Plugin {
       const loaderAssets = await Promise.all([
         readFile(resolve(outDir, "images/kitty-running-v2.gif")),
         readFile(resolve(outDir, "images/kitty-still-v2.png")),
+        readFile(resolve(outDir, "images/project-icon.svg")),
+        readFile(resolve(outDir, "favicon.svg")),
       ]);
       const version = createHash("sha256")
         .update(worker + html + precache.join("\n"))
