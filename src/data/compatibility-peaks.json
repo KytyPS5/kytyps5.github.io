@@ -1,6 +1,6 @@
 {
   "version": 1,
-  "throughCommit": "a59149f51b2cc4924e2d51ca0a9e80ff2996667c",
+  "throughCommit": "8dd054b99d81e0984e3243214e440abcdbbfc0dd",
   "games": {
     "PPSA01284": {
       "windows": {
@@ -203,26 +203,6 @@
         "recordUrl": "https://github.com/KytyPS5/kytyps5.github.io/blob/aeaebc35336b67ddcfd5fc32075ef789a367fddd/src/content/compat/call-of-the-sea-windows.md"
       }
     },
-    "PPSA01556": {
-      "windows": {
-        "slug": "resident-evil-village-windows",
-        "titleId": "PPSA01859",
-        "os": "windows",
-        "status": "main-menu",
-        "testedDate": "2026-10-14",
-        "testedVersion": "KytyPS5-2026-10-12-df5b9b9-Windows-x64",
-        "recordUrl": "https://github.com/KytyPS5/kytyps5.github.io/blob/9a04c436b7aa78470b5fdde8d3ad09a03cfc77f0/src/content/compat/resident-evil-village-windows.md"
-      },
-      "linux": {
-        "slug": "maiden-linux",
-        "titleId": "PPSA01859",
-        "os": "linux",
-        "status": "main-menu",
-        "testedDate": "2026-10-21",
-        "testedVersion": "KytyPS5-2026-10-22-c5016d9-Linux-x86_64",
-        "recordUrl": "https://github.com/KytyPS5/kytyps5.github.io/blob/8bbba69031f6e4073cb16796af2f949eedadf8d7/src/content/compat/maiden-linux.md"
-      }
-    },
     "PPSA01590": {
       "windows": {
         "slug": "oddworld-soulstorm-windows",
@@ -320,6 +300,26 @@
         "testedDate": "2026-09-24",
         "testedVersion": "Pull Request 789, Found Here: https://github.com/KytyPS5/KytyPS5/pull/789",
         "recordUrl": "https://github.com/KytyPS5/kytyps5.github.io/blob/8c9f7131b47fff3616e0fd27b7a181424f725785/src/content/compat/five-nights-at-freddy-s-security-breach-windows.md"
+      }
+    },
+    "PPSA01858": {
+      "windows": {
+        "slug": "resident-evil-village-windows",
+        "titleId": "PPSA01859",
+        "os": "windows",
+        "status": "main-menu",
+        "testedDate": "2026-10-14",
+        "testedVersion": "KytyPS5-2026-10-12-df5b9b9-Windows-x64",
+        "recordUrl": "https://github.com/KytyPS5/kytyps5.github.io/blob/9a04c436b7aa78470b5fdde8d3ad09a03cfc77f0/src/content/compat/resident-evil-village-windows.md"
+      },
+      "linux": {
+        "slug": "maiden-linux",
+        "titleId": "PPSA01859",
+        "os": "linux",
+        "status": "main-menu",
+        "testedDate": "2026-10-23",
+        "testedVersion": "KytyPS5-2026-10-23-9dcff95-Linux-x86_64",
+        "recordUrl": "https://github.com/KytyPS5/kytyps5.github.io/blob/8dd054b99d81e0984e3243214e440abcdbbfc0dd/src/content/compat/maiden-linux.md"
       }
     },
     "PPSA01861": {

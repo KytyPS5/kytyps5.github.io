@@ -1,5 +1,9 @@
 # Verification
 
+## MAIDEN-only grouping exception
+
+MAIDEN's four regional IDs now form one separate compatibility group under `PPSA01858`; every other concept retains its existing grouping. Regression tests first reproduced the combined group, cross-group metadata overwrite during refresh, and rejected same-OS reports. All 233 unit tests pass with the exception, including preservation of unrelated localized titles and Village's other demos. The authenticated production build, report validation, full browser/offline pipeline and original workflow/API parity checks pass. The peak registry retains MAIDEN's historical evidence under its new canonical group; its aliases and runtime exports are regenerated. The Linux report also uses the corrected source #1864 from mirror #978. No general report-conversion workflow or command changes are included.
+
 ## Explicit fork-lineage override
 
 All 229 unit tests pass, including 44 community tests. The new `/force <URL> [game IDs]` cases first reproduced the missing command behavior in the actual command CLI and reconciliation pipeline. Tests now verify an authorized standalone listing, rejected ordinary `/fork` submissions, read/triage permission denial, public-repository and metadata validation, malformed URLs/IDs, explicit target retention, no implicit game targets and ordinary removal. The registry records the lineage override with its command provenance. Workflow validation checks that `/force` is admitted only through the existing management-issue/collaborator gate.

@@ -63,7 +63,6 @@ const unchanged = [
   "scripts/export-compat-json.mjs",
   "scripts/lib/compat-export.mjs",
   "scripts/lib/updates-feed.mjs",
-  "scripts/lib/transform.mjs",
 ];
 for (const file of unchanged) {
   const baseline = execFileSync("git", ["show", `8adc056:${file}`], {
@@ -75,6 +74,44 @@ for (const file of unchanged) {
     file,
   );
 }
+// Only MAIDEN's explicit group identity and product metadata may differ from
+// the original catalog transform; other import/refresh behavior stays exact.
+const transformPath = "scripts/lib/transform.mjs";
+const expectedTransform = execFileSync(
+  "git",
+  ["show", `8adc056:${transformPath}`],
+  { encoding: "utf8" },
+)
+  .replace(
+    "// deduplication, and refresh-merging that preserves enrichment + overrides.\n",
+    '// deduplication, and refresh-merging that preserves enrichment + overrides.\nimport { catalogGroupKey, withGroupMetadata } from "./game-group-exceptions.mjs";\n',
+  )
+  .replace(
+    "if (!byConcept.has(row.conceptId)) byConcept.set(row.conceptId, []);\n    byConcept.get(row.conceptId).push(row);",
+    "const key = catalogGroupKey(row);\n    if (!byConcept.has(key)) byConcept.set(key, []);\n    byConcept.get(key).push(row);",
+  )
+  .replace(
+    "for (const [conceptId, list] of byConcept)",
+    "for (const list of byConcept.values())",
+  )
+  .replace(
+    "games.push({\n      conceptId,",
+    "games.push(withGroupMetadata({\n      conceptId: primary.conceptId,",
+  )
+  .replace(
+    "region: primary.region,\n    });",
+    "region: primary.region,\n    }));",
+  )
+  .replace(
+    "existing.map((g) => [g.conceptId, g])",
+    "existing.map((g) => [catalogGroupKey(g), g])",
+  )
+  .replace("prev.get(g.conceptId)", "prev.get(catalogGroupKey(g))");
+assert.equal(
+  (await readFile(transformPath, "utf8")).replace(/\r\n/g, "\n"),
+  expectedTransform.replace(/\r\n/g, "\n"),
+  "catalog transform differs beyond the MAIDEN-only exception",
+);
 for (const file of await readdir(".github/workflows")) {
   const workflow = parseYaml(
     await readFile(`.github/workflows/${file}`, "utf8"),
