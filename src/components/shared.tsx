@@ -48,12 +48,7 @@ export function External({
 export function Logo({ large = false }: { large?: boolean }) {
   return (
     <span className={`wordmark ${large ? "large" : ""}`}>
-      <svg viewBox="0 0 36 36" fill="none" aria-hidden="true">
-        <path
-          d="M5 5h7v11L23 5h9L18 19l14 12h-10L12 22v9H5V5Z"
-          fill="currentColor"
-        />
-      </svg>
+      <img className="project-icon" src="/images/project-icon.svg" width="48" height="48" alt="" aria-hidden="true" />
       <span>
         kyty<span className="logo-ps">PS5</span>
       </span>

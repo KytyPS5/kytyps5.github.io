@@ -2,38 +2,73 @@
 name: KytyPS5
 description: Gaming editorial for an experimental, community-driven PlayStation 5 emulator
 colors:
-  color-bg-page: "#f7f9f8"
-  color-bg-surface: "#e4ece7"
-  color-bg-subtle: "#d4e3da"
-  color-text-primary: "#073f3b"
-  color-text-primary-hover: "#2e584d"
-  color-text-secondary: "#4d6460"
-  color-accent: "#d4f5ab"
-  color-accent-strong: "#a1d4a7"
-  color-on-accent: "#073f3b"
-  color-focus-ring: "#3e7947"
-  color-border-default: "#d4e3da"
-  color-field-bg: "#132e29"
-  color-field-bg-strong: "#073f3b"
-  color-field-text: "#f7f9f8"
-  color-field-text-muted: "#baccc1"
-  color-field-border: "#2e584d"
-  color-code-bg: "#132e29"
-  color-code-header-bg: "#073f3b"
-  color-code-text-muted: "#baccc1"
-  color-status-success-bg: "#dcefde"
-  color-status-success-fg: "#285b31"
-  color-status-warning-bg: "#f7e8d3"
+  color-action-bg: "#0070D1"
+  color-action-hover: "#0057B8"
+  color-action-text: "#FFFFFF"
+  color-bg-page: "#F5F7FC"
+  color-bg-surface: "#E8EEF8"
+  color-text-primary: "#12366B"
+  color-text-primary-hover: "#2C4F83"
+  color-text-secondary: "#486080"
+  color-accent: "#B8D9FF"
+  color-accent-strong: "#5AA3FF"
+  color-focus-ring: "#0057B8"
+  color-border-default: "#D3DEF0"
+  color-field-text-muted: "#D3DEF0"
+  color-field-bg: "#0F2343"
+  color-field-border: "#2C4F83"
+  color-code-bg: "#0F2343"
+  color-code-header-bg: "#12366B"
+  color-code-text-muted: "#B8CAE8"
+  color-bg-subtle: "#D3DEF0"
+  color-status-success-bg: "#DCEFDE"
+  color-status-success-fg: "#285B31"
+  color-status-warning-bg: "#F7E8D3"
   color-status-warning-fg: "#815218"
-  color-status-danger-bg: "#fee5e1"
-  color-status-danger-fg: "#91463e"
-  color-status-neutral-bg: "#e4ece7"
-  color-status-neutral-fg: "#4d6460"
-  color-chart-success: "#599a63"
-  color-chart-warning: "#d0a45c"
-  color-chart-danger: "#ca7469"
-  color-chart-neutral: "#7d9086"
-  color-chart-untested: "#baccc1"
+  color-status-danger-bg: "#FEE5E1"
+  color-status-danger-fg: "#91463E"
+  color-status-neutral-bg: "#E8EEF8"
+  color-status-neutral-fg: "#486080"
+  color-on-accent: "#12366B"
+  color-field-bg-strong: "#0057B8"
+  color-field-text: "#F5F7FC"
+  color-chart-success: "#599A63"
+  color-chart-warning: "#D0A45C"
+  color-chart-danger: "#CA7469"
+  color-chart-neutral: "#718CB4"
+  color-chart-untested: "#B8CAE8"
+  color-overlay: "color-mix(in srgb, #0F2343 91%, transparent)"
+  color-shadow-cover: "color-mix(in srgb, #080F20 19%, transparent)"
+  color-veil-light: "color-mix(in srgb, #FFFFFF 8%, transparent)"
+  color-veil-dark: "color-mix(in srgb, #12366B 5%, transparent)"
+  dark-color-bg-page: "#080F20"
+  dark-color-bg-surface: "#0F2343"
+  dark-color-text-primary: "#E8EEF8"
+  dark-color-text-primary-hover: "#8BC0FF"
+  dark-color-text-secondary: "#94ADD3"
+  dark-color-accent-strong: "#0070D1"
+  dark-color-focus-ring: "#B8D9FF"
+  dark-color-border-default: "#2C4F83"
+  dark-color-field-bg: "#080F20"
+  dark-color-code-bg: "#080F20"
+  dark-color-code-header-bg: "#0F2343"
+  dark-color-bg-subtle: "#12366B"
+  dark-color-status-success-bg: "#17401F"
+  dark-color-status-success-fg: "#C5E9C8"
+  dark-color-status-warning-bg: "#4C3303"
+  dark-color-status-warning-fg: "#E8C288"
+  dark-color-status-danger-bg: "#5B2923"
+  dark-color-status-danger-fg: "#FEB6AB"
+  dark-color-status-neutral-bg: "#12366B"
+  dark-color-status-neutral-fg: "#B8CAE8"
+  dark-color-field-bg-strong: "#0F2343"
+  dark-color-field-text: "#E8EEF8"
+  dark-color-chart-success: "#7CB984"
+  dark-color-chart-danger: "#E9958A"
+  dark-color-chart-neutral: "#94ADD3"
+  dark-color-chart-untested: "#2C4F83"
+  dark-color-overlay: "color-mix(in srgb, #080F20 95%, transparent)"
+  dark-color-veil-dark: "color-mix(in srgb, #B8D9FF 8%, transparent)"
 typography:
   display:
     fontFamily: "'Big Shoulders Variable', 'Arial Narrow', sans-serif"
@@ -97,7 +132,7 @@ rounded:
   chart-key: "2px"
   badge: "5px"
   filter: "6px"
-  control: "7px"
+  control: "10px"
   field: "8px"
   sleeve: "9px"
   media: "10px"
@@ -116,19 +151,20 @@ spacing:
   section-mobile: "65px"
 components:
   button-primary:
-    backgroundColor: "{colors.color-text-primary}"
-    textColor: "{colors.color-bg-page}"
+    backgroundColor: "{colors.color-action-bg}"
+    textColor: "{colors.color-action-text}"
     rounded: "{rounded.control}"
     padding: "15px 23px"
   button-primary-hover:
-    backgroundColor: "{colors.color-text-primary-hover}"
+    backgroundColor: "{colors.color-action-hover}"
   button-light:
     backgroundColor: "{colors.color-accent}"
-    textColor: "{colors.color-text-primary}"
+    textColor: "{colors.color-on-accent}"
     rounded: "{rounded.control}"
     padding: "15px 23px"
   button-light-hover:
-    backgroundColor: "{colors.color-bg-page}"
+    backgroundColor: "{colors.color-field-text}"
+    textColor: "{colors.color-on-accent}"
   button-secondary:
     textColor: "{colors.color-text-primary}"
     rounded: "{rounded.control}"
@@ -170,62 +206,46 @@ components:
 
 **Creative North Star: "The Living Game Collection"**
 
-A gaming magazine brought to the web: oversized condensed headlines, cool paper, forest teal and mint, with official game artwork handled like a collection of physical sleeves. The visual language is confident and approachable; technical evidence stays legible and connected to the game it describes.
+A gaming magazine brought to the web: oversized condensed headlines, cool console-shell surfaces, navy ink and PlayStation-inspired blue, with official game artwork handled like a collection of physical sleeves. The visual language is confident and approachable; technical evidence stays legible and connected to the game it describes.
 
-Open space and broad color fields pace the marketing pages. Compatibility lists, reports and documentation use the same palette with denser metadata, restrained dividers and clear controls. Official artwork, community captures and contributor avatars provide the visual content; no generated raster assets are required.
+Open space and broad color fields pace the marketing pages. Compatibility lists, reports and documentation use the same palette with denser metadata, restrained dividers and clear controls. Official artwork, community captures and contributor avatars provide the visual content. The exact project-owned winking cat/controller SVG supplies the identity in navigation, the hero and About; preserve its white/silver shading and black contours. No new raster assets are required.
 
 **Key Characteristics:**
 
 - Condensed display type with comfortable sans-serif reading copy.
-- Cool paper and forest-teal fields, punctuated by mint.
+- Console-shell silver and navy fields, punctuated by saturated and icy blue.
 - Physical sleeve geometry and real game imagery.
 - Quiet controls, explicit compatibility labels and readable technical evidence.
 
 This record describes the completed implementation in `src/tokens.css`, `src/styles.css` and the shared components. Token frontmatter is normative; the responsive and state details below explain how the implementation applies it. Component provenance is recorded in `COMPONENTS.md`.
 
 ## Colors
-Light mode retains the original cool paper, teal and mint palette. Dark mode uses forest grounds (`color-bg-page: #0a1c18`, `color-bg-surface: #132e29`) with pale green text (`color-text-primary: #e4ece7`). Mint remains the accent (`color-accent: #d4f5ab`). Dedicated `color-field-bg-strong`, `color-field-text` and `color-on-accent` tokens preserve contrast in full-color sections. Status chart colors correspond to the existing green/amber/red/gray vocabulary. Theme preference follows the system on first visit and persists once toggled; it is applied before React renders.
-
-The palette combines cool paper, deep forest teal and a light mint accent; compatibility states add a small semantic vocabulary.
+Light mode uses cool console-shell grounds, navy text, saturated blue actions and icy blue accents. Dark mode uses midnight-blue grounds with silver text. The frontmatter records light semantic roles under their source names and dark overrides with a `dark-` prefix; roles without a dark override retain their light value. Theme preference follows the system on first visit and persists once toggled; it is applied before React renders.
 
 ### Token structure
 
-Colors are defined in `src/tokens.css` in two layers. The core layer (`--core-color-*`) is a perceptual palette in OKLCH with a shared lightness scale of 11 tones (50-950) per family: one `teal` ramp, plus `lime`, `green`, `amber` and `red`, and the neutrals `neutral-0` (white) and `neutral-1000`. The teal hue drifts from 187 in the dark tones (the brand ink) to 160-165 in the light tints, matching the original site. The semantic layer (`--color-*`) assigns those tones to roles for light and dark themes, and components use only the semantic names.
-
-Four core tones are hand-tuned and not generated: `teal-900` (a compromise between the light-mode field and code backgrounds and the dark-mode surface) and the half-steps `teal-650`, `amber-650` and `red-650` (the original muted text and status foregrounds, between 600 and 700). Keep them if the palette is regenerated.
-
-### Adding a palette
-
-A new family is generated in OKLCH by keeping the shared lightness scale, so that the same tone number has the same lightness in every family and contrast between tones stays predictable across families:
-
-| Tone | 50 | 100 | 200 | 300 | 400 | 500 | 600 | 700 | 800 | 900 | 950 |
-|---|---|---|---|---|---|---|---|---|---|---|---|
-| L | 0.98 | 0.94 | 0.90 | 0.83 | 0.74 | 0.64 | 0.53 | 0.43 | 0.34 | 0.27 | 0.21 |
-
-1. Pick a hue (and a reference chroma) for the family. Chroma rises from near zero at tone 50 to its peak around tones 400-600 (about 0.10-0.11 for `amber`, `red` and `green`) and falls again toward 950. A hue may drift along the ramp, as `teal` does.
-2. For each tone, set OKLCH `L` from the table above (within about 0.01), the chosen hue and the chroma for that tone. Reduce the chroma until the color fits sRGB, and keep the lightness unchanged.
-3. Convert each tone to hex and declare `--core-color-<family>-<tone>` in the core layer of `src/tokens.css`. If a tone must be tuned by hand, mark it with a comment and list it in the paragraph above.
-4. Assign the new tones to roles in the semantic layer for both themes. Components never reference core tones directly.
-5. Check the contrast of every text/background pair that uses the new tones (at least AA, 4.5:1 for body text).
-
-The generated values are a starting point, not a rule. Small hand adjustments to a tone (a slight shift in hue, chroma or lightness) are fine when they make the palette more expressive, as with `teal-900` and the half-steps. Keep them subtle so the shared lightness scale still holds, mark them with a comment in `src/tokens.css` and recheck the contrast of the pairs they affect.
+Colors are defined in `src/tokens.css` in two layers. The core layer (`--core-color-*`) contains the blue, sky, green, amber and red families, each with tones 50–950, plus white and black. Blue also has the intermediate muted-text tone 650; amber and red retain hand-tuned 650 status foregrounds. The semantic layer (`--color-*`) assigns those colors to light and dark roles. Extend existing semantic roles before introducing another palette family, and check every text/background pair in both themes.
 
 ### Primary
 
-- **Forest Teal** (`color-text-primary`): primary text, actions, footer and feature fields. **Teal Hover** (`color-text-primary-hover`) is the primary button hover.
-- **Fresh Mint** (`color-accent`): contrast actions on teal, selected capture controls, the closing download band and decorative backing shapes. **Mint Edge** (`color-accent-strong`) defines the secondary orbit and occasional display emphasis.
+- **Console Blue** (`color-action-bg`, `color-action-hover`, `color-action-text`): primary action fill, deeper hover fill and white labels. Action colors are independent of ordinary text roles and retain their contrast in both themes.
+- **Ice Blue** (`color-accent`): actions on dark fields, selected capture controls, the closing download band and decorative backing shapes. **Signal Blue** (`color-accent-strong`) outlines the secondary orbit and supplies occasional display emphasis.
 
 ### Neutral
 
-- **Cool Paper** (`color-bg-page`): page ground and light text on teal.
-- **Soft Sage Paper** (`color-bg-surface`): fields, accordions, metadata blocks, table headers and hover surfaces.
-- **Muted Teal** (`color-text-secondary`): metadata and secondary controls. Main reading paragraphs use ink after the final stylesheet overrides.
-- **Sage Boundary** (`color-border-default`): functional control edges and real table dividers.
-- **Field Mist**, **Deep Field** and **Field Boundary** (`color-field-text-muted`, `color-field-bg`, `color-field-border`): secondary content and structure inside teal sections.
+- **Console Shell** (`color-bg-page`): the light page ground; midnight blue takes this role in dark mode.
+- **Silver Surface** (`color-bg-surface`): fields, accordions, metadata blocks, table headers and hover surfaces.
+- **Navy Ink** (`color-text-primary`) and **Slate Metadata** (`color-text-secondary`): principal and secondary text; dark overrides become silver and a lighter blue-gray respectively. Main reading paragraphs use the primary role after the final stylesheet overrides.
+- **Blue Boundary** (`color-border-default`): functional control edges and real table dividers.
+- **Field Silver**, **Midnight Field** and **Field Boundary** (`color-field-text-muted`, `color-field-bg`, `color-field-border`): secondary content and structure inside dark sections.
+- **Strong Field** (`color-field-bg-strong`, `color-field-text`): blue feature fields in light mode, midnight feature fields in dark mode, with dedicated light text.
+- **Accent Ink** (`color-on-accent`): stable navy text on icy-blue fields in both themes.
 - **Code Ground**, **Code Header** and **Code Label** (`color-code-bg`, `color-code-header-bg`, `color-code-text-muted`): terminal blocks and their header controls.
-- **Tab Ground** (`color-bg-subtle`): shared track behind paper active tabs.
-- **Focus Green** (`color-focus-ring`): keyboard focus outlines.
-- **Overlay**, **Light Wash** and **Teal Wash** (`color-overlay`, `color-veil-light`, `color-veil-dark`): modal dimming and subtle labels on contrasting surfaces.
+- **Tab Ground** (`color-bg-subtle`): shared track behind page-colored active tabs.
+- **Focus Blue** (`color-focus-ring`): keyboard focus outlines, with an icy-blue dark-mode override.
+- **Overlay**, **Light Wash** and **Blue Wash** (`color-overlay`, `color-veil-light`, `color-veil-dark`): modal dimming and subtle labels on contrasting surfaces.
+
+**The Action Contrast Rule.** Primary actions use the dedicated action roles. Light actions and icy-blue panels use Accent Ink; dark feature fields use their dedicated field-text role.
 
 ### Semantic status colors
 
@@ -284,22 +304,26 @@ Reduced-motion CSS shortens CSS animation and transition durations and removes s
 
 ## Shapes
 
-Controls use a small softened rectangle, with the canonical button radius at 7px. Fields and accordions use 8px; game images use 10px; larger panels and art frames use 12px. Status badges use 5px and remain compact rather than pill-shaped. Circular icon buttons, avatar crops, orbit forms and small status dots provide the rounded counterpoint.
+Controls use a small softened rectangle, with the canonical button radius at 10px. Fields and accordions use 8px; game images use 10px; larger panels and art frames use 12px. Status badges use 5px and remain compact rather than pill-shaped. Circular icon buttons, avatar crops, orbit forms and small status dots provide the rounded counterpoint.
 
 Functional boundaries are thin and restrained: one-pixel borders on secondary actions, icon buttons and table rows. Game sleeve edges clip their artwork; the main sleeve sits at a fixed negative angle with subtle pointer perspective. No shadow vocabulary is active in the stylesheet.
 
 ## Components
 
-Loading uses a compact, solid forest-teal kitten silhouette with rounded contours. Its twelve-frame gentle trot repeats every 960ms only while awaiting content; dark mode renders the silhouette white. Startup, lazy routes, catalog lookups, report fetching and release refreshes share the asset. Labels retain native status semantics, loading completion removes the artwork, and reduced-motion preferences select a static PNG through a native picture source. Startup artwork is included in the offline shell.
+Loading retains its compact, solid kitten silhouette with rounded contours, tinted blue in light mode and icy blue in dark mode by shared CSS. Its twelve-frame gentle trot repeats every 960ms only while awaiting content. Startup, lazy routes, catalog lookups, report fetching and release refreshes share the same tint and asset. Labels retain native status semantics, loading completion removes the artwork, and reduced-motion preferences select a static PNG through a native picture source with the same tint. Startup artwork is included in the offline shell.
 The navigation includes a labeled sun/moon theme button at every breakpoint. A compatibility summary appears above the home game carousel and on the compatibility route. Its segmented bar and legend expose exact counts and percentages; choosing a status opens its game filter. OS-specific summaries retain the full-collection denominator and explicitly include untested titles. Reduced-motion mode disables the hero crossfade without disabling automatic rotation.
+
+### Project identity
+
+Use the unmodified `public/images/project-icon.svg`, sourced from `KytyPS5/KytyPS5` at `docs/logo.svg`; provenance is in `design/project-icon/README.md`. Its white/silver cat/controller silhouette and black contours remain identical in both themes. The shared wordmark pairs it with the existing KytyPS5 lettering: the icon is 48px square by default, 42px at widths up to 900px and 40px at widths up to 680px. The hero signature is a small, rotated copy above the sleeve collection, sized with `clamp(52px, 6vw, 80px)` and automatic height. About places the same icon on an icy-blue panel at 160px square, reduced to 120px at widths up to 680px. Preserve the source artwork rather than redrawing or tinting it.
 
 ### Buttons
 
-Primary buttons are teal with paper labels, a minimum height of 54px and the frontmatter padding. Hover shifts to Teal Hover and lifts by 2px; active returns to the baseline and scales to 0.98. The light variant pairs mint with teal, changing to paper on hover. Secondary buttons use a transparent ground and a thin Sage Boundary edge, filling with Soft Sage Paper on hover. The compact header variant uses a 43px minimum height and 11px / 16px padding on desktop. Disabled controls use 0.4 opacity. Keyboard focus uses a 3px Focus Green outline with a 5px offset.
+Primary buttons use Console Blue with white labels, a minimum height of 54px and the frontmatter padding. Hover shifts to the deeper action hover and lifts by 2px; active returns to the baseline and scales to 0.98. The light variant pairs Ice Blue with Accent Ink, changing to the field-text ground on hover. Secondary buttons use a transparent ground and a thin Blue Boundary edge, filling with Silver Surface on hover. The compact header variant uses a 43px minimum height and 11px / 16px padding on desktop. Disabled controls use 0.4 opacity. Keyboard focus uses a 3px Focus Blue outline with a 5px offset.
 
 ### Inputs and filters
 
-The search field is a full-width Soft Sage Paper surface with a search icon and clear action. Its desktop minimum height is 58px; focus-within adds a 2px teal outline with a 2px offset. Status filter buttons wrap naturally; selected filters reverse to teal and paper. OS and sorting controls remain native selects with compact labels.
+The search field uses a full-width Silver Surface field with a search icon and clear action. Its desktop minimum height is 58px; focus-within adds a 2px primary-text outline with a 2px offset. Status filter buttons wrap naturally; selected filters reverse primary text and page roles. OS and sorting controls remain native selects with compact labels.
 
 ### Status badges
 
@@ -309,15 +333,15 @@ Each state combines semantic foreground, pale background, a small current-color 
 
 Featured sleeves and cards are the nine most recently tested titles with cover artwork in descending report-date order. Their badges refer to the latest report's platform, named in the hero caption and in a quiet 13px date/platform line beneath each featured card. The full compatibility collection keeps its overall/per-platform filter semantics. Captures also use newest-first report order; the quick selector covers three distinct recently captured games. Live refresh can replace the selections without a route change.
 
-A game card places a 1 / 1.08 artwork frame above its title and status. Hover gently enlarges the image to 1.055 and reveals a circular arrow; keyboard focus reveals the same arrow. Missing artwork becomes a surface-colored gamepad fallback with the title. The hero expands this vocabulary into overlapping sleeves, a mint orbit and a linked caption. The label and report link update with the selected title; the artwork does not imply that a capture came from the emulator.
+A game card places a 1 / 1.08 artwork frame above its title and status. Hover gently enlarges the image to 1.055 and reveals a circular arrow; keyboard focus reveals the same arrow. Missing artwork becomes a surface-colored gamepad fallback with the title. The hero expands this vocabulary into overlapping sleeves, an icy-blue orbit and a linked caption. The label and report link update with the selected title; the artwork does not imply that a capture came from the emulator.
 
 ### Navigation and tabs
 
-The sticky paper header is 86px tall on desktop, with a subtle surface-colored shared highlight behind hovered or current navigation links and a 2px reading-progress line. Mobile navigation uses a paper dialog with large condensed links, overlay, close control and scrollable overflow. Platform tabs use a sage track and paper active background, with keyboard behavior supplied by Radix. Active capture selection uses mint against teal.
+The sticky paper header is 86px tall on desktop, with a subtle surface-colored shared highlight behind hovered or current navigation links and a 2px reading-progress line. Mobile navigation uses a paper dialog with large condensed links, overlay, close control and scrollable overflow. Platform tabs use a subtle blue track and page-colored active background, with keyboard behavior supplied by Radix. Active capture selection uses Ice Blue with Accent Ink against the strong field.
 
 ### Accordions
 
-FAQ items sit on Soft Sage Paper with 8px corners and a 9px vertical gap. The plus rotates by 45 degrees when open; the answer expands with the ease-out curve. Radix supplies disclosure and keyboard semantics. Reading answers retain the 16px paragraph rule.
+FAQ items sit on Silver Surface with 8px corners and a 9px vertical gap. The plus rotates by 45 degrees when open; the answer expands with the ease-out curve. Radix supplies disclosure and keyboard semantics. Reading answers retain the 16px paragraph rule.
 
 ### Code, reports and notices
 
@@ -329,7 +353,8 @@ Terminal blocks use Code Ground with a contrasting header, a small dot and a cop
 
 ### Do:
 
-- Do use the existing color and typography tokens across every route.
+- Do use the existing semantic color and typography tokens across every route.
+- Do retain the exact project-owned cat/controller SVG and the dedicated action/field contrast roles in both themes.
 - Do keep reading paragraphs at 16px, with the hero introduction at 18px.
 - Do retain visible status text and source associations beside game imagery.
 - Do preserve focus outlines, native scrolling and reduced-motion fallbacks.
@@ -340,4 +365,5 @@ Terminal blocks use Code Ground with a contrasting header, a small dot and a cop
 - Don't treat official game artwork as proof of emulator output.
 - Don't use an in-game badge to promise playability or performance.
 - Don't introduce box shadows, glass panels or a new accent palette into this flat system.
+- Don't use the brand blues to replace the green, amber and red compatibility status meanings.
 - Don't turn metadata into oversized display type or shrink reading paragraphs to metadata size.

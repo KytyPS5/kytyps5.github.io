@@ -114,26 +114,7 @@ function Hero() {
       <div className="hero-visual">
         <div className="visual-orbit orbit-one" aria-hidden="true" />
         <div className="visual-orbit orbit-two" aria-hidden="true" />
-        <svg
-          className="hero-star star-one"
-          viewBox="0 0 60 60"
-          fill="none"
-          stroke="currentColor"
-          strokeWidth="2"
-          aria-hidden="true"
-        >
-          <path d="M30 3v54M3 30h54M11 11l38 38M11 49l38-38" />
-        </svg>
-        <svg
-          className="hero-star star-two"
-          viewBox="0 0 40 40"
-          fill="none"
-          stroke="currentColor"
-          strokeWidth="2"
-          aria-hidden="true"
-        >
-          <path d="M20 3v34M3 20h34" />
-        </svg>
+        <img className="hero-project-icon" src="/images/project-icon.svg" width="80" height="80" alt="" aria-hidden="true" />
         <HeroDeck games={heroGames} active={selected} onSelect={setActive} />
         {game && (
           <>

@@ -66,14 +66,14 @@
 }
 :root[data-theme="dark"] .platform-1 .platform-card-heading > span,
 :root[data-theme="dark"] .download-platform-2 .download-platform-top > span {
-  background: color-mix(in srgb, var(--core-color-teal-800) 7%, transparent);
+  background: color-mix(in srgb, var(--core-color-blue-800) 7%, transparent);
 }
 :root[data-theme="dark"] .hero-main-card {
-  background: var(--core-color-teal-50);
-  color: var(--core-color-teal-800);
+  background: var(--core-color-blue-50);
+  color: var(--core-color-blue-800);
 }
 :root[data-theme="dark"] .game-sleeve {
-  color: var(--core-color-teal-800);
+  color: var(--core-color-blue-800);
 }
 :root[data-theme="dark"] .hero-game-caption .status-in-game {
   background: var(--core-color-green-100);

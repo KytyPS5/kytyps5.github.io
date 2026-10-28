@@ -3,7 +3,7 @@
   <head>
     <meta charset="UTF-8" />
     <meta name="viewport" content="width=device-width, initial-scale=1.0" />
-    <meta name="theme-color" content="#073f3b" />
+    <meta name="theme-color" content="#0070d1" />
     <script>
       (() => {
         const route = new URLSearchParams(location.search).get("__kyty_path");
@@ -82,7 +82,7 @@
         justify-content: center;
         gap: 12px;
         min-height: 200px;
-        color: var(--color-text-secondary, #496660);
+        color: var(--color-text-secondary, #486080);
         font-family: var(--font-body, "Public Sans Variable", sans-serif);
         font-size: 16px;
         line-height: 1.65;
@@ -98,6 +98,8 @@
         display: block;
         width: 104px;
         aspect-ratio: 5 / 4;
+        /* Tint both animated and reduced-motion artwork without changing frames. */
+        filter: brightness(0) saturate(100%) invert(31%) sepia(100%) saturate(1969%) hue-rotate(187deg) brightness(87%) contrast(107%);
       }
       .kitty-loader-art img {
         display: block;
@@ -112,15 +114,15 @@
         height: 37px;
       }
       :root[data-theme="dark"] .kitty-loader-art {
-        filter: brightness(0) invert(1);
+        filter: brightness(0) saturate(100%) invert(85%) sepia(19%) saturate(811%) hue-rotate(181deg) brightness(102%) contrast(101%);
       }
       :root[data-theme="dark"] #root > .kitty-loader {
-        background: #0e1a18;
-        color: #a5bdae;
+        background: #080f20;
+        color: #b8cae8;
       }
       body:has(#root > .kitty-loader) {
         margin: 0;
-        background: #f7f9f8;
+        background: #f5f7fc;
       }
     </style>
     <title>KytyPS5 — Beyond the console</title>

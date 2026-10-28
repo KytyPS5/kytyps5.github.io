@@ -125,3 +125,18 @@ Inspected the home page at desktop, tablet and phone widths and all resource/det
 - External download links point to actual current GitHub release assets. Browser checks verify the URLs and interactions; they do not download or execute emulator archives.
 - Browser fallback behavior uses saved compatibility/GitHub data. Remote artwork, captures and full reports require a successful first fetch before they are available offline. Cache entries expire or are evicted within bounded storage; missing images retain a readable fallback. Emulator archives are not cached.
 - This is a local preview. No remote deployment or upstream repository modification was performed.
+
+## Local blue/icon preview — 2026-10-28
+
+The brand refresh uses the exact main-project cat/controller SVG, PlayStation-inspired blue actions, cool silver surfaces and a midnight-blue dark theme. Compatibility status colors and existing navigation/interaction behavior remain distinct and intact. This section records local verification before publication.
+
+- Final production build and type checking pass. The full browser CI suite passes, covering history/filter restoration, reports, featured content, card movement, community content, integration parity and offline behavior.
+- Final targeted cache/ripple checks pass; a separate production check confirms the new project icon and favicon are precached and the header icon renders after an offline reload.
+- Eighteen light/dark route and viewport states at 1440/768/390px have no document overflow or runtime errors. Seven measured text/action color pairs per state meet at least 4.95:1 contrast. These measurements do not claim a complete accessibility audit.
+- The homepage capture slideshow was paused and its image decoded before final full-page screenshots. About icon evidence was decoded before capture. Final images are under `.impeccable/review/blue-brand/`; historical inspector contact sheets can include unsettled offscreen images and are not the final visual evidence.
+- The Impeccable source detector found no anti-patterns and retained 88 existing typography/radius advisory notes. Its unsupported `--format json` argument was ignored; this was a source scan, not rendered contrast analysis.
+- The Taste inspector reports zero failures with two documented classifier exceptions: `edge-text` counts code inside a clipped, horizontally scrollable preformatted block; `eyebrow` counts functional previous-section CTA links and the hero footer as decorative labels. Eight inherited composition/type warnings remain outside this palette/icon refinement.
+
+Separately authorized repository maintenance: 84 legacy-format reports were closed without deleting their histories; modern-format report #819 remains open. The MAIDEN-only grouping exception merged in website PR #1012 and its Pages deployment passed. The local branch has pulled that merged main state.
+
+The separate full visual review required only design-document synchronization. Its final targeted verdict is ship: that persistence fix is resolved; source UI was unchanged during documentation. The subsequent loading-cat tint passed eight startup theme/motion/viewport states, including the animated GIF and reduced-motion PNG, and the production build.
