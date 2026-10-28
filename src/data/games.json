@@ -907,10 +907,6 @@
    "PPSA01558",
    "PPSA01559",
    "PPSA01560",
-   "PPSA01856",
-   "PPSA01857",
-   "PPSA01858",
-   "PPSA01859",
    "PPSA02998",
    "PPSA03152",
    "PPSA03153",
@@ -1789,6 +1785,26 @@
   "name": "U-NEXT",
   "region": "JA",
   "noStore": true
+ },
+ {
+  "conceptId": 235235,
+  "titleId": "PPSA01858",
+  "allTitleIds": [
+   "PPSA01856",
+   "PPSA01857",
+   "PPSA01858",
+   "PPSA01859"
+  ],
+  "name": "MAIDEN",
+  "region": "UP",
+  "cover": "https://image.api.playstation.com/vulcan/ap/rnd/202101/0813/mjtDBltmb4XyEjR599l1pRFa.png",
+  "publisher": "Capcom U.S.A., Inc.",
+  "releaseDate": "2021-01-21T23:00:00Z",
+  "genres": [
+   "Action",
+   "Horror"
+  ],
+  "enriched": true
  },
  {
   "conceptId": 233202,

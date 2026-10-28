@@ -8,10 +8,6 @@ Only `trusted: true` in report frontmatter can supply existing approval, and its
 
 The poller reconciles inherited `trusted` labels on mirrors as it visits their source issues, preserving explicit approvals and revocations. Closed mirrors receive label corrections without being reopened solely for that correction. The mirrored reports remain available for normal maintainer review. Existing published report files and their content are not rewritten by this fix.
 
-## Report freshness and PR attribution
+## MAIDEN grouping exception
 
-Each mirror now uses `compat/<game>-<os>-issue-<mirror number>` for its conversion PR. Re-running `/compat` on the same mirror updates its own pending PR. Different mirrors for the same game/OS get separate PRs, preserving each report's body, source link and mirror marker. This prevents the older MAIDEN mirror #955 from overwriting the pending conversion of mirror #978, as happened in PR #984.
-
-Before replacing or retiring any report files, the converter checks every report for the same canonical game and operating system. It refuses an older test date from a different source. For reports tested on the same date in the same upstream repository, the lower issue number is treated as older. A refusal leaves all existing files intact and uses the existing workflow failure handling; it does not silently publish stale data.
-
-Edits to the same source remain convertible, and a newer source can report a lower compatibility status. Reports for other operating systems do not block conversion. The published storage remains one report per game/OS, and trust still requires approval for that specific source. These safeguards do not change `/compat`, `/trusted` or field-override authorization.
+MAIDEN's regional IDs `PPSA01856`, `PPSA01857`, `PPSA01858` and `PPSA01859` resolve to their own group under `PPSA01858`, separately from Resident Evil Village. All other titles retain their original concept-based grouping, including Village's other demos and translations. Weekly imports preserve the exception; refresh merging keeps its product metadata and manual flags separate from the concept's default full game. Existing canonical-game/OS matching then separates MAIDEN conversion, validation, history, aliases and exports without changing report commands or applying a general per-PPSA policy.

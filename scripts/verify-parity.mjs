@@ -48,11 +48,12 @@ console.log(
 
 // These operational workflows/scripts must remain byte-identical to the original
 // migration baseline. CI and catalog-PR gates have separate, additive UI checks.
-// The converter, poller and status-issues helper include reviewed trust/freshness
-// fixes covered by actual CLI regression tests. The conversion workflow's
-// source-isolated branches are checked structurally against its baseline below.
+// The converter, poller and status-issues helper intentionally differ only for
+// source-scoped trust. trust-pipeline.test.mjs exercises both actual CLIs;
+// status-issues.test.mjs covers maintainer overrides and the trust boundary.
 const unchanged = [
   ".github/workflows/compat-issues.yml",
+  ".github/workflows/compat-convert.yml",
   ".github/workflows/compat-set-fields.yml",
   ".github/workflows/refresh-data.yml",
   ".github/workflows/deploy.yml",
@@ -62,7 +63,6 @@ const unchanged = [
   "scripts/export-compat-json.mjs",
   "scripts/lib/compat-export.mjs",
   "scripts/lib/updates-feed.mjs",
-  "scripts/lib/transform.mjs",
 ];
 for (const file of unchanged) {
   const baseline = execFileSync("git", ["show", `8adc056:${file}`], {
@@ -74,34 +74,43 @@ for (const file of unchanged) {
     file,
   );
 }
-const conversionPath = ".github/workflows/compat-convert.yml";
-const expectedConversion = parseYaml(
-  execFileSync("git", ["show", `8adc056:${conversionPath}`], {
-    encoding: "utf8",
-  }),
-);
-const conversionSteps = expectedConversion.jobs.convert.steps;
-const reportBranch =
-  "compat/${{ steps.convert.outputs.slug }}-issue-${{ steps.issue_context.outputs.mirror_number }}";
-conversionSteps.find((step) => step.id === "cpr").with.branch = reportBranch;
-const prFailure = conversionSteps.find(
-  (step) => step.name === "Fail the job if the report PR could not be opened",
-);
-prFailure.env = { REPORT_BRANCH: reportBranch };
-prFailure.run = prFailure.run
-  .replace("branch compat/%s", "branch %s")
-  .replace('"$SLUG"', '"$REPORT_BRANCH"');
-const autoMerge = conversionSteps.find((step) => step.id === "auto_merge");
-delete autoMerge.env.SLUG;
-autoMerge.env.REPORT_BRANCH = reportBranch;
-autoMerge.run = autoMerge.run.replace(
-  '--head "compat/${SLUG}"',
-  '--head "$REPORT_BRANCH"',
-);
-assert.deepEqual(
-  parseYaml(await readFile(conversionPath, "utf8")),
-  expectedConversion,
-  "conversion workflow differs beyond the reviewed source-isolated branch change",
+// Only MAIDEN's explicit group identity and product metadata may differ from
+// the original catalog transform; other import/refresh behavior stays exact.
+const transformPath = "scripts/lib/transform.mjs";
+const expectedTransform = execFileSync(
+  "git",
+  ["show", `8adc056:${transformPath}`],
+  { encoding: "utf8" },
+)
+  .replace(
+    "// deduplication, and refresh-merging that preserves enrichment + overrides.\n",
+    '// deduplication, and refresh-merging that preserves enrichment + overrides.\nimport { catalogGroupKey, withGroupMetadata } from "./game-group-exceptions.mjs";\n',
+  )
+  .replace(
+    "if (!byConcept.has(row.conceptId)) byConcept.set(row.conceptId, []);\n    byConcept.get(row.conceptId).push(row);",
+    "const key = catalogGroupKey(row);\n    if (!byConcept.has(key)) byConcept.set(key, []);\n    byConcept.get(key).push(row);",
+  )
+  .replace(
+    "for (const [conceptId, list] of byConcept)",
+    "for (const list of byConcept.values())",
+  )
+  .replace(
+    "games.push({\n      conceptId,",
+    "games.push(withGroupMetadata({\n      conceptId: primary.conceptId,",
+  )
+  .replace(
+    "region: primary.region,\n    });",
+    "region: primary.region,\n    }));",
+  )
+  .replace(
+    "existing.map((g) => [g.conceptId, g])",
+    "existing.map((g) => [catalogGroupKey(g), g])",
+  )
+  .replace("prev.get(g.conceptId)", "prev.get(catalogGroupKey(g))");
+assert.equal(
+  (await readFile(transformPath, "utf8")).replace(/\r\n/g, "\n"),
+  expectedTransform.replace(/\r\n/g, "\n"),
+  "catalog transform differs beyond the MAIDEN-only exception",
 );
 for (const file of await readdir(".github/workflows")) {
   const workflow = parseYaml(

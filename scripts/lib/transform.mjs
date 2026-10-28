@@ -1,5 +1,6 @@
 // Title-list transforms: regional-ID stripping, junk filtering, concept
 // deduplication, and refresh-merging that preserves enrichment + overrides.
+import { catalogGroupKey, withGroupMetadata } from "./game-group-exceptions.mjs";
 
 const REGION_RANK = { UP: 0, EP: 1, JP: 2 };
 export function regionRank(region) {
@@ -23,31 +24,32 @@ export function dedupeByConcept(rows) {
   const byConcept = new Map();
   for (const row of rows) {
     if (isJunk(row)) continue;
-    if (!byConcept.has(row.conceptId)) byConcept.set(row.conceptId, []);
-    byConcept.get(row.conceptId).push(row);
+    const key = catalogGroupKey(row);
+    if (!byConcept.has(key)) byConcept.set(key, []);
+    byConcept.get(key).push(row);
   }
   const games = [];
-  for (const [conceptId, list] of byConcept) {
+  for (const list of byConcept.values()) {
     list.sort(
       (a, b) => regionRank(a.region) - regionRank(b.region) || a.titleId.localeCompare(b.titleId),
     );
     const primary = list[0];
-    games.push({
-      conceptId,
+    games.push(withGroupMetadata({
+      conceptId: primary.conceptId,
       titleId: stripSuffix(primary.titleId),
       allTitleIds: [...new Set(list.map((r) => stripSuffix(r.titleId)))].sort(),
       name: primary.name,
       region: primary.region,
-    });
+    }));
   }
   return games.sort((a, b) => a.titleId.localeCompare(b.titleId));
 }
 
 /** Preserve enrichment + manual overrides across database refreshes. */
 export function mergeExisting(fresh, existing) {
-  const prev = new Map(existing.map((g) => [g.conceptId, g]));
+  const prev = new Map(existing.map((g) => [catalogGroupKey(g), g]));
   return fresh.map((g) => {
-    const old = prev.get(g.conceptId);
+    const old = prev.get(catalogGroupKey(g));
     if (!old) return g;
     // Manual flags (commentsDisabled, noStore) survive refreshes even for
     // entries that aren't enriched yet — including hand-completed entries.

@@ -45,9 +45,8 @@ import {
   reportOs,
   reportTitleId,
   reportTrusted,
-  reportTestedDate,
 } from "./lib/status-issues.mjs";
-import { reportTrustSource, sourceIssueKey, sourceReportTrusted } from "./lib/report-trust.mjs";
+import { reportTrustSource, sourceReportTrusted } from "./lib/report-trust.mjs";
 
 const ROOT = path.resolve(path.dirname(fileURLToPath(import.meta.url)), "..");
 const DIR = path.join(ROOT, "src", "content", "compat");
@@ -317,35 +316,20 @@ await mkdir(DIR, { recursive: true });
 const games = JSON.parse(await readFile(GAMES_FILE, "utf8"));
 const gameKey = gameKeyFor(titleId, games);
 let existingTrusted = false;
-const incomingSource = sourceIssueKey(sourceUrl);
-const retiredFiles = [];
 
-// Check every matching report before retiring any files. A delayed /compat on
-// an older source must not replace a newer published result for this game/OS.
+// Scan existing reports for the same (game, OS) to retire old slugs and detect trust
 for (const file of await readdir(DIR)) {
   if (!file.endsWith(".md")) continue;
   const raw = await readFile(path.join(DIR, file), "utf8");
   const otherKey = reportTitleId(raw);
   const otherOs = reportOs(raw);
   if (otherKey && otherOs === os && gameKeyFor(otherKey, games) === gameKey) {
-    const existingSource = reportTrustSource(raw);
-    const existingDate = reportTestedDate(raw);
-    const sameSource = Boolean(incomingSource && incomingSource === existingSource);
-    const [incomingRepo, incomingNumber] = incomingSource?.split("#") ?? [];
-    const [existingRepo, existingNumber] = existingSource?.split("#") ?? [];
-    const olderOnSameDay = date === existingDate && incomingRepo && incomingRepo === existingRepo && Number(incomingNumber) < Number(existingNumber);
-    if (!sameSource && existingDate && (date < existingDate || olderOnSameDay)) {
-      console.error(`[issue-to-compat] Refusing an older source report (${date}); ${file} already records a newer report (${existingDate}). Convert the newer mirror instead.`);
-      process.exit(1);
-    }
     if (sourceReportTrusted({ report: { trusted: reportTrusted(raw), trustSource: reportTrustSource(raw) }, sourceUrl })) existingTrusted = true;
-    if (file !== `${slug}.md`) retiredFiles.push(file);
+    if (file !== `${slug}.md`) {
+      await unlink(path.join(DIR, file));
+      console.log(`[issue-to-compat] retired ${file} — same (game, OS), replaced by ${slug}.md`);
+    }
   }
-}
-
-for (const file of retiredFiles) {
-  await unlink(path.join(DIR, file));
-  console.log(`[issue-to-compat] retired ${file} — same (game, OS), replaced by ${slug}.md`);
 }
 
 const isTrusted = intake.trusted !== undefined ? intake.trusted : existingTrusted;

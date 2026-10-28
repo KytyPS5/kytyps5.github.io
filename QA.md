@@ -1,14 +1,8 @@
 # Verification
 
-## Report provenance and partial releases (#984 / #983)
+## MAIDEN-only grouping exception
 
-Reproduced the MAIDEN collision: converting mirror #978 and then older mirror #955 reused `compat/maiden-linux`, replacing the pending PR's report and attribution. Conversion branches now include the mirror number. Six new regressions execute the actual converter in isolated directories and check branch isolation, older-source refusal, same-date issue ordering, same-source reconversion, newer lower-status results, regional identity, platform isolation and file preservation on refusal. All 235 unit tests pass after the normal data export.
-
-Restored `maiden-linux.md` from mirror #978 / upstream KytyPS5 issue #1864, including its 2026-10-23 build, test date, hardware and crash details. The exported API identifies #1864 as its source even though the report's extra notes also mention the earlier issue. The original workflow authorization, triggers, auto-merge and failure handling pass structural comparison with the baseline, allowing only the reviewed source-branch changes.
-
-Reproduced #983's failed download assertion with a release lacking platform archives. The browser suite now uses controlled complete/partial release fixtures, checks exact archive links and checksum exclusion, and verifies missing-platform fallback and recovery after refresh. The existing download behavior needed no production change. The update was pushed to #983; its CI passed, existing auto-merge completed and Pages deployed both new fork listings with their intended game IDs.
-
-The authenticated production build and complete `npm run test:ci` browser/offline pipeline pass, including the nine general journey groups and original API/feed/catalog/sitemap/workflow parity. The build retains its existing large-chunk advisory. Tests used local fixtures without posting commands to live issues.
+MAIDEN's four regional IDs now form one separate compatibility group under `PPSA01858`; every other concept retains its existing grouping. Regression tests first reproduced the combined group, cross-group metadata overwrite during refresh, and rejected same-OS reports. All 233 unit tests pass with the exception, including preservation of unrelated localized titles and Village's other demos. The authenticated production build, report validation, full browser/offline pipeline and original workflow/API parity checks pass. The peak registry retains MAIDEN's historical evidence under its new canonical group; its aliases and runtime exports are regenerated. The Linux report also uses the corrected source #1864 from mirror #978. No general report-conversion workflow or command changes are included.
 
 ## Explicit fork-lineage override
 
