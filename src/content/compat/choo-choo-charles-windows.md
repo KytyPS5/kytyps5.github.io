@@ -1,46 +1,24 @@
 ---
-title: "CHOO CHOO CHARLES"
+title: "Choo Choo Charles"
 titleId: "PPSA17313"
-status: "doesnt-boot"
-testedVersion: "LATEST VERSION CAF LATEST WORD"
-testedDate: "2026-09-30"
+status: "main-menu"
+testedVersion: "KytyPS5-2026-10-29-5e837a9-Windows-x64"
+testedDate: "2026-10-29"
 os: "windows"
-hardware: "I7 9700 / GTX 1060 6GB / 24GB RAM DDR4"
-screenshots: ["https://github.com/user-attachments/assets/2e636c45-f670-47c6-a4c1-560201852d93"]
+hardware: "Intel(R) Core(TM) i9-10850K CPU @ 3.60GHz (3.60 GHz) / NVIDIA GeForce RTX 3060 (12 GB) / 32.0 GB DDR4 System RAM and 12gb VRAM"
 ---
 
-NOT OPENING
+Game booted, correctly to the main menu with no graphical issues, clicked start and was able to watch the opening cutscene, after the cutscene finished the game crashed with unknown exception error
 
 ## Steps to reproduce
 
-?
+1: Open Kytyps5
+2: launch Choo Choo Charles
+3: Press start or new game to play the cutscene
+4: watch cutscene until crash occurs
 
 ## Expected behavior
 
-NOT OPENING
+Game should make it past opening cutscene and into gameplay
 
-## Extra notes
-
-Initialized: Config
-Initialized: Log
-Initialized: Timer
-Initialized: Pthread
-Tracy profiler enabled: client 0.14.1, protocol 82, broadcast 3, connect to 127.0.0.1:8086
-Initialized: Profiler
-Initialized: Network
-Initialized: Memory
-Initialized: FileSystem
-Initialized: Controller
-Initialized: Audio
---- Build ---
-Official build KytyPS5-2026-09-30-8ba2caf
---- Error ---
-Could not find suitable device:
-  NVIDIA GeForce GTX 1060 6GB: fragmentShaderBarycentric is not supported in D:\a\KytyPS5\KytyPS5\src\graphics\presentation\window\vulkanWindow.cpp:933
-
-E:\PROGRAMS\KytyPS5-2026-09-30-8ba2caf-Windows-x64>
- 
-
-HOW TO FIX IM GTX 1060 6GB
-
-> Source: [KytyPS5 issue #944](https://github.com/KytyPS5/KytyPS5/issues/944)
+> Source: [KytyPS5 issue #1982](https://github.com/KytyPS5/KytyPS5/issues/1982)
