@@ -1,24 +1,30 @@
 ---
 title: "Clair Obscur: Expedition 33"
 titleId: "PPSA17599"
-status: "main-menu"
-testedVersion: "v0.3.0 2026-10-12"
-testedDate: "2026-10-14"
+status: "in-game"
+testedVersion: "0.3.0 5e837a9"
+testedDate: "2026-10-29"
 os: "windows"
-hardware: "AMD Ryzen 9 5950X / NVIDIA Geforce RTX 5070 TI / 64GB DDR4 RAM / 16GB VRAM"
-screenshots: ["https://github.com/user-attachments/assets/6b72888f-2b27-41e4-925f-00faebf815d2","https://github.com/user-attachments/assets/fa320054-6681-4e8f-b969-cf2a871a9ce7","https://github.com/user-attachments/assets/c39a5c45-c883-4717-b994-7426547fcfc8"]
+hardware: "AMD Ryzen 7 7700X / AMD Radeon RX 9070XT / 32GB DDR5 RAM / 16GB VRAM"
+screenshots: ["https://github.com/user-attachments/assets/06a7af93-fca7-401a-b9d2-3c7aaf8da321","https://github.com/user-attachments/assets/133b6a67-118b-4c92-a939-7d89d797719a","https://github.com/user-attachments/assets/3441fc41-0223-4791-ba10-1f5ead101581","https://github.com/user-attachments/assets/e53109c2-f058-4143-8884-29c09984b2c8","https://github.com/user-attachments/assets/a60e0e3b-a26c-466e-b92e-fe4d5b0dea65","https://github.com/user-attachments/assets/36640478-4d7d-42fa-bf8d-7590603d414f","https://github.com/user-attachments/assets/214012ba-bec1-4e21-8ba4-59080b463751"]
 ---
 
-Loaded with vanilla settings, load into main menu.
-Going ingame lets is crash
+Game boots, select new game, cutscene plays then goes in game and controllable by the player.
+
+Poor frame rate, choppy audio and minor graphical issues.
 
 ## Steps to reproduce
 
-Open KytyPS5
-Run the game with no setting adjustments
+Open Translator
+Boot Game
+Start New Game
 
 ## Expected behavior
 
-should render ingame
+Goes In game, as expected.
 
-> Source: [KytyPS5 issue #1500](https://github.com/KytyPS5/KytyPS5/issues/1500)
+## Extra notes
+
+Default settings.
+
+> Source: [KytyPS5 issue #1976](https://github.com/KytyPS5/KytyPS5/issues/1976)
