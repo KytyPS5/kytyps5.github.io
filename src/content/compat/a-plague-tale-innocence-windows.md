@@ -1,0 +1,57 @@
+---
+title: "A Plague Tale: Innocence"
+titleId: "PPSA02387"
+status: "doesnt-boot"
+testedVersion: "0.3.0 b65dd18"
+testedDate: "2026-10-30"
+os: "windows"
+hardware: "AMD Ryzen 7 7700X / AMD Radeon RX 9070XT / 32 GB RAM / 16GB VRAM"
+screenshots: ["https://github.com/user-attachments/assets/3567afa1-b09f-4456-a408-c07e20d83161"]
+---
+
+Attempt to boot the game.
+
+Crashes instantly.
+
+--- Guest fault context ---
+thread: MainThread
+rax=0000000000000000 rbx=0000000000000780 rcx=000000000000021c rdx=0000000000000000
+rsi=0000000000000001 rdi=000000100016baa0 rbp=00000007efdf2540 rsp=00000007efdf2510
+r8 =7ffffffffffffffc r9 =00000000000002c8 r10=0000000000000059 r11=00000000c0000001
+r12=0000000000000438 r13=00000000000003c0 r14=000000100016baa0 r15=0000001005db3800
+code (pc-48 .. pc+48, fault at byte 48):
+ 00 00 49 89 fe 8b 59 50 44 8b 61 54 41 89 dd 44
+ 89 e1 41 d1 ed d1 e9 48 85 c0 74 12 8b 50 08 41
+ 3b 96 c4 00 00 00 75 06 48 8b 50 18 eb 02 31 d2
+ 89 5a 20 44 89 62 24 49 8b 96 c8 00 00 00 48 8b
+ 52 18 44 89 6a 20 89 4a 24 48 8d 15 8a e3 27 01
+ 48 8b 7a 18 48 85 c0 74 12 8b 48 08 41 3b 8e c4
+stack:
+  0000000000000000 0000000000000002 00000007efdf2550 000000014191eee8
+  0000000000000002 0000001005db3800 00000007efdf25a0 00000009007b08f8
+  0000000000000002 0000bb8000000002 00646e7500000000 000000000000362a
+  deadbeef00000007 0000013ff7563c00 0000013ff748d1a0 0000013ff748d130
+  00000009007b0950 0000013f604569c0 00000007efdf2630 0000000140b677a1
+  0000013ff7563c00 0000013ff7563c00 00000007efdf2630 0000013ff748d820
+  0000000140b6c1c0 0000000000000000 0000000140b6c0f0 0000000000000008
+  0000013f00000002 0000000000000000 000000000000003f 000000000000003f
+--- Build ---
+Official build KytyPS5-2026-10-30-b65dd18
+--- Error ---
+Unhandled host exception: type=1 code=3221225477 pc=0x00000009007b1d66 access=2 address=0x0000000000000020
+ in D:\a\KytyPS5\KytyPS5\src\loader\runtimeLinker.cpp:721
+
+## Steps to reproduce
+
+Open Translator
+Boot game
+
+## Expected behavior
+
+Logo/splash screens would render before the main menu.
+
+## Extra notes
+
+Default settings
+
+> Source: [KytyPS5 issue #1994](https://github.com/KytyPS5/KytyPS5/issues/1994)
