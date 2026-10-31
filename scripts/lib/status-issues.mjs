@@ -489,7 +489,8 @@ export const CANDIDATE_TITLE_REGEX =
 
 /**
  * Test whether an upstream GitHub issue qualifies as a valid compatibility report candidate.
- * Strictly requires a parsable PPSA title ID, valid OS, valid compatibility status, and game title.
+ * Requires a parsable PPSA title ID, an OS field (normalized OR raw string that can be overridden via /setos),
+ * a compatibility status, and a game title.
  */
 export function isCandidateIssue(issue) {
   if (!issue || issue.pull_request) return false;
@@ -500,13 +501,16 @@ export function isCandidateIssue(issue) {
   const titleId = issueTitleId(body, title);
   if (!titleId || !/^PPSA\d{5}$/i.test(titleId)) return false;
 
-  // 2. Must have a valid OS
+  // 2. Must have an OS field (normalized OR raw string that can be overridden via /setos)
+  const sections = parseIssueBody(body);
+  const rawOs = cleanField(sections, "OS") || cleanField(sections, "Operating system");
   const os = issueOs(body);
-  if (!os) return false;
+  if (!os && !rawOs) return false;
 
-  // 3. Must have a valid compatibility status
+  // 3. Must have a compatibility status (normalized, title-derived, or raw string that can be overridden via /setstatus)
   const status = issueStatus(body, title);
-  if (!status) return false;
+  const rawStatus = cleanField(sections, "Compatibility status");
+  if (!status && !rawStatus) return false;
 
   // 4. Must have a game title (either from form or fallback title)
   const gameTitle = issueGameTitle(body) || title;

@@ -617,6 +617,13 @@ describe("isCandidateIssue", () => {
     expect(isCandidateIssue({ title: "[GAME BUG]: Demon Souls (BOOTS)" })).toBe(false);
   });
 
+  it("accepts candidate with raw OS or status needing override correction", () => {
+    const rawOs = UPSTREAM_BODY.replace("Windows 11", "26200.9457");
+    expect(isCandidateIssue({ title: "[GAME STATUS]: Absolum (In game)", body: rawOs })).toBe(true);
+    const unrecogOs = UPSTREAM_BODY.replace("Windows 11", "CustomOS");
+    expect(isCandidateIssue({ title: "[GAME STATUS] Stray", body: unrecogOs })).toBe(true);
+  });
+
   it("rejects issues missing OS", () => {
     const noOs = UPSTREAM_BODY.replace(/### OS\nWindows 11\n\n/, "");
     expect(isCandidateIssue({ title: "[GAME STATUS] Stray", body: noOs })).toBe(false);
