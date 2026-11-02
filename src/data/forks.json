@@ -1,7 +1,7 @@
 {
   "version": 1,
   "issueNumber": 932,
-  "lastCommentId": 6467762816,
+  "lastCommentId": 6572856618,
   "forks": [
     {
       "repositoryId": 1429901071,
@@ -109,6 +109,22 @@
       "addedBy": "DistantMyth",
       "sourceCommentId": 6467762816,
       "sourceUrl": "https://github.com/KytyPS5/kytyps5.github.io/issues/932#issuecomment-6467762816",
+      "lineageOverride": true
+    },
+    {
+      "repositoryId": 1392795473,
+      "repository": "TheCruZ/KytyPS5-GTA",
+      "url": "https://github.com/TheCruZ/KytyPS5-GTA",
+      "description": "KytyPS5 fork focused to make GTA work smoothly and find bugs to push to main repo",
+      "targetTitleIds": [
+        "PPSA03420"
+      ],
+      "archived": false,
+      "addedAt": "2026-11-02T08:45:13Z",
+      "updatedAt": "2026-11-02T08:45:13Z",
+      "addedBy": "DistantMyth",
+      "sourceCommentId": 6572856618,
+      "sourceUrl": "https://github.com/KytyPS5/kytyps5.github.io/issues/932#issuecomment-6572856618",
       "lineageOverride": true
     },
     {
