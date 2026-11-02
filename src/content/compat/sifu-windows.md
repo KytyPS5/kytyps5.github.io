@@ -1,46 +1,54 @@
 ---
 title: "Sifu"
-titleId: "PPSA03001"
-status: "doesnt-boot"
-testedVersion: "KytyPS5-2026-09-20-fe4f942"
-testedDate: "2026-09-20"
+titleId: "PPSA05132"
+status: "main-menu"
+testedVersion: "KytyPS5-2026-11-02-02b17af"
+testedDate: "2026-11-02"
 os: "windows"
-hardware: "Ryzen 7 5800x / RTX 5070ti / 32GB / 16GB VRAM"
+hardware: "AMD Ryzen 7 5800X / AMD Radeon RX 9070 XT / 16 GB DDR4 RAM / 16 GB GDDR6 VRAM"
+screenshots: ["https://github.com/user-attachments/assets/cf7afa62-9c4b-4e1c-a14b-ff79d1995b6f","https://github.com/user-attachments/assets/8148456d-89dd-4016-aadf-e586867afda3","https://github.com/user-attachments/assets/38e22e5e-4129-44f8-b6d6-c2e70a291819","https://github.com/user-attachments/assets/5562b4e8-9b7c-467d-ac20-32a19e5d0aee","https://github.com/user-attachments/assets/0d7228b7-257b-49f7-8042-71257de3be0a"]
 ---
 
-Sifu starts loading and KytyPS5 successfully initializes graphics, compiles multiple compute, vertex and pixel shaders, and starts/stops several AvPlayer videos.
+Sifu boots successfully and progresses through the initial logos, audio configuration, display configuration, and difficulty selection screens before reaching the main menu.
 
-ATRAC9 audio decoding is also initialized.
+Working:
 
-After compiling additional shaders, the emulator crashes on RenderThread 1 with an unhandled host exception / access violation.
+Game launches.
+Initial logos play.
+Audio playback works.
+Audio and display settings are accessible.
+Difficulty selection.
+Main menu loads, including NEW GAME, CREDITS, and OPTIONS.
 
-The final error is:
+Issues:
+Selecting NEW GAME causes the emulator to crash before playable gameplay begins.
 
-Unhandled host exception: type=1 code=3221225477 pc=0x00000009050191b5 access=2 address=0x000000207d332400
+Severe graphical overexposure is visible in the background during the difficulty selection and main menu screens. Large portions of the image appear almost completely white, obscuring scene details.
 
-Reported from:
-
-src/loader/runtimeLinker.cpp:843
-
-At the time of the crash, the shader counters were:
-
-VS 11 | PS 11 | CS 37 | GS 0 | LS 0 | HS 0 | TES 0
+The emulator reports an unhandled access violation on RenderThread 1.
 
 ## Steps to reproduce
 
-Steps to reproduce the result
-Launch KytyPS5.
-Boot Sifu (PPSA03001).
-Wait for the game to initialize.
-Several videos/shaders are processed.
-Emulator crashes on RenderThread 1 with an unhandled host exception.
+Launch KytyPS5 build KytyPS5-2026-11-02-02b17af.
+Enable Windows SysV red-zone crash protection.
+Boot Sifu (PPSA05132, version 01.024.000).
+Wait for the startup logos and videos to finish.
+Complete the audio and display configuration screens.
+Select a difficulty.
+Observe the main menu and its heavily overexposed background.
+Select NEW GAME.
+The emulator crashes before gameplay begins.
 
 ## Expected behavior
 
-The game should continue booting instead of crashing on the render thread.
+The game should render the startup and menu backgrounds correctly, without severe overexposure or missing visual detail.
 
-## Last working build / first broken build
+Selecting NEW GAME should load the opening gameplay sequence and allow the player to begin playing without the emulator crashing.
 
-No known working build.
+## Extra notes
 
-> Source: [KytyPS5 issue #739](https://github.com/KytyPS5/KytyPS5/issues/739)
+With Windows SysV red-zone crash protection enabled, the game reaches the main menu.
+
+With the protection disabled in an earlier test, the game crashed after the initial logos, before reaching the main menu.
+
+> Source: [KytyPS5 issue #2073](https://github.com/KytyPS5/KytyPS5/issues/2073)
