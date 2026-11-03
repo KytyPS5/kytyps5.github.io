@@ -1,7 +1,7 @@
 {
   "version": 1,
   "issueNumber": 932,
-  "lastCommentId": 6572856618,
+  "lastCommentId": 6592443711,
   "forks": [
     {
       "repositoryId": 1429901071,
@@ -56,6 +56,22 @@
       "addedBy": "DistantMyth",
       "sourceCommentId": 6386494232,
       "sourceUrl": "https://github.com/KytyPS5/kytyps5.github.io/issues/932#issuecomment-6386494232",
+      "lineageOverride": true
+    },
+    {
+      "repositoryId": 1443507066,
+      "repository": "Erlou93/KytyPS5-Yotei",
+      "url": "https://github.com/Erlou93/KytyPS5-Yotei",
+      "description": "KytyPS5 fork for Ghost of Yōtei only",
+      "targetTitleIds": [
+        "PPSA26344"
+      ],
+      "archived": false,
+      "addedAt": "2026-11-03T00:52:34Z",
+      "updatedAt": "2026-11-03T00:52:34Z",
+      "addedBy": "DistantMyth",
+      "sourceCommentId": 6592443711,
+      "sourceUrl": "https://github.com/KytyPS5/kytyps5.github.io/issues/932#issuecomment-6592443711",
       "lineageOverride": true
     },
     {
