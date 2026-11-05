@@ -1,44 +1,30 @@
 ---
 title: "Silent Hill: Townfall"
 titleId: "PPSA33286"
-status: "doesnt-boot"
-testedVersion: "Official build KytyPS5-2026-10-10-307fdcf (Windows x64 release)"
-testedDate: "2026-10-10"
+status: "in-game"
+testedVersion: "0.3.0 4fec14a"
+testedDate: "2026-11-03"
 os: "windows"
-hardware: "Intel Core i7-11700KF / NVIDIA GeForce RTX 3070, driver 617.14 / 32 GB RAM / 8 GB VRAM"
+hardware: "AMD Ryzen 7 7700X / AMD Radeon RX 9070XT / 32 GB RAM / 16GB VRAM"
+screenshots: ["https://github.com/user-attachments/assets/7db7abca-c289-4a7a-98fb-1fa0772a4f19","https://github.com/user-attachments/assets/33ec5ab9-6e6d-41dc-b781-e3dacb229699","https://github.com/user-attachments/assets/6d075f9d-65dc-417c-9dd5-ef8a99bd914e","https://github.com/user-attachments/assets/fa74ccba-2078-48ae-8f7e-fb19cab3014a","https://github.com/user-attachments/assets/e82148d3-f056-4a05-b804-6ac1166cf81a"]
 ---
 
-The window opens with the game's title and stays black (49 frames, nothing drawn), then the emulator exits about 5 seconds after start. Same result on two runs:
+Game boots. Able to start new game and it goes in game and can be played.
 
-```
---- Error ---
-scalar resource reads overlap a shader buffer write
- in D:\a\KytyPS5\KytyPS5\src\graphics\host_gpu\renderer\pipeline\descriptors.cpp:978
-```
-
-By then it had compiled 1 vertex and 30 compute shaders. The only unresolved imports called are four `NpCppWebApi` functions (`8x++mBOUeso`, `Y295ygEccqk`, `UYPxv8MIzGo`, `52AlYvq+dmk`).
-
-**With open PR #1253** (its Windows CI build, `d53546a`), this error is gone. The title runs about 40 s on a cold shader cache (8 s on a warm one) and compiles 7 VS / 11 PS / 170 CS / 1 GS, then stops on a different error (window still black):
-
-```
-shader resource tracking: hash=0xb9da5e64f4c5b10a stage=compute pc=0x00000084 buffer descriptor is not a valid runtime value; GPU-selected access requires a scalar, raw DWORD x1/x2/x3/x4, or formatted X load in D:\a\KytyPS5\KytyPS5\src\graphics\shader\recompiler\ir\passes\ResourceTracking.cpp:506
-```
-
-The same message appears in #824, #1053 and #1278.
+Poor frame rate, audio is fine, no graphical corruption.
 
 ## Steps to reproduce
 
-1. `kyty_emulator.exe --game <game dir> --printf-direction File`
-2. Wait about 5 seconds.
+Open Translator
+Boot Game
+Start New Game
 
 ## Expected behavior
 
-The game shows its startup logos.
+Goes in game and is controllable, as expected.
 
 ## Extra notes
 
-Dump: v02.003.000 fake PKG, unpacked. The pkg's `sce_sys` sits one level deeper (`sce_sys/sce_sys`), so the game directory used for the test is a folder of links to the dump with `sce_sys` pointing at the inner one. Nothing in the dump was changed.
+Default settings.
 
-*Tested and written with Claude (AI assistant) on my machine.*
-
-> Source: [KytyPS5 issue #1373](https://github.com/KytyPS5/KytyPS5/issues/1373)
+> Source: [KytyPS5 issue #2080](https://github.com/KytyPS5/KytyPS5/issues/2080)
