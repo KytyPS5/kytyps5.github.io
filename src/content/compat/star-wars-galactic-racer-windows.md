@@ -1,32 +1,28 @@
 ---
 title: "Star Wars: Galactic Racer"
 titleId: "PPSA28416"
-status: "main-menu"
-testedVersion: "KytyPS5-2026-10-27-ffc8137"
-testedDate: "2026-10-27"
+status: "in-game"
+testedVersion: "KytyPS5-2026-11-07-589bd14"
+testedDate: "2026-11-07"
 os: "windows"
 hardware: "AMD Ryzen 9800X3D / NVIDIA GeForce RTX 5080 / 32 GB DDR5 RAM / 16 GB VRAM"
-screenshots: ["https://github.com/user-attachments/assets/a34b9207-14f0-493b-a0d8-eb9c049ca570","https://github.com/user-attachments/assets/328740f6-b9f6-4294-8d23-632ef2ac99db","https://github.com/user-attachments/assets/23c795a2-3b6a-434d-b34b-ef36b17b9080","https://github.com/user-attachments/assets/1d241421-264e-4e1e-ac88-3c3a08f519ea","https://github.com/user-attachments/assets/cb7d658b-2490-4c3b-ac60-744df3df1a78","https://github.com/user-attachments/assets/ad3e6be5-81dd-4d68-899e-cfb017ce558b","https://github.com/user-attachments/assets/ac53e5ac-6ea9-42df-9391-8d41d34f40bc"]
+screenshots: ["https://github.com/user-attachments/assets/b48d6646-a193-40f1-9d66-59a2183da645","https://github.com/user-attachments/assets/cc3c6082-01e7-4fe6-9ea6-12062ab49c25","https://github.com/user-attachments/assets/f66836c3-2c84-415d-bf74-1e627690d727","https://github.com/user-attachments/assets/e42b0f44-7ec6-4e01-97bf-c7d31e05b347","https://github.com/user-attachments/assets/e999589e-c55e-4cc0-bf79-d9de0412a55c"]
 ---
 
-The game is booting, the logos are appearing very slowly (2-3 fps) and we can hear the music.
-The main menu appears ... Slowly...
-When I started a race, it's crashing.
+The game is reaching ingame now with 0-5 fps.
+There are graphical artifacts on the race track (see screenshots).
+And finally it's crashing.
 
 ## Steps to reproduce
 
 Boot
-Main logo
-Main menu
-Launch a race
+Select mode
+Play
 
 ## Expected behavior
 
-No slowdown
+Run smoother
+No graphical artifacts
 No crash
 
-## Extra notes
-
-The 2 first attempts crashed at the first logo.
-
-> Source: [KytyPS5 issue #1943](https://github.com/KytyPS5/KytyPS5/issues/1943)
+> Source: [KytyPS5 issue #2152](https://github.com/KytyPS5/KytyPS5/issues/2152)
