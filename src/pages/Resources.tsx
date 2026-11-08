@@ -52,6 +52,7 @@ import { releaseAsset } from "../lib/github";
 import { QuickStart } from "../components/quick-start";
 import { KittyAnimation } from "../components/loading-state";
 import { forkManagementUrl, websiteRepo } from "../data/community-types";
+import { trackEvent } from "../lib/analytics";
 
 const osKeys = Object.keys(osNames) as OS[];
 const buildNotes: Record<OS, string> = {
@@ -168,6 +169,12 @@ export function DownloadPage() {
                   className={`button ${i === 0 ? "light" : ""}`}
                   href={
                     asset?.browser_download_url ?? `${repoUrl}/releases/latest`
+                  }
+                  onClick={() =>
+                    trackEvent("download_click", {
+                      platform: os,
+                      file_name: asset?.name ?? "release-archive",
+                    })
                   }
                 >
                   <Download size={18} />
@@ -662,7 +669,12 @@ export function About() {
             THE BEGINNING.
           </h2>
           <div className="about-logomark" aria-hidden="true">
-            <img src="/images/project-icon.svg" width="160" height="160" alt="" />
+            <img
+              src="/images/project-icon.svg"
+              width="160"
+              height="160"
+              alt=""
+            />
             <span>C++ / Vulkan 1.3</span>
           </div>
         </div>

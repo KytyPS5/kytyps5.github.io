@@ -51,6 +51,7 @@ import { CompatibilitySummary } from "../components/compatibility-summary";
 import { CompatibilityRegression } from "../components/compatibility-regression";
 import { cachedJson } from "../lib/cache";
 import { pageMetadata } from "../lib/page-metadata";
+import { trackPageView } from "../lib/analytics";
 import { LoadingState } from "../components/loading-state";
 import { GameCommunityResources } from "../components/community-resources";
 import { useGameReports } from "../hooks/use-game-reports";
@@ -162,7 +163,7 @@ function CatalogGamePage({ titleKey }: { titleKey: string }) {
         );
         setCatalogGame(match ?? null);
         setLoading(false);
-        if (match)
+        if (match) {
           pageMetadata(
             `/game/${encodeURIComponent(titleKey)}`,
             `${match.name} compatibility`,
@@ -173,6 +174,11 @@ function CatalogGamePage({ titleKey }: { titleKey: string }) {
               canonicalPath: `/game/${encodeURIComponent(match.titleId)}`,
             },
           );
+          trackPageView(
+            `/game/${encodeURIComponent(titleKey)}`,
+            `KytyPS5 — ${match.name} compatibility`,
+          );
+        }
       })
       .catch(() => {
         if (current) {
@@ -205,7 +211,7 @@ function CatalogGamePage({ titleKey }: { titleKey: string }) {
         }
       : null);
   useEffect(() => {
-    if (!catalogGame && resourceGame)
+    if (!catalogGame && resourceGame) {
       pageMetadata(
         `/game/${encodeURIComponent(titleKey)}`,
         `${resourceGame.title} compatibility`,
@@ -216,7 +222,20 @@ function CatalogGamePage({ titleKey }: { titleKey: string }) {
           canonicalPath: `/game/${encodeURIComponent(resourceGame.key)}`,
         },
       );
+      trackPageView(
+        `/game/${encodeURIComponent(titleKey)}`,
+        `KytyPS5 — ${resourceGame.title} compatibility`,
+      );
+    }
   }, [catalogGame, resourceGame, titleKey]);
+  useEffect(() => {
+    if (!loading && !entry && (resources.data || resources.error)) {
+      trackPageView(
+        `/game/${encodeURIComponent(titleKey)}`,
+        "KytyPS5 — Game not found",
+      );
+    }
+  }, [loading, entry, resources.data, resources.error, titleKey]);
   if (loading || (!entry && !resources.data && !resources.error))
     return <LoadingState label="Looking up this title…" route />;
   if (!entry)
@@ -723,6 +742,10 @@ export function GamePage() {
           ...(indexedGame?.genres?.length ? { genre: indexedGame.genres } : {}),
         },
       },
+    );
+    trackPageView(
+      `/game/${encodeURIComponent(key ?? "")}`,
+      `KytyPS5 — ${data.title} compatibility`,
     );
   }, [data, key, indexedGame]);
   if (!game) return <CatalogGamePage titleKey={key ?? ""} />;

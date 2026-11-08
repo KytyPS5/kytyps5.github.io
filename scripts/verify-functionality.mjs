@@ -501,7 +501,11 @@ try {
     await fs.readFile("public/data/compatibility.json", "utf8"),
   );
   assert.equal(updates.tag, seed.release.tag_name);
-  assert(updates.assets.windows.url.includes("/releases/download/"));
+  const availableAssets = Object.values(updates.assets).filter(Boolean);
+  assert(availableAssets.length > 0);
+  assert(
+    availableAssets.every((asset) => asset.url.includes("/releases/download/")),
+  );
   assert.equal(launcher.PPSA21567.status, "InGame");
   assert.equal(launcher.PPSA21567.platforms.macos.status, "DoesntBoot");
   assert(

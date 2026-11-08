@@ -17,6 +17,7 @@ import { repoUrl } from "./data/types";
 import { ThemeToggle } from "./components/theme-toggle";
 import { pageMetadata } from "./lib/page-metadata";
 import { LoadingState } from "./components/loading-state";
+import { initAnalytics, trackPageView } from "./lib/analytics";
 
 const Home = lazy(() =>
   import("./pages/Home").then((m) => ({ default: m.Home })),
@@ -249,6 +250,7 @@ export default function App() {
   const navigation = useNavigationType();
   const previousRoute = useRef("");
   useEffect(() => {
+    initAnalytics();
     const original = history.scrollRestoration;
     history.scrollRestoration = "manual";
     return () => {
@@ -285,6 +287,12 @@ export default function App() {
           ? "Compatibility report"
           : "Page not found"),
     );
+    if (!pathname.startsWith("/game/")) {
+      trackPageView(
+        pathname,
+        title ? `KytyPS5 — ${title}` : "KytyPS5 — Page not found",
+      );
+    }
   }, [pathname, hash, navigation]);
   return (
     <>

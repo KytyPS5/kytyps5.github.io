@@ -1,6 +1,6 @@
 {
   "version": 1,
-  "throughCommit": "e36160b7d466af05a2d21912417fed6b7a11bce0",
+  "throughCommit": "217ef6b46203b729a0d8126fa3e738c93b5df8b0",
   "games": {
     "PPSA01284": {
       "windows": {
@@ -22,6 +22,15 @@
         "testedDate": "2026-08-17",
         "testedVersion": "KytyPS5-2026-08-16-bc2f077",
         "recordUrl": "https://github.com/KytyPS5/kytyps5.github.io/blob/542804cd10c251807f901f8c12030b31aab10155/src/content/compat/sackboy-a-big-adventure-windows.md"
+      },
+      "linux": {
+        "slug": "sackboy-a-big-adventure-linux",
+        "titleId": "PPSA01289",
+        "os": "linux",
+        "status": "in-game",
+        "testedDate": "2026-11-01",
+        "testedVersion": "KytyPS5-2026-11-01-d5b70d8",
+        "recordUrl": "https://github.com/KytyPS5/kytyps5.github.io/blob/544c4b7dd7bbc11f38c02f9abcaa6e6db866b7ab/src/content/compat/sackboy-a-big-adventure-linux.md"
       }
     },
     "PPSA01302": {
@@ -41,9 +50,9 @@
         "titleId": "PPSA01317",
         "os": "windows",
         "status": "in-game",
-        "testedDate": "2026-10-09",
-        "testedVersion": "KytyPS5-2026-10-09-4c8fc53-Windows-x64",
-        "recordUrl": "https://github.com/KytyPS5/kytyps5.github.io/blob/0ffe3aac7dfdc95ffcf9ead014c6d849b2c89cd1/src/content/compat/gran-turismo-7-windows.md"
+        "testedDate": "2026-11-06",
+        "testedVersion": "1b7ea36",
+        "recordUrl": "https://github.com/KytyPS5/kytyps5.github.io/blob/d772e2181c7e565aa5c3282f200caa3cba94439c/src/content/compat/gran-turismo-7-windows.md"
       },
       "linux": {
         "slug": "gran-turismo-7-linux",
@@ -100,10 +109,10 @@
         "slug": "demon-s-souls-windows",
         "titleId": "PPSA01341",
         "os": "windows",
-        "status": "main-menu",
-        "testedDate": "2026-10-14",
-        "testedVersion": "0.3.0",
-        "recordUrl": "https://github.com/KytyPS5/kytyps5.github.io/blob/9126d205ab30556ce781e3631b1a3692126b64ab/src/content/compat/demon-s-souls-windows.md"
+        "status": "in-game",
+        "testedDate": "2026-11-05",
+        "testedVersion": "v20261026",
+        "recordUrl": "https://github.com/KytyPS5/kytyps5.github.io/blob/16bf433a3c570c7ab3370138e07abd7f41b896bc/src/content/compat/demon-s-souls-windows.md"
       },
       "linux": {
         "slug": "demon-s-souls-linux",
@@ -170,6 +179,17 @@
         "recordUrl": "https://github.com/KytyPS5/kytyps5.github.io/blob/424e4acf41cc0b93b2d770e879c4107efe60a299/src/content/compat/ratchet-clank-rift-apart-windows.md"
       }
     },
+    "PPSA01487": {
+      "windows": {
+        "slug": "watch-dogs-legion-windows",
+        "titleId": "PPSA01487",
+        "os": "windows",
+        "status": "main-menu",
+        "testedDate": "2026-11-04",
+        "testedVersion": "01.191.000",
+        "recordUrl": "https://github.com/KytyPS5/kytyps5.github.io/blob/780484ed178f85a7dde38816339938c2e2eaf0d0/src/content/compat/watch-dogs-legion-windows.md"
+      }
+    },
     "PPSA01502": {
       "linux": {
         "slug": "bugsnax-linux",
@@ -217,10 +237,10 @@
         "slug": "resident-evil-village-windows",
         "titleId": "PPSA01556",
         "os": "windows",
-        "status": "doesnt-boot",
-        "testedDate": "2026-07-19",
-        "testedVersion": "0.0.5.5 BETA",
-        "recordUrl": "https://github.com/KytyPS5/kytyps5.github.io/blob/424e4acf41cc0b93b2d770e879c4107efe60a299/src/content/compat/resident-evil-village-windows.md"
+        "status": "in-game",
+        "testedDate": "2026-11-07",
+        "testedVersion": "0.3.0 b9cb08d",
+        "recordUrl": "https://github.com/KytyPS5/kytyps5.github.io/blob/04fbafc2936296ef8a0b05a65a2c40531ed9eeda/src/content/compat/resident-evil-village-windows.md"
       }
     },
     "PPSA01590": {
@@ -322,6 +342,17 @@
         "recordUrl": "https://github.com/KytyPS5/kytyps5.github.io/blob/8c9f7131b47fff3616e0fd27b7a181424f725785/src/content/compat/five-nights-at-freddy-s-security-breach-windows.md"
       }
     },
+    "PPSA01825": {
+      "windows": {
+        "slug": "the-pathless-windows",
+        "titleId": "PPSA01825",
+        "os": "windows",
+        "status": "doesnt-boot",
+        "testedDate": "2026-11-07",
+        "testedVersion": "KytyPS5-2026-11-07-589bd14",
+        "recordUrl": "https://github.com/KytyPS5/kytyps5.github.io/blob/19306bbc8ad1aec5bd9a310a4c31d762ba068df0/src/content/compat/the-pathless-windows.md"
+      }
+    },
     "PPSA01858": {
       "windows": {
         "slug": "resident-evil-village-windows",
@@ -400,12 +431,12 @@
     "PPSA01924": {
       "windows": {
         "slug": "alan-wake-remastered-windows",
-        "titleId": "PPSA01925",
+        "titleId": "PPSA01924",
         "os": "windows",
         "status": "main-menu",
-        "testedDate": "2026-10-09",
-        "testedVersion": "v0.3.0",
-        "recordUrl": "https://github.com/KytyPS5/kytyps5.github.io/blob/2d65010f0b1ae0f185775251e3f1620366223ed6/src/content/compat/alan-wake-remastered-windows.md"
+        "testedDate": "2026-11-01",
+        "testedVersion": "0.3.0 893b035",
+        "recordUrl": "https://github.com/KytyPS5/kytyps5.github.io/blob/2a301cebba9f179f91572f273644034c6a51ee3b/src/content/compat/alan-wake-remastered-windows.md"
       }
     },
     "PPSA01937": {
@@ -486,6 +517,17 @@
         "recordUrl": "https://github.com/KytyPS5/kytyps5.github.io/blob/542804cd10c251807f901f8c12030b31aab10155/src/content/compat/balan-wonderworld-windows.md"
       }
     },
+    "PPSA02069": {
+      "windows": {
+        "slug": "don-t-starve-together-console-edition-windows",
+        "titleId": "PPSA02070",
+        "os": "windows",
+        "status": "main-menu",
+        "testedDate": "2026-11-07",
+        "testedVersion": "KytyPS5-2026-11-07-589bd14",
+        "recordUrl": "https://github.com/KytyPS5/kytyps5.github.io/blob/f0de40f3c7c2a3105a653e42c7e1347154e4c258/src/content/compat/don-t-starve-together-console-edition-windows.md"
+      }
+    },
     "PPSA02100": {
       "windows": {
         "slug": "stray-windows",
@@ -495,6 +537,17 @@
         "testedDate": "2026-09-18",
         "testedVersion": "KytyPS5-2026-09-18-5b7d334",
         "recordUrl": "https://github.com/KytyPS5/kytyps5.github.io/blob/a148aa3c995b06e53df9eaf71f8e3ab8e26f11e9/src/content/compat/stray-windows.md"
+      }
+    },
+    "PPSA02110": {
+      "windows": {
+        "slug": "no-man-s-sky-windows",
+        "titleId": "PPSA02110",
+        "os": "windows",
+        "status": "doesnt-boot",
+        "testedDate": "2026-11-07",
+        "testedVersion": "KytyPS5-2026-11-07-589bd14",
+        "recordUrl": "https://github.com/KytyPS5/kytyps5.github.io/blob/e579ab5aec155a2834ea1ff2dc773b51ded06322/src/content/compat/no-man-s-sky-windows.md"
       }
     },
     "PPSA02176": {
@@ -514,9 +567,9 @@
         "titleId": "PPSA02199",
         "os": "windows",
         "status": "in-game",
-        "testedDate": "2026-07-19",
-        "testedVersion": "0.3.0 6aaa533",
-        "recordUrl": "https://github.com/KytyPS5/kytyps5.github.io/blob/fd77f5ebc68ee1e51d7547c2b3595298c8825232/src/content/compat/star-wars-jedi-fallen-order-windows.md"
+        "testedDate": "2026-11-01",
+        "testedVersion": "0.3.0 893b035",
+        "recordUrl": "https://github.com/KytyPS5/kytyps5.github.io/blob/6e4943391ee70fbb1f4dd7386851a86c8d73d0c3/src/content/compat/star-wars-jedi-fallen-order-windows.md"
       }
     },
     "PPSA02200": {
@@ -563,6 +616,17 @@
         "recordUrl": "https://github.com/KytyPS5/kytyps5.github.io/blob/db228f7e6c32917a656fd86b13248d92c8aed8c8/src/content/compat/it-takes-two-windows.md"
       }
     },
+    "PPSA02383": {
+      "linux": {
+        "slug": "yakuza-like-a-dragon-linux",
+        "titleId": "PPSA02384",
+        "os": "linux",
+        "status": "in-game",
+        "testedDate": "2026-11-02",
+        "testedVersion": "v0.3.0 - KytyPS5-2026-10-31-a06e356",
+        "recordUrl": "https://github.com/KytyPS5/kytyps5.github.io/blob/11e955dc54065e5ad263d1fa208aa5b0e8ba1ee3/src/content/compat/yakuza-like-a-dragon-linux.md"
+      }
+    },
     "PPSA02388": {
       "windows": {
         "slug": "a-plague-tale-innocence-windows",
@@ -576,13 +640,13 @@
     },
     "PPSA02426": {
       "windows": {
-        "slug": "farming-simulator-22-v01-070-windows",
+        "slug": "farming-simulator-22-windows",
         "titleId": "PPSA02385",
         "os": "windows",
-        "status": "main-menu",
-        "testedDate": "2026-08-28",
-        "testedVersion": "KytyPS5-2026-08-27-ade32e7",
-        "recordUrl": "https://github.com/KytyPS5/kytyps5.github.io/blob/44b22771bc8a21e5054f9a79c005b235617eca4c/src/content/compat/farming-simulator-22-v01-070-windows.md"
+        "status": "in-game",
+        "testedDate": "2026-11-05",
+        "testedVersion": "0.3.0 (a0268f1)",
+        "recordUrl": "https://github.com/KytyPS5/kytyps5.github.io/blob/ce9d02a08d8d97bb0469e68bbfb3b2cb79382035/src/content/compat/farming-simulator-22-windows.md"
       }
     },
     "PPSA02432": {
@@ -997,6 +1061,17 @@
         "recordUrl": "https://github.com/KytyPS5/kytyps5.github.io/blob/f3e4576b2b3bc0c3358c9c37bc5d659e4743387c/src/content/compat/grand-theft-auto-v-linux.md"
       }
     },
+    "PPSA03446": {
+      "windows": {
+        "slug": "pumpkin-jack-windows",
+        "titleId": "PPSA03446",
+        "os": "windows",
+        "status": "logo",
+        "testedDate": "2026-11-07",
+        "testedVersion": "KytyPS5-2026-11-07-589bd14",
+        "recordUrl": "https://github.com/KytyPS5/kytyps5.github.io/blob/f1423b547f08a062187c655ad15c58bb7f7ff766/src/content/compat/pumpkin-jack-windows.md"
+      }
+    },
     "PPSA03468": {
       "windows": {
         "slug": "blackwind-windows",
@@ -1145,6 +1220,17 @@
         "recordUrl": "https://github.com/KytyPS5/kytyps5.github.io/blob/bc98dcf661ff2daba61d858877ef95f85fa57c02/src/content/compat/art-of-rally-windows.md"
       }
     },
+    "PPSA03705": {
+      "windows": {
+        "slug": "my-friend-peppa-pig-windows",
+        "titleId": "PPSA03706",
+        "os": "windows",
+        "status": "in-game",
+        "testedDate": "2026-10-20",
+        "testedVersion": "KytyPS5-2026-10-20-7b7f9a7",
+        "recordUrl": "https://github.com/KytyPS5/kytyps5.github.io/blob/dae172d4c214cc980a3a2e006896d3641d29f9e6/src/content/compat/my-friend-peppa-pig-windows.md"
+      }
+    },
     "PPSA03712": {
       "windows": {
         "slug": "puzzle-bobble-3d-vacation-odyssey-windows",
@@ -1198,6 +1284,17 @@
         "testedDate": "2026-08-06",
         "testedVersion": "v0.2.2 869329e 2026.08.05",
         "recordUrl": "https://github.com/KytyPS5/kytyps5.github.io/blob/424e4acf41cc0b93b2d770e879c4107efe60a299/src/content/compat/the-elder-scrolls-v-skyrim-windows.md"
+      }
+    },
+    "PPSA03766": {
+      "windows": {
+        "slug": "far-changing-tides-windows",
+        "titleId": "PPSA03766",
+        "os": "windows",
+        "status": "doesnt-boot",
+        "testedDate": "2026-11-07",
+        "testedVersion": "KytyPS5-2026-11-07-589bd14",
+        "recordUrl": "https://github.com/KytyPS5/kytyps5.github.io/blob/6cf008092c614d7be8cc411f4e7f5fa97fa3f147/src/content/compat/far-changing-tides-windows.md"
       }
     },
     "PPSA03774": {
@@ -1467,6 +1564,17 @@
         "recordUrl": "https://github.com/KytyPS5/kytyps5.github.io/blob/11a6938fbbf3ff44394d9cffbc153e1d6700e39e/src/content/compat/fatal-frame-maiden-of-the-black-water-windows.md"
       }
     },
+    "PPSA04354": {
+      "windows": {
+        "slug": "toem-windows",
+        "titleId": "PPSA04354",
+        "os": "windows",
+        "status": "in-game",
+        "testedDate": "2026-10-19",
+        "testedVersion": "KytyPS5-2026-10-19-0cad467",
+        "recordUrl": "https://github.com/KytyPS5/kytyps5.github.io/blob/dc8f94ac3076cc1f759fb60f7e7843d939d4fb12/src/content/compat/toem-windows.md"
+      }
+    },
     "PPSA04379": {
       "windows": {
         "slug": "construction-simulator-windows",
@@ -1679,12 +1787,12 @@
     "PPSA05132": {
       "windows": {
         "slug": "sifu-windows",
-        "titleId": "PPSA03001",
+        "titleId": "PPSA05132",
         "os": "windows",
-        "status": "doesnt-boot",
-        "testedDate": "2026-09-20",
-        "testedVersion": "KytyPS5-2026-09-20-fe4f942",
-        "recordUrl": "https://github.com/KytyPS5/kytyps5.github.io/blob/4abdbd12ce78a7944219c9531f69e6caad600edb/src/content/compat/sifu-windows.md"
+        "status": "main-menu",
+        "testedDate": "2026-11-02",
+        "testedVersion": "KytyPS5-2026-11-02-02b17af",
+        "recordUrl": "https://github.com/KytyPS5/kytyps5.github.io/blob/ab62cbb49a55f17981ad5857402247bc34f5e80b/src/content/compat/sifu-windows.md"
       }
     },
     "PPSA05265": {
@@ -1971,6 +2079,17 @@
         "recordUrl": "https://github.com/KytyPS5/kytyps5.github.io/blob/3d8de315f09cd22c54061b2301242a2c9f6c6a0c/src/content/compat/topspin-2k25-windows.md"
       }
     },
+    "PPSA06927": {
+      "windows": {
+        "slug": "warhammer-age-of-sigmar-realms-of-ruin-windows",
+        "titleId": "PPSA06927",
+        "os": "windows",
+        "status": "main-menu",
+        "testedDate": "2026-09-22",
+        "testedVersion": "KytyPS5-2026-10-19-0cad467",
+        "recordUrl": "https://github.com/KytyPS5/kytyps5.github.io/blob/f967bf69c7fbe7fc03aa2a54c697001eab058adc/src/content/compat/warhammer-age-of-sigmar-realms-of-ruin-windows.md"
+      }
+    },
     "PPSA06960": {
       "windows": {
         "slug": "mandragora-whispers-of-the-witch-tree-windows",
@@ -1980,6 +2099,17 @@
         "testedDate": "2026-09-09",
         "testedVersion": "d285efe",
         "recordUrl": "https://github.com/KytyPS5/kytyps5.github.io/blob/f83b29d460612ef7b61851483ef8217ab45b239e/src/content/compat/mandragora-whispers-of-the-witch-tree-windows.md"
+      }
+    },
+    "PPSA07022": {
+      "windows": {
+        "slug": "inscryption-windows",
+        "titleId": "PPSA07023",
+        "os": "windows",
+        "status": "doesnt-boot",
+        "testedDate": "2026-11-07",
+        "testedVersion": "v1.00",
+        "recordUrl": "https://github.com/KytyPS5/kytyps5.github.io/blob/0bfab49d68db0e4b6a608bb7c05968deb99dd729/src/content/compat/inscryption-windows.md"
       }
     },
     "PPSA07063": {
@@ -2002,6 +2132,17 @@
         "testedDate": "2026-09-17",
         "testedVersion": "KytyPS5-2026-09-17-ce629e0 (Official Build)",
         "recordUrl": "https://github.com/KytyPS5/kytyps5.github.io/blob/92dee5dc73225f8076e5194a19fdf3c082c72037/src/content/compat/unpacking-windows.md"
+      }
+    },
+    "PPSA07248": {
+      "windows": {
+        "slug": "warhammer-40-000-boltgun-windows",
+        "titleId": "PPSA07247",
+        "os": "windows",
+        "status": "in-game",
+        "testedDate": "2026-10-15",
+        "testedVersion": "KytyPS5-2026-10-12-df5b9b9",
+        "recordUrl": "https://github.com/KytyPS5/kytyps5.github.io/blob/aedf772a50665b3f482552f64cb8f73b82ce922a/src/content/compat/warhammer-40-000-boltgun-windows.md"
       }
     },
     "PPSA07287": {
@@ -2079,6 +2220,15 @@
         "testedDate": "2026-10-04",
         "testedVersion": "Official build KytyPS5-2026-10-04-719e025",
         "recordUrl": "https://github.com/KytyPS5/kytyps5.github.io/blob/e43b6c3452ab1a03b4424da89bf8d4730f994893/src/content/compat/saros-windows.md"
+      },
+      "linux": {
+        "slug": "saros-linux",
+        "titleId": "PPSA07631",
+        "os": "linux",
+        "status": "in-game",
+        "testedDate": "2026-11-05",
+        "testedVersion": "KytyPS5-2026-11-05-23ed47e",
+        "recordUrl": "https://github.com/KytyPS5/kytyps5.github.io/blob/186ee2e2165f743d8c0f0649b92d754807e483f1/src/content/compat/saros-linux.md"
       }
     },
     "PPSA07641": {
@@ -2090,6 +2240,17 @@
         "testedDate": "2026-09-27",
         "testedVersion": "KytyPS5-2026-09-27-421684e",
         "recordUrl": "https://github.com/KytyPS5/kytyps5.github.io/blob/2bfcdb6a33975992a2a9fa46f9079c8d559d7793/src/content/compat/pistol-whip-windows.md"
+      }
+    },
+    "PPSA07783": {
+      "windows": {
+        "slug": "star-wars-jedi-survivor-windows",
+        "titleId": "PPSA07783",
+        "os": "windows",
+        "status": "logo",
+        "testedDate": "2026-11-01",
+        "testedVersion": "0.3.0 893b035",
+        "recordUrl": "https://github.com/KytyPS5/kytyps5.github.io/blob/7b557cc947c6d050b1ae76307683668f189b99dc/src/content/compat/star-wars-jedi-survivor-windows.md"
       }
     },
     "PPSA07817": {
@@ -2471,6 +2632,17 @@
         "recordUrl": "https://github.com/KytyPS5/kytyps5.github.io/blob/eaf5e9efe3a8083837d30cacd55adec19165fcee/src/content/compat/wuchang-fallen-feathers-windows.md"
       }
     },
+    "PPSA09546": {
+      "windows": {
+        "slug": "you-suck-at-parking-windows",
+        "titleId": "PPSA08894",
+        "os": "windows",
+        "status": "in-game",
+        "testedDate": "2026-10-19",
+        "testedVersion": "KytyPS5-2026-10-19-0cad467",
+        "recordUrl": "https://github.com/KytyPS5/kytyps5.github.io/blob/7dcc974a51d450b93449a1d36d1098e1b00d2874/src/content/compat/you-suck-at-parking-windows.md"
+      }
+    },
     "PPSA09613": {
       "windows": {
         "slug": "graven-windows",
@@ -2520,10 +2692,10 @@
         "slug": "naiad-windows",
         "titleId": "PPSA09904",
         "os": "windows",
-        "status": "main-menu",
-        "testedDate": "2026-07-19",
-        "testedVersion": "bd9086e",
-        "recordUrl": "https://github.com/KytyPS5/kytyps5.github.io/blob/424e4acf41cc0b93b2d770e879c4107efe60a299/src/content/compat/naiad-windows.md"
+        "status": "in-game",
+        "testedDate": "2026-09-22",
+        "testedVersion": "KytyPS5-2026-09-22-8b095ca",
+        "recordUrl": "https://github.com/KytyPS5/kytyps5.github.io/blob/ea9e754ec0d34690aeab6b1ad1654c6d5d1f3c0b/src/content/compat/naiad-windows.md"
       }
     },
     "PPSA09911": {
@@ -2546,6 +2718,17 @@
         "testedDate": "2026-10-19",
         "testedVersion": "0.3.0",
         "recordUrl": "https://github.com/KytyPS5/kytyps5.github.io/blob/30c4aaee7a50c4c5a4e94c3f417600b50d8f8c3f/src/content/compat/prince-of-persia-the-lost-crown-windows.md"
+      }
+    },
+    "PPSA10122": {
+      "windows": {
+        "slug": "return-to-monkey-island-windows",
+        "titleId": "PPSA10122",
+        "os": "windows",
+        "status": "in-game",
+        "testedDate": "2026-11-07",
+        "testedVersion": "KytyPS5-2026-11-07-589bd14",
+        "recordUrl": "https://github.com/KytyPS5/kytyps5.github.io/blob/e3cbd1ddda697bcbf1aa5355c4b6fc35e4594341/src/content/compat/return-to-monkey-island-windows.md"
       }
     },
     "PPSA10240": {
@@ -2645,6 +2828,17 @@
         "recordUrl": "https://github.com/KytyPS5/kytyps5.github.io/blob/3994f52d7e717eacaef20318bc13910e35e26c73/src/content/compat/the-last-of-us-part-ii-remastered-windows.md"
       }
     },
+    "PPSA10683": {
+      "windows": {
+        "slug": "motogp-23-windows",
+        "titleId": "PPSA10682",
+        "os": "windows",
+        "status": "in-game",
+        "testedDate": "2026-09-16",
+        "testedVersion": "KytyPS5-2026-10-20-7b7f9a7",
+        "recordUrl": "https://github.com/KytyPS5/kytyps5.github.io/blob/94069502010a34e30f02a3ca8b3a3b1d71ea1755/src/content/compat/motogp-23-windows.md"
+      }
+    },
     "PPSA10696": {
       "windows": {
         "slug": "atomic-heart-windows",
@@ -2654,6 +2848,17 @@
         "testedDate": "2026-08-29",
         "testedVersion": "KytyPS5-2026-08-29-60a0181",
         "recordUrl": "https://github.com/KytyPS5/kytyps5.github.io/blob/36a333f120d2e4db6d7b32a4a5b75bbf1c409694/src/content/compat/atomic-heart-windows.md"
+      }
+    },
+    "PPSA10965": {
+      "windows": {
+        "slug": "pacific-drive-windows",
+        "titleId": "PPSA10965",
+        "os": "windows",
+        "status": "main-menu",
+        "testedDate": "2026-11-07",
+        "testedVersion": "KytyPS5-2026-11-07-589bd14",
+        "recordUrl": "https://github.com/KytyPS5/kytyps5.github.io/blob/c5b4f477f084ec69cde679729fa6ba30e2f83f61/src/content/compat/pacific-drive-windows.md"
       }
     },
     "PPSA11141": {
@@ -2678,6 +2883,28 @@
         "recordUrl": "https://github.com/KytyPS5/kytyps5.github.io/blob/be8843981aae11d02dd4b8c2e0ea660aeb9470d5/src/content/compat/007-first-light-1-018-000-windows.md"
       }
     },
+    "PPSA12362": {
+      "windows": {
+        "slug": "transport-fever-2-windows",
+        "titleId": "PPSA12361",
+        "os": "windows",
+        "status": "doesnt-boot",
+        "testedDate": "2026-10-20",
+        "testedVersion": "KytyPS5-2026-10-20-1a053f9",
+        "recordUrl": "https://github.com/KytyPS5/kytyps5.github.io/blob/3cbb15f7b5090d132d51de3e520a33858dec5147/src/content/compat/transport-fever-2-windows.md"
+      }
+    },
+    "PPSA12503": {
+      "windows": {
+        "slug": "seeker-my-shadow-windows",
+        "titleId": "PPSA12500",
+        "os": "windows",
+        "status": "logo",
+        "testedDate": "2026-09-29",
+        "testedVersion": "KytyPS5-2026-10-12-df5b9b9",
+        "recordUrl": "https://github.com/KytyPS5/kytyps5.github.io/blob/0ff5b37bc96b764658f709c3e5754d34aa05ff88/src/content/compat/seeker-my-shadow-windows.md"
+      }
+    },
     "PPSA12544": {
       "windows": {
         "slug": "hollow-knight-silksong-windows",
@@ -2687,6 +2914,17 @@
         "testedDate": "2026-09-30",
         "testedVersion": "KytyPS5-2026-09-29-05057c9",
         "recordUrl": "https://github.com/KytyPS5/kytyps5.github.io/blob/c6a091fa5eea841b47541addf0769e6a65100b07/src/content/compat/hollow-knight-silksong-windows.md"
+      }
+    },
+    "PPSA13225": {
+      "windows": {
+        "slug": "venba-windows",
+        "titleId": "PPSA13225",
+        "os": "windows",
+        "status": "in-game",
+        "testedDate": "2026-11-07",
+        "testedVersion": "KytyPS5-2026-11-06-182161e",
+        "recordUrl": "https://github.com/KytyPS5/kytyps5.github.io/blob/b430dc3f145ba59417d8884bbfd4091632f88481/src/content/compat/venba-windows.md"
       }
     },
     "PPSA13356": {
@@ -2755,6 +2993,28 @@
         "recordUrl": "https://github.com/KytyPS5/kytyps5.github.io/blob/7d26e12773d1440c7efb8734f2239c6ebd4d20ef/src/content/compat/tour-de-france-2023-windows.md"
       }
     },
+    "PPSA14421": {
+      "windows": {
+        "slug": "disney-s-atlantis-the-lost-empire-windows",
+        "titleId": "PPSA14421",
+        "os": "windows",
+        "status": "in-game",
+        "testedDate": "2026-11-07",
+        "testedVersion": "KytyPS5-2026-11-07-589bd14",
+        "recordUrl": "https://github.com/KytyPS5/kytyps5.github.io/blob/9e7a7f8d6072dacf617b1efd6c87d2919f880a8f/src/content/compat/disney-s-atlantis-the-lost-empire-windows.md"
+      }
+    },
+    "PPSA14427": {
+      "windows": {
+        "slug": "crymachina-windows",
+        "titleId": "PPSA13324",
+        "os": "windows",
+        "status": "in-game",
+        "testedDate": "2026-09-22",
+        "testedVersion": "KytyPS5-2026-10-19-0cad467",
+        "recordUrl": "https://github.com/KytyPS5/kytyps5.github.io/blob/6579d68f4e773dc023a5d928aaf39e49a8d74d4d/src/content/compat/crymachina-windows.md"
+      }
+    },
     "PPSA14632": {
       "windows": {
         "slug": "lego-horizon-adventures-windows",
@@ -2782,10 +3042,10 @@
         "slug": "teardown-windows",
         "titleId": "PPSA15246",
         "os": "windows",
-        "status": "logo",
-        "testedDate": "2026-10-13",
-        "testedVersion": "v0.3.0",
-        "recordUrl": "https://github.com/KytyPS5/kytyps5.github.io/blob/55371c8753d000ba966b922cdb01dc45e785963a/src/content/compat/teardown-windows.md"
+        "status": "in-game",
+        "testedDate": "2026-11-07",
+        "testedVersion": "KytyPS5-2026-11-06-182161e",
+        "recordUrl": "https://github.com/KytyPS5/kytyps5.github.io/blob/e4b5dd9a093f520d1004c0b967be88265f1400d3/src/content/compat/teardown-windows.md"
       },
       "linux": {
         "slug": "teardown-linux",
@@ -2907,6 +3167,17 @@
         "recordUrl": "https://github.com/KytyPS5/kytyps5.github.io/blob/8dc448e3725c49acde35155bf8bb10bbb8379b7e/src/content/compat/minecraft-dungeons-ii-windows.md"
       }
     },
+    "PPSA16109": {
+      "windows": {
+        "slug": "the-mortuary-assistant-windows",
+        "titleId": "PPSA16110",
+        "os": "windows",
+        "status": "in-game",
+        "testedDate": "2026-11-07",
+        "testedVersion": "KytyPS5-2026-11-07-589bd14",
+        "recordUrl": "https://github.com/KytyPS5/kytyps5.github.io/blob/4713e9bea4379772c448d82da5fa17b673dab064/src/content/compat/the-mortuary-assistant-windows.md"
+      }
+    },
     "PPSA16411": {
       "windows": {
         "slug": "taiko-no-tatsujin-rhythm-festival-windows",
@@ -2984,15 +3255,26 @@
         "recordUrl": "https://github.com/KytyPS5/kytyps5.github.io/blob/96586afc2998e641db1c079d3cb8a1e73e50ab04/src/content/compat/richman-11-windows.md"
       }
     },
+    "PPSA17116": {
+      "windows": {
+        "slug": "jet-kave-adventure-windows",
+        "titleId": "PPSA17373",
+        "os": "windows",
+        "status": "logo",
+        "testedDate": "2026-11-07",
+        "testedVersion": "KytyPS5-2026-11-07-589bd14",
+        "recordUrl": "https://github.com/KytyPS5/kytyps5.github.io/blob/a25a0a5b40fe62ec056cc192739728214a2523b4/src/content/compat/jet-kave-adventure-windows.md"
+      }
+    },
     "PPSA17168": {
       "windows": {
-        "slug": "potion-permit-windows",
-        "titleId": "PPSA17168",
+        "slug": "hi-fi-rush-windows",
+        "titleId": "PPSA17191",
         "os": "windows",
         "status": "in-game",
-        "testedDate": "2026-08-19",
-        "testedVersion": "KytyPS5-2026-08-18-7e42513",
-        "recordUrl": "https://github.com/KytyPS5/kytyps5.github.io/blob/7c47ef52cf6b734b0c8301da71ed7f287288a78c/src/content/compat/potion-permit-windows.md"
+        "testedDate": "2026-11-07",
+        "testedVersion": "KytyPS5-2026-11-06-182161e",
+        "recordUrl": "https://github.com/KytyPS5/kytyps5.github.io/blob/6f180e167cb0f9f70ec18139e6a762d0739421ea/src/content/compat/hi-fi-rush-windows.md"
       }
     },
     "PPSA17189": {
@@ -3035,6 +3317,17 @@
         "testedDate": "2026-08-18",
         "testedVersion": "0.2.2 (KytyPS5-2026-08-18-6bf6929)",
         "recordUrl": "https://github.com/KytyPS5/kytyps5.github.io/blob/4467c1921bb616956a8c585e5600a41b1fa1943a/src/content/compat/minecraft-windows.md"
+      }
+    },
+    "PPSA17225": {
+      "windows": {
+        "slug": "coral-island-windows",
+        "titleId": "PPSA17226",
+        "os": "windows",
+        "status": "main-menu",
+        "testedDate": "2026-10-19",
+        "testedVersion": "KytyPS5-2026-10-19-0cad467",
+        "recordUrl": "https://github.com/KytyPS5/kytyps5.github.io/blob/7967d3498b1ade7694abb4c29e65dbe0ba03b0a4/src/content/compat/coral-island-windows.md"
       }
     },
     "PPSA17245": {
@@ -3224,6 +3517,17 @@
         "recordUrl": "https://github.com/KytyPS5/kytyps5.github.io/blob/b3c4b73ba41953ff998b15b74df28337723e1787/src/content/compat/ready-or-not-linux.md"
       }
     },
+    "PPSA18653": {
+      "windows": {
+        "slug": "age-of-mythology-retold-windows",
+        "titleId": "PPSA18653",
+        "os": "windows",
+        "status": "doesnt-boot",
+        "testedDate": "2026-11-01",
+        "testedVersion": "0.3.0 893b035",
+        "recordUrl": "https://github.com/KytyPS5/kytyps5.github.io/blob/de6b69d4014c765f5466872708d7c5edcb42c158/src/content/compat/age-of-mythology-retold-windows.md"
+      }
+    },
     "PPSA18886": {
       "windows": {
         "slug": "five-nights-at-freddy-s-help-wanted-2-windows",
@@ -3266,6 +3570,15 @@
         "testedDate": "2026-10-19",
         "testedVersion": "2026-10-01-4479808",
         "recordUrl": "https://github.com/KytyPS5/kytyps5.github.io/blob/67dbe4170e1efc0425a62fa3d1104f9d41cadddd/src/content/compat/dave-the-diver-linux.md"
+      },
+      "windows": {
+        "slug": "dave-the-diver-windows",
+        "titleId": "PPSA19115",
+        "os": "windows",
+        "status": "in-game",
+        "testedDate": "2026-10-15",
+        "testedVersion": "KytyPS5-2026-10-12-df5b9b9",
+        "recordUrl": "https://github.com/KytyPS5/kytyps5.github.io/blob/610687c794759f9e0e851d132144acb9b04d4140/src/content/compat/dave-the-diver-windows.md"
       }
     },
     "PPSA19268": {
@@ -3279,6 +3592,17 @@
         "recordUrl": "https://github.com/KytyPS5/kytyps5.github.io/blob/424e4acf41cc0b93b2d770e879c4107efe60a299/src/content/compat/juicy-realm-windows.md"
       }
     },
+    "PPSA19451": {
+      "windows": {
+        "slug": "planet-of-luna-windows",
+        "titleId": "PPSA19450",
+        "os": "windows",
+        "status": "in-game",
+        "testedDate": "2026-10-15",
+        "testedVersion": "KytyPS5-2026-10-12-df5b9b9",
+        "recordUrl": "https://github.com/KytyPS5/kytyps5.github.io/blob/c848bcc9e8239049ade5ee24b796b1465dd9956f/src/content/compat/planet-of-luna-windows.md"
+      }
+    },
     "PPSA19728": {
       "windows": {
         "slug": "star-wars-dark-forces-remaster-windows",
@@ -3290,6 +3614,28 @@
         "recordUrl": "https://github.com/KytyPS5/kytyps5.github.io/blob/0eb8c1a65e9345493395f57647b5e975e9e34303/src/content/compat/star-wars-dark-forces-remaster-windows.md"
       }
     },
+    "PPSA19769": {
+      "windows": {
+        "slug": "two-point-museum-windows",
+        "titleId": "PPSA19769",
+        "os": "windows",
+        "status": "main-menu",
+        "testedDate": "2026-09-28",
+        "testedVersion": "KytyPS5-2026-09-28-8e61798",
+        "recordUrl": "https://github.com/KytyPS5/kytyps5.github.io/blob/8b5913dcc97eeb647c81e3a56d3877a8a31d1f42/src/content/compat/two-point-museum-windows.md"
+      }
+    },
+    "PPSA19969": {
+      "windows": {
+        "slug": "turbo-overkill-windows",
+        "titleId": "PPSA19969",
+        "os": "windows",
+        "status": "in-game",
+        "testedDate": "2026-10-15",
+        "testedVersion": "KytyPS5-2026-10-12-df5b9b9",
+        "recordUrl": "https://github.com/KytyPS5/kytyps5.github.io/blob/d18b2fc8d73287d9ce696d4c02e6c9e44d80eb98/src/content/compat/turbo-overkill-windows.md"
+      }
+    },
     "PPSA20053": {
       "windows": {
         "slug": "worms-armageddon-anniversary-edition-windows",
@@ -3299,6 +3645,17 @@
         "testedDate": "2026-09-08",
         "testedVersion": "d285efe",
         "recordUrl": "https://github.com/KytyPS5/kytyps5.github.io/blob/8024459bd54a49809494c6187768b8521f902b41/src/content/compat/worms-armageddon-anniversary-edition-windows.md"
+      }
+    },
+    "PPSA20313": {
+      "windows": {
+        "slug": "besiege-windows",
+        "titleId": "PPSA20313",
+        "os": "windows",
+        "status": "in-game",
+        "testedDate": "2026-11-07",
+        "testedVersion": "KytyPS5-2026-11-07-589bd14",
+        "recordUrl": "https://github.com/KytyPS5/kytyps5.github.io/blob/a27f292c392f0beca244f2d219a3956c30425f7e/src/content/compat/besiege-windows.md"
       }
     },
     "PPSA20422": {
@@ -3354,6 +3711,15 @@
         "testedDate": "2026-09-28",
         "testedVersion": "KytyPS5-2026-09-27-421684e",
         "recordUrl": "https://github.com/KytyPS5/kytyps5.github.io/blob/777827b8084d190f4204e76b658713e828556f07/src/content/compat/silent-hill-f-linux.md"
+      },
+      "windows": {
+        "slug": "silent-hill-f-windows",
+        "titleId": "PPSA21159",
+        "os": "windows",
+        "status": "in-game",
+        "testedDate": "2026-11-03",
+        "testedVersion": "0.3.0 dfec14a",
+        "recordUrl": "https://github.com/KytyPS5/kytyps5.github.io/blob/da21a7164d80557a97ef62847334c20d5f9afd9a/src/content/compat/silent-hill-f-windows.md"
       }
     },
     "PPSA21296": {
@@ -3395,9 +3761,9 @@
         "titleId": "PPSA21444",
         "os": "windows",
         "status": "in-game",
-        "testedDate": "2026-08-18",
-        "testedVersion": "0.2.2 (KytyPS5-2026-08-18-6bf6929)",
-        "recordUrl": "https://github.com/KytyPS5/kytyps5.github.io/blob/aeaebc35336b67ddcfd5fc32075ef789a367fddd/src/content/compat/doom-doom-ii-windows.md"
+        "testedDate": "2026-11-06",
+        "testedVersion": "0.3.0 (182161e)",
+        "recordUrl": "https://github.com/KytyPS5/kytyps5.github.io/blob/d67161f5e792af1eb7eee6eaf9d903209441c4b1/src/content/compat/doom-doom-ii-windows.md"
       }
     },
     "PPSA21564": {
@@ -3427,6 +3793,17 @@
         "testedDate": "2026-10-02",
         "testedVersion": "KytyPS5-2026-10-01-4479808-Linux-x86_64",
         "recordUrl": "https://github.com/KytyPS5/kytyps5.github.io/blob/f752ebc188170ff5a86af15b896e338d03717590/src/content/compat/astro-bot-linux.md"
+      }
+    },
+    "PPSA21607": {
+      "windows": {
+        "slug": "the-smurfs-dreams-windows",
+        "titleId": "PPSA21607",
+        "os": "windows",
+        "status": "in-game",
+        "testedDate": "2026-09-16",
+        "testedVersion": "KytyPS5-2026-10-12-df5b9b9",
+        "recordUrl": "https://github.com/KytyPS5/kytyps5.github.io/blob/c5d3db0750e6e0534c1a20056721f329337185e7/src/content/compat/the-smurfs-dreams-windows.md"
       }
     },
     "PPSA21631": {
@@ -3506,6 +3883,17 @@
         "recordUrl": "https://github.com/KytyPS5/kytyps5.github.io/blob/25160548a5cf011baa78bdd024a5b0ae928e4a29/src/content/compat/hot-wheels-infinite-rush-linux.md"
       }
     },
+    "PPSA22548": {
+      "windows": {
+        "slug": "shogun-showdown-windows",
+        "titleId": "PPSA22779",
+        "os": "windows",
+        "status": "in-game",
+        "testedDate": "2026-10-19",
+        "testedVersion": "KytyPS5-2026-10-19-0cad467",
+        "recordUrl": "https://github.com/KytyPS5/kytyps5.github.io/blob/b7548bdc59d31f223b693d69c0e0bb00f89bed9f/src/content/compat/shogun-showdown-windows.md"
+      }
+    },
     "PPSA22624": {
       "windows": {
         "slug": "zombie-cure-lab-windows",
@@ -3550,6 +3938,17 @@
         "recordUrl": "https://github.com/KytyPS5/kytyps5.github.io/blob/6e3379980b9b8ca58dd5de56fb4173cfdb220dbc/src/content/compat/echoes-of-aincrad-windows.md"
       }
     },
+    "PPSA22996": {
+      "windows": {
+        "slug": "aaa-dynamic-scenes-windows",
+        "titleId": "PPSA22996",
+        "os": "windows",
+        "status": "in-game",
+        "testedDate": "2026-11-01",
+        "testedVersion": "0.3.0 893b035",
+        "recordUrl": "https://github.com/KytyPS5/kytyps5.github.io/blob/9a5234230d4686f6704aa5a4aefd42df77309fbf/src/content/compat/aaa-dynamic-scenes-windows.md"
+      }
+    },
     "PPSA23012": {
       "windows": {
         "slug": "call-of-duty-modern-warfare-2-windows",
@@ -3559,6 +3958,17 @@
         "testedDate": "2026-10-15",
         "testedVersion": "V0.3.0",
         "recordUrl": "https://github.com/KytyPS5/kytyps5.github.io/blob/3a3da3116d7886c629b23a833387a39545be3568/src/content/compat/call-of-duty-modern-warfare-2-windows.md"
+      }
+    },
+    "PPSA23076": {
+      "windows": {
+        "slug": "biped-2-windows",
+        "titleId": "PPSA23066",
+        "os": "windows",
+        "status": "logo",
+        "testedDate": "2026-10-19",
+        "testedVersion": "KytyPS5-2026-10-19-0cad467",
+        "recordUrl": "https://github.com/KytyPS5/kytyps5.github.io/blob/5181a7bfc323043f594682517635cdebe1bd6bb6/src/content/compat/biped-2-windows.md"
       }
     },
     "PPSA23082": {
@@ -3651,13 +4061,13 @@
     },
     "PPSA24096": {
       "windows": {
-        "slug": "chronos-the-new-dawn-windows",
+        "slug": "cronos-the-new-dawn-windows",
         "titleId": "PPSA24096",
         "os": "windows",
-        "status": "logo",
-        "testedDate": "2026-08-06",
-        "testedVersion": "869329e",
-        "recordUrl": "https://github.com/KytyPS5/kytyps5.github.io/blob/424e4acf41cc0b93b2d770e879c4107efe60a299/src/content/compat/chronos-the-new-dawn-windows.md"
+        "status": "in-game",
+        "testedDate": "2026-11-03",
+        "testedVersion": "0.3.0 dfec14a",
+        "recordUrl": "https://github.com/KytyPS5/kytyps5.github.io/blob/c9a9cdd54705151b048f558688c5d9854b1f2e44/src/content/compat/cronos-the-new-dawn-windows.md"
       }
     },
     "PPSA24156": {
@@ -3713,6 +4123,17 @@
         "testedDate": "2026-07-25",
         "testedVersion": "0.2.2",
         "recordUrl": "https://github.com/KytyPS5/kytyps5.github.io/blob/424e4acf41cc0b93b2d770e879c4107efe60a299/src/content/compat/turok-windows.md"
+      }
+    },
+    "PPSA24589": {
+      "windows": {
+        "slug": "biped-windows",
+        "titleId": "PPSA24589",
+        "os": "windows",
+        "status": "in-game",
+        "testedDate": "2026-10-19",
+        "testedVersion": "KytyPS5-2026-10-19-0cad467",
+        "recordUrl": "https://github.com/KytyPS5/kytyps5.github.io/blob/0b64016178f88fae425ac65a9744af20eb466df6/src/content/compat/biped-windows.md"
       }
     },
     "PPSA24643": {
@@ -3836,6 +4257,17 @@
         "recordUrl": "https://github.com/KytyPS5/kytyps5.github.io/blob/b4ec88ff735471470380383803a2a919daf96d9a/src/content/compat/terminator-2d-no-fate-windows.md"
       }
     },
+    "PPSA26012": {
+      "windows": {
+        "slug": "abiotic-factor-windows",
+        "titleId": "PPSA26012",
+        "os": "windows",
+        "status": "main-menu",
+        "testedDate": "2026-11-07",
+        "testedVersion": "KytyPS5-2026-11-07-589bd14",
+        "recordUrl": "https://github.com/KytyPS5/kytyps5.github.io/blob/217ef6b46203b729a0d8126fa3e738c93b5df8b0/src/content/compat/abiotic-factor-windows.md"
+      }
+    },
     "PPSA26127": {
       "linux": {
         "slug": "madden-nfl-26-linux",
@@ -3864,9 +4296,9 @@
         "titleId": "PPSA26344",
         "os": "windows",
         "status": "logo",
-        "testedDate": "2026-10-22",
-        "testedVersion": "0.3.0 git f5f4e7d rel 2026-10-22",
-        "recordUrl": "https://github.com/KytyPS5/kytyps5.github.io/blob/94cae73c49d7430259dcd8a9a5dfe6120e500f00/src/content/compat/ghost-of-yotei-windows.md"
+        "testedDate": "2026-11-07",
+        "testedVersion": "Version 0.3.0, git=589bd14",
+        "recordUrl": "https://github.com/KytyPS5/kytyps5.github.io/blob/f9e250028a964e95a07b9277e38d236ad2c578a9/src/content/compat/ghost-of-yotei-windows.md"
       },
       "linux": {
         "slug": "ghost-of-y-tei-linux",
@@ -3942,6 +4374,17 @@
         "recordUrl": "https://github.com/KytyPS5/kytyps5.github.io/blob/127343159d70fdb90840098464f6f83027139b00/src/content/compat/spongebob-squarepants-titans-of-the-tide-windows.md"
       }
     },
+    "PPSA26923": {
+      "windows": {
+        "slug": "nice-day-for-fishing-windows",
+        "titleId": "PPSA26923",
+        "os": "windows",
+        "status": "in-game",
+        "testedDate": "2026-11-07",
+        "testedVersion": "KytyPS5-2026-11-07-589bd14",
+        "recordUrl": "https://github.com/KytyPS5/kytyps5.github.io/blob/6f633db911ac66bf2d8d959143ea441fc4fe1bc3/src/content/compat/nice-day-for-fishing-windows.md"
+      }
+    },
     "PPSA27023": {
       "windows": {
         "slug": "ace-combat-8-wings-of-theve-windows",
@@ -3964,6 +4407,17 @@
         "recordUrl": "https://github.com/KytyPS5/kytyps5.github.io/blob/1acdfca6b7c7452b5b16dd995457c4498e6b6d61/src/content/compat/ea-fc-26-windows.md"
       }
     },
+    "PPSA27581": {
+      "windows": {
+        "slug": "hellblade-senua-s-sacrifice-windows",
+        "titleId": "PPSA27581",
+        "os": "windows",
+        "status": "main-menu",
+        "testedDate": "2026-11-01",
+        "testedVersion": "0.3.0 d5b70d8",
+        "recordUrl": "https://github.com/KytyPS5/kytyps5.github.io/blob/5c37d621dd57251c58396e5e451423442449b39f/src/content/compat/hellblade-senua-s-sacrifice-windows.md"
+      }
+    },
     "PPSA27616": {
       "windows": {
         "slug": "bendy-and-the-ink-machine-windows",
@@ -3973,6 +4427,17 @@
         "testedDate": "2026-09-11",
         "testedVersion": "v0,3,0",
         "recordUrl": "https://github.com/KytyPS5/kytyps5.github.io/blob/368b82192d3779eec0228038a1291e234cb8b582/src/content/compat/bendy-and-the-ink-machine-windows.md"
+      }
+    },
+    "PPSA27622": {
+      "windows": {
+        "slug": "astroneer-windows",
+        "titleId": "PPSA27623",
+        "os": "windows",
+        "status": "in-game",
+        "testedDate": "2026-11-07",
+        "testedVersion": "KytyPS5-2026-11-07-589bd14",
+        "recordUrl": "https://github.com/KytyPS5/kytyps5.github.io/blob/c5bfd00444ba1d4d4329189b7362aabaf86425b8/src/content/compat/astroneer-windows.md"
       }
     },
     "PPSA27836": {
@@ -4057,10 +4522,10 @@
         "slug": "star-wars-galactic-racer-windows",
         "titleId": "PPSA28416",
         "os": "windows",
-        "status": "main-menu",
-        "testedDate": "2026-10-27",
-        "testedVersion": "KytyPS5-2026-10-27-ffc8137",
-        "recordUrl": "https://github.com/KytyPS5/kytyps5.github.io/blob/cccbab7737532495f6d6f0d38d3ce2ae917c3a23/src/content/compat/star-wars-galactic-racer-windows.md"
+        "status": "in-game",
+        "testedDate": "2026-11-07",
+        "testedVersion": "KytyPS5-2026-11-07-589bd14",
+        "recordUrl": "https://github.com/KytyPS5/kytyps5.github.io/blob/f02efb983fbc0ba9fcb539dcdc4a600dedb24b18/src/content/compat/star-wars-galactic-racer-windows.md"
       }
     },
     "PPSA28465": {
@@ -4072,6 +4537,17 @@
         "testedDate": "2026-08-24",
         "testedVersion": "KytyPS5-2026-09-09-679adbf-Windows-x64",
         "recordUrl": "https://github.com/KytyPS5/kytyps5.github.io/blob/79827a1adb6b9af38bba5da8ba2138fa975733aa/src/content/compat/trails-in-the-sky-first-chapter-windows.md"
+      }
+    },
+    "PPSA28502": {
+      "windows": {
+        "slug": "pure-pool-pro-windows",
+        "titleId": "PPSA28502",
+        "os": "windows",
+        "status": "doesnt-boot",
+        "testedDate": "2026-10-31",
+        "testedVersion": "0.3.0 4919fdb",
+        "recordUrl": "https://github.com/KytyPS5/kytyps5.github.io/blob/44bc637c770683ac3c5a6358e1ff73e49cf950eb/src/content/compat/pure-pool-pro-windows.md"
       }
     },
     "PPSA28542": {
@@ -4105,6 +4581,17 @@
         "testedDate": "2026-10-25",
         "testedVersion": "v0.3.0",
         "recordUrl": "https://github.com/KytyPS5/kytyps5.github.io/blob/bc065dec6db893917921ff74bb1f4b328222f540/src/content/compat/god-of-war-sons-of-sparta-windows.md"
+      }
+    },
+    "PPSA29043": {
+      "windows": {
+        "slug": "anger-foot-windows",
+        "titleId": "PPSA29043",
+        "os": "windows",
+        "status": "main-menu",
+        "testedDate": "2026-11-07",
+        "testedVersion": "KytyPS5-2026-11-07-589bd14",
+        "recordUrl": "https://github.com/KytyPS5/kytyps5.github.io/blob/c288544bbe80c1c4b7dfd6e562d2543e75078ade/src/content/compat/anger-foot-windows.md"
       }
     },
     "PPSA29140": {
@@ -4239,6 +4726,17 @@
         "recordUrl": "https://github.com/KytyPS5/kytyps5.github.io/blob/5381a1591825bbd71651fb8d15dff35a9a0741f3/src/content/compat/vampire-crawlers-windows.md"
       }
     },
+    "PPSA30776": {
+      "windows": {
+        "slug": "senua-s-saga-hellblade-2-windows",
+        "titleId": "PPSA25991",
+        "os": "windows",
+        "status": "main-menu",
+        "testedDate": "2026-11-01",
+        "testedVersion": "0.3.0 d5b70d8",
+        "recordUrl": "https://github.com/KytyPS5/kytyps5.github.io/blob/3a3e032bd93abd6653c7f588a9787bfb0cd1283f/src/content/compat/senua-s-saga-hellblade-2-windows.md"
+      }
+    },
     "PPSA30803": {
       "windows": {
         "slug": "resident-evil-requiem-windows",
@@ -4259,6 +4757,17 @@
         "testedDate": "2026-10-11",
         "testedVersion": "v0.3.0",
         "recordUrl": "https://github.com/KytyPS5/kytyps5.github.io/blob/95a1cf0685c45da19bd5242eef5d222e539f87eb/src/content/compat/mxgp-26-the-official-game-windows.md"
+      }
+    },
+    "PPSA31291": {
+      "windows": {
+        "slug": "tekken-3-windows",
+        "titleId": "PPSA31291",
+        "os": "windows",
+        "status": "in-game",
+        "testedDate": "2026-11-04",
+        "testedVersion": "0.3.0 (4a305a9)",
+        "recordUrl": "https://github.com/KytyPS5/kytyps5.github.io/blob/238d77ea365aa79632c4c891ee2d927ecf081253/src/content/compat/tekken-3-windows.md"
       }
     },
     "PPSA31372": {
@@ -4365,10 +4874,10 @@
         "slug": "silent-hill-townfall-windows",
         "titleId": "PPSA33286",
         "os": "windows",
-        "status": "doesnt-boot",
-        "testedDate": "2026-10-10",
-        "testedVersion": "Official build KytyPS5-2026-10-10-307fdcf (Windows x64 release)",
-        "recordUrl": "https://github.com/KytyPS5/kytyps5.github.io/blob/3c7d4ede85630874337d79c64bbedb1345b0d27d/src/content/compat/silent-hill-townfall-windows.md"
+        "status": "in-game",
+        "testedDate": "2026-11-03",
+        "testedVersion": "0.3.0 4fec14a",
+        "recordUrl": "https://github.com/KytyPS5/kytyps5.github.io/blob/a0e0439f992172096e2fd1c17b79a96eb50104af/src/content/compat/silent-hill-townfall-windows.md"
       }
     },
     "PPSA33627": {
@@ -4380,6 +4889,28 @@
         "testedDate": "2026-10-22",
         "testedVersion": "0.3.0.",
         "recordUrl": "https://github.com/KytyPS5/kytyps5.github.io/blob/66d78ea549ef781a982a60fa6af93c5a8ee3b7e4/src/content/compat/toy-story-retro-roundup-windows.md"
+      }
+    },
+    "PPSA33802": {
+      "windows": {
+        "slug": "my-little-puppy-windows",
+        "titleId": "PPSA33802",
+        "os": "windows",
+        "status": "in-game",
+        "testedDate": "2026-10-15",
+        "testedVersion": "KytyPS5-2026-10-12-df5b9b9",
+        "recordUrl": "https://github.com/KytyPS5/kytyps5.github.io/blob/82aac9cb6eab67a30b538fdef877db245a6af42b/src/content/compat/my-little-puppy-windows.md"
+      }
+    },
+    "PPSA34008": {
+      "windows": {
+        "slug": "mortal-shell-2-windows",
+        "titleId": "PPSA34008",
+        "os": "windows",
+        "status": "in-game",
+        "testedDate": "2026-11-01",
+        "testedVersion": "0.3.0. 893b035",
+        "recordUrl": "https://github.com/KytyPS5/kytyps5.github.io/blob/202535e3514b1adb4f2dc79cfbab9503a23e9372/src/content/compat/mortal-shell-2-windows.md"
       }
     },
     "PPSA34015": {
@@ -4510,6 +5041,28 @@
         "testedDate": "2026-10-24",
         "testedVersion": "KytyPS5-2026-10-24-906d255-Windows-x64",
         "recordUrl": "https://github.com/KytyPS5/kytyps5.github.io/blob/de0a81f5f6b12aca72b703a4ed3deac9cdddfe6a/src/content/compat/castlevania-belmont-s-curse-windows.md"
+      }
+    },
+    "PPSA35943": {
+      "windows": {
+        "slug": "graveyard-keeper-2-windows",
+        "titleId": "PPSA35943",
+        "os": "windows",
+        "status": "in-game",
+        "testedDate": "2026-11-07",
+        "testedVersion": "KytyPS5-2026-11-07-589bd14",
+        "recordUrl": "https://github.com/KytyPS5/kytyps5.github.io/blob/96f2f1298aa91e88f67cc2debb123696fbdb4907/src/content/compat/graveyard-keeper-2-windows.md"
+      }
+    },
+    "PPSA36082": {
+      "windows": {
+        "slug": "hades-ii-windows",
+        "titleId": "PPSA36082",
+        "os": "windows",
+        "status": "in-game",
+        "testedDate": "2026-11-07",
+        "testedVersion": "KytyPS5-2026-11-07-589bd14",
+        "recordUrl": "https://github.com/KytyPS5/kytyps5.github.io/blob/8e54d215d9562e25d0fb8e00c68af2b774928d5d/src/content/compat/hades-ii-windows.md"
       }
     },
     "PPSA36543": {
