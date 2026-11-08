@@ -2,23 +2,20 @@
 title: "Disney's Atlantis : The Lost Empire"
 titleId: "PPSA14421"
 status: "in-game"
-testedVersion: "v.0.3.0"
-testedDate: "2026-10-31"
+testedVersion: "KytyPS5-2026-11-07-589bd14"
+testedDate: "2026-11-07"
 os: "windows"
-hardware: "Intel Core i7 14700k / Nvidia RTX 5070 / 32 GB DDR5 RAM / 12 GB VRAM"
+hardware: "13th Gen Intel(R) Core(TM) i7-13700K (3.40 GHz) / NVIDIA GeForce RTX 4070 Ti / 32 GB DDR5 / 12 GB VRAM"
 ---
 
-the game reaches the boot screen, the game menue an is in-game
+The game runs smoothly without any problems.
 
 ## Steps to reproduce
 
-1. open KyTyPS5
-2. download or dump the game
-3. convert it to a suitable format
-4. launch it via KytyPS5
+Start the game.
 
 ## Expected behavior
 
-the game should be playable, just tested the first few minutes ..
+No known issue
 
-> Source: [KytyPS5 issue #2029](https://github.com/KytyPS5/KytyPS5/issues/2029)
+> Source: [KytyPS5 issue #2168](https://github.com/KytyPS5/KytyPS5/issues/2168)
