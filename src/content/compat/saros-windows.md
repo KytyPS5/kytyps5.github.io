@@ -2,7 +2,7 @@
 title: "Saros"
 titleId: "PPSA07631"
 status: "main-menu"
-testedVersion: "Official build KytyPS5-2026-10-26-f90a8b1"
+testedVersion: "Official build KytyPS5-2026-11-08-8dbee86"
 testedDate: "2026-10-04"
 os: "windows"
 hardware: "Intel Core 14600KF / RX 9070 OC / 32 GB DDR5 RAM / 16 GB GDDR6 VRAM"
