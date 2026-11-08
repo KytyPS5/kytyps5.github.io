@@ -13,9 +13,10 @@ declare global {
 }
 
 // Measurement ID can be configured via environment variable (e.g. VITE_GA_MEASUREMENT_ID in .env or CI)
-// or set directly here (e.g. "G-XXXXXXXXXX").
+// or defaults to the KytyPS5 production Google Analytics 4 Measurement ID.
 export const GA_MEASUREMENT_ID: string =
-  (import.meta.env.VITE_GA_MEASUREMENT_ID as string | undefined)?.trim() || "";
+  (import.meta.env.VITE_GA_MEASUREMENT_ID as string | undefined)?.trim() ||
+  "G-31K60BT880";
 
 const GA_ID_PATTERN = /^(G|GT|GTM)-[A-Za-z0-9]+$/i;
 
