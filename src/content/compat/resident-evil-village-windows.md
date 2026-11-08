@@ -1,27 +1,31 @@
 ---
-title: "Resident Evil Village"
-titleId: "PPSA01859"
-status: "main-menu"
-testedVersion: "KytyPS5-2026-10-12-df5b9b9-Windows-x64"
-testedDate: "2026-10-14"
+title: "Resident Evil: Village"
+titleId: "PPSA01556"
+status: "in-game"
+testedVersion: "0.3.0 b9cb08d"
+testedDate: "2026-11-07"
 os: "windows"
-hardware: "AMD / Nvidia 4030 lap / 32 GB"
-screenshots: ["https://github.com/user-attachments/assets/51b79c6b-379d-4665-87f1-4777bbc369cb"]
+hardware: "AMD Ryzen 7 7700X / AMD Radeon RX 9070XT / 32 GB RAM / 16GB VRAM"
+screenshots: ["https://github.com/user-attachments/assets/1a911361-ea15-4f09-886b-5000695fed04","https://github.com/user-attachments/assets/17c73db0-b6c8-4074-9b08-eb962681f974","https://github.com/user-attachments/assets/ab1eb86e-08ba-4277-bb0b-1281e1edbd57","https://github.com/user-attachments/assets/86a650e9-4d58-4210-97c6-e566404ca8ed","https://github.com/user-attachments/assets/eeee328c-4977-4c59-ba2b-468ddec3ad28","https://github.com/user-attachments/assets/1de5a829-635b-40db-9e4b-e452f5a062fe"]
 ---
 
-Game goes into menu, after starting game runs extrememly slow with black screen aka nothing happens
+Game boots to main menu. Start a new game.
+Cutscene audio and video are out of sync.
+Game then goes in game and can be played. Minor graphical issues with the light and some flickering.
+Solid 30fps and above.
 
 ## Steps to reproduce
 
-1. Open Kyty
-2. Run game
+Open Translator
+Boot Game
+Start New Game
 
 ## Expected behavior
 
-Game should run normally
+Goes In game, as expected.
 
 ## Extra notes
 
-This is Demo version
+Default Settings.
 
-> Source: [KytyPS5 issue #1516](https://github.com/KytyPS5/KytyPS5/issues/1516)
+> Source: [KytyPS5 issue #2147](https://github.com/KytyPS5/KytyPS5/issues/2147)
