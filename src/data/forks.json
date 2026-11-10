@@ -1,7 +1,7 @@
 {
   "version": 1,
   "issueNumber": 932,
-  "lastCommentId": 6592443711,
+  "lastCommentId": 6772942599,
   "forks": [
     {
       "repositoryId": 1429901071,
@@ -93,6 +93,22 @@
       "addedBy": "DistantMyth",
       "sourceCommentId": 6299064759,
       "sourceUrl": "https://github.com/KytyPS5/kytyps5.github.io/issues/932#issuecomment-6299064759",
+      "lineageOverride": true
+    },
+    {
+      "repositoryId": 1442623809,
+      "repository": "MatusRiedl/KytyPS5-nhl27-enhanced",
+      "url": "https://github.com/MatusRiedl/KytyPS5-nhl27-enhanced",
+      "description": "NHL 27 on PC: a KytyPS5 fork with steady pacing and Be a Pro fixes.",
+      "targetTitleIds": [
+        "PPSA34063"
+      ],
+      "archived": false,
+      "addedAt": "2026-11-10T16:29:27Z",
+      "updatedAt": "2026-11-10T16:29:27Z",
+      "addedBy": "DistantMyth",
+      "sourceCommentId": 6772942599,
+      "sourceUrl": "https://github.com/KytyPS5/kytyps5.github.io/issues/932#issuecomment-6772942599",
       "lineageOverride": true
     },
     {
