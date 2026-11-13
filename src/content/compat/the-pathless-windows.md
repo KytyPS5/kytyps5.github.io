@@ -1,52 +1,26 @@
 ---
 title: "The Pathless"
 titleId: "PPSA01825"
-status: "doesnt-boot"
-testedVersion: "KytyPS5-2026-11-07-589bd14"
-testedDate: "2026-11-07"
+status: "in-game"
+testedVersion: "KytyPS5-2026-11-12-58ca8d1"
+testedDate: "2026-11-12"
 os: "windows"
 hardware: "13th Gen Intel(R) Core(TM) i7-13700K (3.40 GHz) / NVIDIA GeForce RTX 4070 Ti / 32 GB DDR5 / 12 GB VRAM"
-screenshots: ["https://github.com/user-attachments/assets/a11da6f8-8804-4b20-b25c-3785c7f439f3"]
+screenshots: ["https://github.com/user-attachments/assets/739fb2df-c402-4b6a-b781-c804a8c4aa8a","https://github.com/user-attachments/assets/e2747501-b8e1-4911-83e8-398be1238e9d"]
 ---
 
-The game won't start. It crashes when it launches.
+The game loads the logos and opens the menu. After a “slow” compilation, it enters the game. 
 
-```
---- Guest fault context ---
-thread: RenderThread 1
-rax=000000090267bab0 rbx=0000001064feeaf0 rcx=0000000000000002 rdx=00000010a7cde810
-rsi=0000000908318118 rdi=000000100bb9a4f0 rbp=00000007ec2a2eb0 rsp=00000007ec2a2e88
-r8 =0000000000000038 r9 =0000000000000000 r10=000000100bb9a550 r11=0000000906233ed4
-r12=0000000000000000 r13=0000000000000004 r14=0000000000000000 r15=0000000000000000
-code (pc-48 .. pc+48, fault at byte 48):
- c1 66 44 3b 44 98 02 75 99 41 ff c7 48 ff c1 49
- 39 cd 75 a2 e9 88 00 00 00 66 0f 1f 84 00 00 00
- 00 00 44 3b 67 78 0f 8d 76 ff ff ff 4c 8b 4d c8
- 49 8b 19 48 89 d8 48 d1 f8 4c 01 c8 f6 c3 01 48
- 0f 44 c3 49 63 dc 66 44 3b 44 98 02 0f 85 50 ff
- ff ff 41 ff c4 48 ff c1 49 39 cd 0f 85 55 ff ff
-stack:
-  000000100b156c00 00000010a7cde810 000000100bb9a4f0 00000010ae960010
-  0000001024a50150 00000007ec2a37f0 00000009033d6b9c 0000000000000000
-  0000000000000000 0000000100000000 0000000100000100 0000005000000002
-  00000010bda8e930 0000000000000000 00000010ae960010 0000002d00000000
-  00000010ae960010 0000002d00000050 0000000140039312 000000107a2447c0
-  4200000040626328 0000000000000000 000000014061e573 3f7f2b6b392e6cee
-  0000000000000000 00000001424143b8 000001001872ba68 000000000000000c
-  000000014061e573 0000000908309b18 000000090827d000 0000000908309a78
---- Build ---
-Source build 589bd14-dirty
---- Error ---
-Unhandled host exception: type=1 code=3221225477 pc=0x000000090267babe access=1 address=0x0000000000000000
- in D:/Progetti/KytyPS5/src/loader/runtimeLinker.cpp:718
-```
+With “cold” shaders, the game occasionally pauses to compile them.
+
+In particular, GS shaders slow the game down significantly and take the longest to compile.
 
 ## Steps to reproduce
 
-Launch the game from kytyPS5
+1. Open the game and play!
 
 ## Expected behavior
 
-The game should load the main menu without crashing.
+You'd expect it to run more smoothly, with a smoother frame rate.
 
-> Source: [KytyPS5 issue #2156](https://github.com/KytyPS5/KytyPS5/issues/2156)
+> Source: [KytyPS5 issue #2235](https://github.com/KytyPS5/KytyPS5/issues/2235)
