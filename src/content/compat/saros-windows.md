@@ -1,27 +1,27 @@
 ---
 title: "Saros"
 titleId: "PPSA07631"
-status: "main-menu"
-testedVersion: "Official build KytyPS5-2026-11-08-8dbee86"
-testedDate: "2026-10-04"
+status: "in-game"
+testedVersion: "v0.3.0"
+testedDate: "2026-11-11"
 os: "windows"
-hardware: "Intel Core 14600KF / RX 9070 OC / 32 GB DDR5 RAM / 16 GB GDDR6 VRAM"
-screenshots: ["https://github.com/user-attachments/assets/b536d1e4-cead-49cd-84e5-9c92ccdc9b1a"]
-trusted: true
+hardware: "Intel 12900K / Nvidia RTX 5090 - 621.14 / 64 GB DDR5 DRAM"
 ---
 
-Successfully started with logo with initial config for subtitles, but after confirmation it crashes.
+Game goes ingame with intel CPU & 5090 but crashes very quickly afterwards.
 
 ## Steps to reproduce
 
-1. Launch Saros.
-2. Allow the startup logos to complete.
-3. Confirm subtitles options.
-4. Confirm cycle saves info.
-5. Game Crashes.
+1. Go ingame
+2. Move
+3. Crash
 
 ## Expected behavior
 
-It should continue configurations to a gameplay settings menu.
+Move beyond the starting area.
 
-> Source: [KytyPS5 issue #1053](https://github.com/KytyPS5/KytyPS5/issues/1053)
+## Extra notes
+
+[buffers.zip](https://github.com/user-attachments/files/34681010/buffers.zip)
+
+> Source: [KytyPS5 issue #2211](https://github.com/KytyPS5/KytyPS5/issues/2211)
