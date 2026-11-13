@@ -2,33 +2,30 @@
 title: "Viewfinder"
 titleId: "PPSA10249"
 status: "in-game"
-testedVersion: "KytyPS5-2026-10-05-af3011c"
-testedDate: "2026-10-05"
+testedVersion: "v0.3.0-bc934ef"
+testedDate: "2026-11-11"
 os: "windows"
-hardware: "Ryzen 5 5600X / RX 7600 / 32 GB / 8 GB"
-screenshots: ["https://github.com/user-attachments/assets/2a9752f4-c637-460c-89d5-8de9c4daeebd","https://github.com/user-attachments/assets/40c6a152-55d7-4d7c-89c6-046228babd23","https://github.com/user-attachments/assets/e6b9a2d7-4af6-4f96-b808-801fbf310e78"]
+hardware: "AMD Ryzen 9 3900X @ 4.1 GHz / NVIDIA GeForce RTX 5070Ti, driver 621.14 / 32 GB DDR4 RAM / 16 GB VRAM"
+screenshots: ["https://github.com/user-attachments/assets/f0fdf6c7-0724-4ca4-8796-9ef9629598b5","https://github.com/user-attachments/assets/b7510381-01f1-4c26-b7e4-5603e0a5c09f"]
 ---
 
-What works, the R2 problem, the crash with its error line, your eboot findings, and the keyboard-only caveat
-
-I'm able to progess through the start of the game up until the first photo needs placing.
-This confirms jump keys work, reqind keys etc.
-Upon picking up the photo, I'm able to press L2 to hold the photo up but R2 does nothing.
-Pressing L2 then R1 without red zone protection causes a crash shown in the first log (run1).
-With redzone protection, nothing fails but nothing happens.
-Unable to progess wihotu the ability to press R2.
-
-I'll carry on looking into this issue but nothing obvious right now.
+The game functions correctly from title menu to gameplay. All player interactions function, including picture placement. However, there's an intermittent crashing issue when interacting with teleporters. It appears to be a 50/50 as to whether a crash will occur upon interaction with teleporters.
 
 ## Steps to reproduce
 
-1. Open Kyty
-2. Boot Viewfinder
-3. Progess through the game
-4. Upon reaching he first photo, try and Press L2+R1 (without redzone protection) and it shoudl throw an error)
+1. Open KytyPS5
+2. Boot game
+3. New/Continue game
+4. Grab picture from canvas
+5. Place picture with L2 & R2
+6. Interact with teleporter inside of picture
 
 ## Expected behavior
 
-Pressing L2+R2 should place the photo contents down (confirmed location via gameplay videos)
+The player teleportation should complete without a crash.
 
-> Source: [KytyPS5 issue #1064](https://github.com/KytyPS5/KytyPS5/issues/1064)
+## Extra notes
+
+Last report on this game was issue #1064
+
+> Source: [KytyPS5 issue #2220](https://github.com/KytyPS5/KytyPS5/issues/2220)
