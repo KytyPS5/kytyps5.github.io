@@ -1,3 +1,4 @@
+import { useMemo } from "react";
 import { Link } from "react-router-dom";
 import { ArrowRight, ArrowUpRight, Download } from "lucide-react";
 import ReactMarkdown from "react-markdown";
@@ -6,6 +7,9 @@ import { date, External, GameImage } from "./shared";
 import { Reveal } from "./primitives";
 import { LoadingState } from "./loading-state";
 import { useCommunityResources } from "../hooks/use-community-resources";
+import { useGameModules } from "../hooks/use-modules";
+import { ModuleCard } from "./module-card";
+import { modulesRepo, normalizeTitleId } from "../data/modules-types";
 import {
   websiteRepo,
   type CommunityFork,
@@ -233,21 +237,53 @@ export function PatchCollectionBlock({
     </Reveal>
   );
 }
-export function GameCommunityResources({ gameKey }: { gameKey: string }) {
+export function GameCommunityResources({
+  gameKey,
+  gameTitle,
+  titleId,
+  allTitleIds,
+}: {
+  gameKey: string;
+  gameTitle?: string;
+  titleId?: string;
+  allTitleIds?: string[];
+}) {
   const resource = useCommunityResources();
-  const collections =
-    resource.data?.patchCollections.filter(
-      (collection) =>
-        collection.game.key.toUpperCase() === gameKey.toUpperCase(),
-    ) ?? [];
-  const forks =
-    resource.data?.forks.filter(
-      (fork) =>
-        fork.targetTitleIds.length > 0 &&
-        fork.games.some(
-          (game) => game.key.toUpperCase() === gameKey.toUpperCase(),
-        ),
-    ) ?? [];
+  const effectiveIds = useMemo(() => {
+    const ids = (allTitleIds?.filter(Boolean) ?? []).map(normalizeTitleId);
+    if (ids.length > 0) return ids;
+    if (titleId) return [normalizeTitleId(titleId)];
+    return [normalizeTitleId(gameKey)];
+  }, [allTitleIds, titleId, gameKey]);
+
+  const {
+    patches: modularPatches,
+    cheats: modularCheats,
+    configs: modularConfigs,
+    loading: modulesLoading,
+    error: modulesError,
+    refresh: refreshModules,
+  } = useGameModules(effectiveIds);
+
+  const forks = useMemo(() => {
+    return (
+      resource.data?.forks.filter(
+        (fork) =>
+          fork.targetTitleIds.length > 0 &&
+          fork.games.some(
+            (game) =>
+              normalizeTitleId(game.key) === normalizeTitleId(gameKey) ||
+              effectiveIds.some(
+                (id) => id === normalizeTitleId(game.titleId),
+              ),
+          ),
+      ) ?? []
+    );
+  }, [resource.data, gameKey, effectiveIds]);
+
+  const primaryTitleId = titleId || effectiveIds[0] || gameKey;
+  const displayGameTitle = gameTitle || gameKey;
+
   return (
     <section
       className="game-community-resources"
@@ -256,11 +292,25 @@ export function GameCommunityResources({ gameKey }: { gameKey: string }) {
       <div className="community-section-intro">
         <h2 id="community-resources-title">More ways to explore this game.</h2>
         <p>
-          Community patches and forks, maintained independently of test reports.
+          Community patches, cheats, configurations, and forks, maintained
+          independently of test reports.
         </p>
       </div>
       <ResourceFeedback {...resource} />
+      {modulesError && (
+        <p className="community-feedback" role="status">
+          Live module catalog could not be reached.{" "}
+          <button
+            className="text-link"
+            type="button"
+            onClick={() => void refreshModules(true)}
+          >
+            Try again
+          </button>
+        </p>
+      )}
       <div className="game-community-columns">
+        {/* Patches Section */}
         <section aria-labelledby="game-patches-title">
           <div className="community-subheading">
             <h3 id="game-patches-title">Community patches</h3>
@@ -269,19 +319,109 @@ export function GameCommunityResources({ gameKey }: { gameKey: string }) {
               <ArrowRight size={16} />
             </Link>
           </div>
-          {resource.data &&
-            (collections.length ? (
-              collections.map((collection) => (
-                <PatchCollectionBlock
-                  key={collection.titleId}
-                  collection={collection}
-                  showGame={false}
-                />
-              ))
-            ) : (
+          {modulesLoading && !modularPatches.length ? (
+            <LoadingState label="Loading patches…" />
+          ) : modularPatches.length > 0 ? (
+            <div className="module-list">
+              {modularPatches.map((entry) => (
+                <ModuleCard key={entry.path} entry={entry} headingLevel="h4" />
+              ))}
+            </div>
+          ) : modulesError ? (
+            <div className="community-empty-module">
+              <p>Unable to load patches right now.</p>
+            </div>
+          ) : (
+            <div className="community-empty-module">
               <p>No community patches are listed for this game yet.</p>
-            ))}
+              <a
+                href={`${modulesRepo}/issues/new?template=01_patch_submission.yml&title_id=${encodeURIComponent(primaryTitleId)}&game_name=${encodeURIComponent(displayGameTitle)}`}
+                target="_blank"
+                rel="noopener noreferrer"
+                className="text-link"
+              >
+                Submit a patch
+                <ArrowUpRight size={15} />
+              </a>
+            </div>
+          )}
         </section>
+
+        {/* Cheats Section */}
+        <section aria-labelledby="game-cheats-title">
+          <div className="community-subheading">
+            <h3 id="game-cheats-title">Cheats</h3>
+            <Link to="/cheats">
+              All cheats
+              <ArrowRight size={16} />
+            </Link>
+          </div>
+          {modulesLoading && !modularCheats.length ? (
+            <LoadingState label="Loading cheats…" />
+          ) : modularCheats.length > 0 ? (
+            <div className="module-list">
+              {modularCheats.map((entry) => (
+                <ModuleCard key={entry.path} entry={entry} headingLevel="h4" />
+              ))}
+            </div>
+          ) : modulesError ? (
+            <div className="community-empty-module">
+              <p>Unable to load cheats right now.</p>
+            </div>
+          ) : (
+            <div className="community-empty-module">
+              <p>No community cheats are listed for this game yet.</p>
+              <a
+                href={`${modulesRepo}/issues/new?template=02_cheat_submission.yml&title_id=${encodeURIComponent(primaryTitleId)}&game_name=${encodeURIComponent(displayGameTitle)}`}
+                target="_blank"
+                rel="noopener noreferrer"
+                className="text-link"
+              >
+                Submit a cheat
+                <ArrowUpRight size={15} />
+              </a>
+            </div>
+          )}
+        </section>
+
+        {/* Configuration Presets Section */}
+        <section aria-labelledby="game-configs-title">
+          <div className="community-subheading">
+            <h3 id="game-configs-title">Configuration presets</h3>
+            <Link to="/configs">
+              All configs
+              <ArrowRight size={16} />
+            </Link>
+          </div>
+          {modulesLoading && !modularConfigs.length ? (
+            <LoadingState label="Loading configuration presets…" />
+          ) : modularConfigs.length > 0 ? (
+            <div className="module-list">
+              {modularConfigs.map((entry) => (
+                <ModuleCard key={entry.path} entry={entry} headingLevel="h4" />
+              ))}
+            </div>
+          ) : modulesError ? (
+            <div className="community-empty-module">
+              <p>Unable to load configuration presets right now.</p>
+            </div>
+          ) : (
+            <div className="community-empty-module">
+              <p>No configuration presets are listed for this game yet.</p>
+              <a
+                href={`${modulesRepo}/issues/new?template=03_config_submission.yml&title_id=${encodeURIComponent(primaryTitleId)}&game_name=${encodeURIComponent(displayGameTitle)}`}
+                target="_blank"
+                rel="noopener noreferrer"
+                className="text-link"
+              >
+                Submit a config
+                <ArrowUpRight size={15} />
+              </a>
+            </div>
+          )}
+        </section>
+
+        {/* Targeted Forks Section */}
         <section aria-labelledby="game-forks-title">
           <div className="community-subheading">
             <h3 id="game-forks-title">Targeted forks</h3>
@@ -290,12 +430,11 @@ export function GameCommunityResources({ gameKey }: { gameKey: string }) {
               <ArrowRight size={16} />
             </Link>
           </div>
-          {resource.data &&
-            (forks.length ? (
-              <ForkList forks={forks} showTargets={false} />
-            ) : (
-              <p>No listed forks specifically target this game yet.</p>
-            ))}
+          {forks.length ? (
+            <ForkList forks={forks} showTargets={false} />
+          ) : (
+            <p>No listed forks specifically target this game yet.</p>
+          )}
         </section>
       </div>
     </section>

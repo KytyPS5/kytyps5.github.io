@@ -301,7 +301,12 @@ function CatalogGamePage({ titleKey }: { titleKey: string }) {
           </p>
         </div>
       </div>
-      <GameCommunityResources gameKey={entry.titleId} />
+      <GameCommunityResources
+        gameKey={entry.titleId}
+        gameTitle={entry.name}
+        titleId={entry.titleId}
+        allTitleIds={entry.allTitleIds}
+      />
     </section>
   );
 }
@@ -768,7 +773,12 @@ export function GamePage() {
           <ArrowLeft size={17} />
           Back to compatibility
         </CollectionBackLink>
-        <GameCommunityResources gameKey={game.key} />
+        <GameCommunityResources
+          gameKey={game.key}
+          gameTitle={game.title}
+          titleId={game.titleId}
+          allTitleIds={game.allTitleIds}
+        />
       </section>
     );
   const reports = data?.reports.filter((r) => r.os === os) ?? [];
@@ -948,7 +958,12 @@ export function GamePage() {
           )}
         </div>
       </div>
-      <GameCommunityResources gameKey={game.key} />
+      <GameCommunityResources
+        gameKey={game.key}
+        gameTitle={game.title}
+        titleId={game.titleId}
+        allTitleIds={game.allTitleIds}
+      />
     </section>
   );
 }

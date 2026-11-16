@@ -49,6 +49,12 @@ const NotFound = lazy(() =>
 const Patches = lazy(() =>
   import("./pages/Community").then((m) => ({ default: m.Patches })),
 );
+const Cheats = lazy(() =>
+  import("./pages/Community").then((m) => ({ default: m.Cheats })),
+);
+const Configs = lazy(() =>
+  import("./pages/Community").then((m) => ({ default: m.Configs })),
+);
 const Forks = lazy(() =>
   import("./pages/Community").then((m) => ({ default: m.Forks })),
 );
@@ -56,6 +62,8 @@ const Forks = lazy(() =>
 const navigation = [
   { label: "Compatibility", to: "/compatibility" },
   { label: "Patches", to: "/patches" },
+  { label: "Cheats", to: "/cheats" },
+  { label: "Configs", to: "/configs" },
   { label: "Forks", to: "/forks" },
   { label: "Documentation", to: "/docs" },
 ];
@@ -273,6 +281,8 @@ export default function App() {
         "/download": "Download",
         "/compatibility": "Game compatibility",
         "/patches": "Community patches",
+        "/cheats": "Community cheats",
+        "/configs": "Configuration presets",
         "/forks": "Community forks",
         "/docs": "Documentation",
         "/faq": "Frequently asked questions",
@@ -314,6 +324,8 @@ export default function App() {
             <Route path="/download" element={<DownloadPage />} />
             <Route path="/compatibility" element={<Compatibility />} />
             <Route path="/patches" element={<Patches />} />
+            <Route path="/cheats" element={<Cheats />} />
+            <Route path="/configs" element={<Configs />} />
             <Route path="/forks" element={<Forks />} />
             <Route path="/game/:key" element={<GamePage />} />
             <Route path="/docs" element={<Documentation />} />

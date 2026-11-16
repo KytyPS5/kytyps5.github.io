@@ -24,6 +24,10 @@ const descriptions: Record<string, string> = {
     "Search tested PS5 games, filter compatibility by platform and status, and read the original community reports.",
   "/patches":
     "Browse community patches for PS5 games, read installation instructions and download patch packages for KytyPS5.",
+  "/cheats":
+    "Browse community cheats, trainers, and gameplay modifications for PS5 games running on KytyPS5.",
+  "/configs":
+    "Explore community configuration presets and performance profiles for KytyPS5 games.",
   "/forks":
     "Explore community forks of KytyPS5 and the specific games each fork targets.",
   "/docs":

@@ -19,3 +19,4 @@ test-results/
 skills-lock.json
 design-system/
 .DS_Store
+issues_cache.json
