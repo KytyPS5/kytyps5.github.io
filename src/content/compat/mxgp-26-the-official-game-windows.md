@@ -1,26 +1,34 @@
 ---
 title: "MXGP 26: The Official Game"
 titleId: "PPSA30839"
-status: "logo"
-testedVersion: "v0.3.0"
-testedDate: "2026-10-11"
+status: "in-game"
+testedVersion: "KytyPS5-2026-11-14-3e226bf"
+testedDate: "2026-11-14"
 os: "windows"
-hardware: "13th Gen Intel(R) Core(TM) i7-13620H (2.40 GHz) / NVIDIA GeForce RTX 4070 Laptop GPU (8 GB) / 32 GB DDR5"
+hardware: "Ryzen 7 5800xt / Asus TUF RTX 3080 OC Edition 10 GB / 32 GB DDR4 RAM, 10 GB VRAM"
+screenshots: ["https://github.com/user-attachments/assets/63747df2-b595-4151-b835-1f0161ae1a61"]
 ---
 
-Game boots, loads for a few frames, then crashes at shader compiling.
+Game entered, i headed through the menus and once in game you get about 15 fps and it crashes after a little while.
 
 ## Steps to reproduce
 
-1. Open KyTy
-2. Boot game
+1. Open KytyPS5
+2. double click the game
+3. go through the menus
+4. enter game
+5. usually crashes after a bit of gameplay
 
 ## Expected behavior
 
-KyTyPS5 should compile shaders and run the game menu correctly
+Crash after a bit of gameplay
 
 ## Last working build / first broken build
 
-last worked v01.003.000
+Works in the last few builds but this one works the best (No reason to use older build)
 
-> Source: [KytyPS5 issue #1422](https://github.com/KytyPS5/KytyPS5/issues/1422)
+## Extra notes
+
+<img width="941" height="982" alt="image_2026-11-14_155625015" src="https://github.com/user-attachments/assets/63747df2-b595-4151-b835-1f0161ae1a61" />
+
+> Source: [KytyPS5 issue #2282](https://github.com/KytyPS5/KytyPS5/issues/2282)
