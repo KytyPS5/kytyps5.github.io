@@ -476,27 +476,25 @@ export function Documentation() {
               the fork. Commands open or update a checked data PR; publication
               follows its merge.
             </p>
-            <p>For patches, add files manually to the website repository:</p>
+            <p>
+              Community patches, cheats, and configuration presets are hosted in the{" "}
+              <External href="https://github.com/KytyPS5/KytyPS5-Modules">
+                KytyPS5-Modules repository
+              </External>
+              . Contributors can submit new patches, trainers, and emulator
+              settings via dedicated GitHub Issue templates:
+            </p>
             <CodeBlock
-              title="Patch source layout"
+              title="Modules registry submission templates"
               code={[
-                "patches/PPSA21567/Patch name/description.md",
-                "patches/PPSA21567/Patch name/patch.zip",
-                "patches/PPSA21567/Patch name/optional-second-package.zip",
+                "01_patch_submission.yml  — Community memory patches & fixes",
+                "02_cheat_submission.yml  — Trainers & gameplay cheats",
+                "03_config_submission.yml — Configuration presets",
               ]}
             />
             <p>
-              Each named patch needs a description and at least one ZIP. See the{" "}
-              <External
-                href={`${websiteRepo}/blob/main/docs/COMMUNITY_RESOURCES.md`}
-              >
-                maintenance guide
-              </External>{" "}
-              and{" "}
-              <External href={`${websiteRepo}/blob/main/patches/README.md`}>
-                patch instructions
-              </External>{" "}
-              for the full process.
+              Submissions undergo automated schema validation and linting on
+              the modules repository before being deployed to the live catalog.
             </p>
           </DocSection>
           <DocSection id="troubleshooting" title="Troubleshooting">

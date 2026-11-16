@@ -192,7 +192,7 @@ function CatalogGamePage({ titleKey }: { titleKey: string }) {
   }, [titleKey, attempt]);
   const normalizedKey = titleKey.toUpperCase().replaceAll("-", "");
   const resourceGame = [
-    ...(resources.data?.patchCollections.map((collection) => collection.game) ??
+    ...(resources.data?.patchCollections?.map((collection) => collection.game) ??
       []),
     ...(resources.data?.forks
       .filter((fork) => fork.targetTitleIds.length > 0)

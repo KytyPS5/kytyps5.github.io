@@ -38,7 +38,7 @@ export type PatchCollection = {
 export type CommunityData = {
   version: 1;
   forks: CommunityFork[];
-  patchCollections: PatchCollection[];
+  patchCollections?: PatchCollection[];
 };
 export const websiteRepo = "https://github.com/KytyPS5/kytyps5.github.io";
 export const forkManagementUrl = `${websiteRepo}/issues/932`;

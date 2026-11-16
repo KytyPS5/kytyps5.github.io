@@ -56,21 +56,13 @@ The `Manage community forks` workflow rechecks repository write access, validate
 
 After installing the workflow on `main`, set the `FORKS_ISSUE_NUMBER` repository variable to the management issue's number. The initial workflow push and manual workflow dispatch can reconcile existing commands, including commands posted while this feature was awaiting merge.
 
-## Add patches manually
+## Submit patches, cheats, and configs
 
-Create source folders using this structure:
-
-```text
-patches/PPSA21567/Patch name/description.md
-patches/PPSA21567/Patch name/patch.zip
-patches/PPSA21567/Patch name/another-package.zip
-```
-
-The game-ID folder registers that game's patch collection. Every patch-name folder requires a description and one or more ZIPs. Read [patches/README.md](../patches/README.md) for content requirements, validation and examples. Add or remove packages in Git, then merge/push to `main` for the normal deployment. There are no public issue commands that upload or edit patches.
+Community patches, cheats, and configuration presets are maintained in the [KytyPS5-Modules](https://github.com/KytyPS5/KytyPS5-Modules) registry repository. Contributions are submitted via structured GitHub issue templates (Patch, Cheat, Configuration), verified through automated CI validation workflows, and published directly to the live catalog.
 
 ## Data and verification
 
-`scripts/export-community.mjs` builds `/data/community.json` and `/patch-files/...zip` downloads using the catalog, fork registry and patch directories. The main export/build pipeline calls it automatically. ZIPs are not added to the offline application shell. The browser refreshes community listings on the normal five-minute data lifetime and can use previously cached JSON offline.
+`scripts/export-community.mjs` builds `/data/community.json` using the catalog and fork registry. The main export/build pipeline calls it automatically. The browser refreshes community listings on the normal five-minute data lifetime and can use previously cached JSON offline.
 
 ```sh
 npm run export:community

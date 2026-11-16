@@ -51,7 +51,6 @@ async function loadCommunityResources(force = false) {
       if (
         data?.version !== 1 ||
         !Array.isArray(data.forks) ||
-        !Array.isArray(data.patchCollections) ||
         !data.forks.every(
           (fork: CommunityData["forks"][number]) =>
             fork &&
@@ -65,23 +64,25 @@ async function loadCommunityResources(force = false) {
             fork.targetTitleIds.every((id) => /^PPSA\d{5}$/.test(id)) &&
             /^https:\/\/github\.com\/[\w-]+\/[\w.-]+$/.test(fork.url),
         ) ||
-        !data.patchCollections.every(
-          (collection: CommunityData["patchCollections"][number]) =>
-            collection &&
-            validGame(collection.game) &&
-            /^PPSA\d{5}$/.test(collection.titleId) &&
-            Array.isArray(collection.patches) &&
-            collection.patches.every(
-              (patch) =>
-                patch &&
-                typeof patch.id === "string" &&
-                typeof patch.name === "string" &&
-                typeof patch.description === "string" &&
-                Array.isArray(patch.files) &&
-                patch.files.length > 0 &&
-                patch.files.every(validFile),
-            ),
-        )
+        (data.patchCollections !== undefined &&
+          (!Array.isArray(data.patchCollections) ||
+            !data.patchCollections.every(
+              (collection: NonNullable<CommunityData["patchCollections"]>[number]) =>
+                collection &&
+                validGame(collection.game) &&
+                /^PPSA\d{5}$/.test(collection.titleId) &&
+                Array.isArray(collection.patches) &&
+                collection.patches.every(
+                  (patch) =>
+                    patch &&
+                    typeof patch.id === "string" &&
+                    typeof patch.name === "string" &&
+                    typeof patch.description === "string" &&
+                    Array.isArray(patch.files) &&
+                    patch.files.length > 0 &&
+                    patch.files.every(validFile),
+                ),
+            )))
       )
         throw new Error("Invalid community resources.");
       return data;

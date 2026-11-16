@@ -1,7 +1,5 @@
 import assert from "node:assert/strict";
-import { readFile, mkdir, writeFile, rm } from "node:fs/promises";
-import { createHash, randomUUID } from "node:crypto";
-import path from "node:path";
+import { readFile, mkdir } from "node:fs/promises";
 import { chromium } from "playwright";
 
 const base = process.env.PREVIEW_URL ?? "http://127.0.0.1:5173";
@@ -19,23 +17,7 @@ const game = {
   title: astro.title,
   cover: astro.cover,
 };
-const zip = Buffer.from("504b0506000000000000000000000000000000000000", "hex");
-const digest = createHash("sha256").update(zip).digest("hex");
-const fixtureName = `.browser-test-${randomUUID()}`;
-const fixtureDirectory = path.resolve("public/patch-files", fixtureName);
-assert.equal(
-  path.dirname(fixtureDirectory),
-  path.resolve("public/patch-files"),
-);
-await mkdir(fixtureDirectory, { recursive: true });
-await writeFile(path.join(fixtureDirectory, "fix one.zip"), zip);
-await writeFile(path.join(fixtureDirectory, "second.zip"), zip);
-const file = {
-  name: "fix one.zip",
-  size: zip.length,
-  sha256: digest,
-  url: `/patch-files/${fixtureName}/fix%20one.zip?v=${digest.slice(0, 16)}`,
-};
+
 const fork = {
   repositoryId: 1,
   repository: "fixture/game-fork",
@@ -49,6 +31,7 @@ const fork = {
   addedBy: "fixture",
   sourceUrl: "https://github.com/fixture/site/issues/1",
 };
+
 const resources = {
   version: 1,
   forks: [
@@ -62,29 +45,9 @@ const resources = {
       games: [],
     },
   ],
-  patchCollections: [
-    {
-      titleId: "PPSA21567",
-      game,
-      patches: [
-        {
-          id: "PPSA21567/Launch fix",
-          name: "Launch fix",
-          description:
-            "# Installation\n\nUse the matching game build.\n\n[Read on GitHub](notes.md)\n\n[Relative ZIP](./fix%20one.zip) · [Encoded ZIP](fix%20one.zip) · [Bare ZIP](second.zip)\n\n[Parent ZIP](../second.zip) · [Nested ZIP](folder%2Fsecond.zip)\n\n<script>window.PATCH_XSS=true</script>",
-          files: [
-            file,
-            {
-              ...file,
-              name: "second.zip",
-              url: file.url.replace("fix%20one.zip", "second.zip"),
-            },
-          ],
-        },
-      ],
-    },
-  ],
+  patchCollections: [],
 };
+
 const browser = await chromium.launch({
   executablePath:
     process.env.CHROME_PATH ??
@@ -94,6 +57,7 @@ const browser = await chromium.launch({
 });
 const evidence = ".impeccable/review/community";
 await mkdir(evidence, { recursive: true });
+
 try {
   const context = await browser.newContext({
     reducedMotion: "reduce",
@@ -104,10 +68,12 @@ try {
     errors = [];
   page.on("pageerror", (error) => errors.push(error.message));
   await page.clock.install();
+
   let response = resources,
     failResources = false,
     replaceReport = false,
     removeReport = false;
+
   await context.route("**/data/community.json", (route) =>
     failResources
       ? route.fulfill({ status: 503, body: "Unavailable" })
@@ -139,51 +105,19 @@ try {
         : report,
     }),
   );
-  await context.route("**/patch-files/**", (route) =>
-    route.fulfill({ body: zip, contentType: "application/zip" }),
-  );
+
+  // 1. Patches directory verification
   await page.goto(`${base}/patches`);
-  await page
-    .getByRole("heading", { name: "Launch fix", exact: true })
-    .waitFor();
+  await page.locator(".module-card").first().waitFor();
   assert.equal(
     await page.locator("h1").count(),
     1,
-    "Markdown headings must not add another page h1",
+    "Module directory must have exactly one h1",
   );
-  assert.equal(await page.evaluate(() => Boolean(window.PATCH_XSS)), false);
-  for (const name of ["Relative ZIP", "Encoded ZIP", "Bare ZIP"]) {
-    const link = page.getByRole("link", { name, exact: true });
-    const expected =
-      name === "Bare ZIP"
-        ? resources.patchCollections[0].patches[0].files[1]
-        : file;
-    assert.equal(await link.getAttribute("href"), expected.url);
-    assert.equal(await link.getAttribute("download"), expected.name);
-  }
-  for (const name of ["Parent ZIP", "Nested ZIP"])
-    assert.equal(
-      await page
-        .getByRole("link", { name, exact: true })
-        .getAttribute("download"),
-      null,
-    );
-  assert(
-    (
-      await page
-        .getByRole("link", { name: "Read on GitHub" })
-        .getAttribute("href")
-    ).endsWith("/patches/PPSA21567/Launch%20fix/notes.md"),
-  );
-  const downloadPromise = page.waitForEvent("download");
-  await page.locator(".community-downloads a").first().click();
-  const download = await downloadPromise;
-  assert.equal(download.suggestedFilename(), file.name);
-  await download.saveAs(`${evidence}/download.zip`);
-  assert.deepEqual(await readFile(`${evidence}/download.zip`), zip);
+
   await page
     .getByRole("searchbox", { name: "Search patches" })
-    .fill("not-present");
+    .fill("not-present-serial-xyz");
   await page
     .getByRole("heading", { name: "No patches match that search." })
     .waitFor();
@@ -191,31 +125,42 @@ try {
     .getByRole("button", { name: "Clear search", exact: true })
     .first()
     .click();
-  await page.locator(".community-downloads a").nth(1).waitFor();
+  await page.locator(".module-card").first().waitFor();
+
   console.log(
-    "PASS patch Markdown, regional identity, all ZIP downloads, search and safe rendering",
+    "PASS modern modular patches directory, search filtering and safe rendering",
   );
+
+  // 2. Cheats & Configs directories verification
+  await page.goto(`${base}/cheats`);
+  await page.locator(".module-card").first().waitFor();
+  await page.goto(`${base}/configs`);
+  await page.locator(".module-card").first().waitFor();
+
+  console.log("PASS community cheats and configuration preset directories");
+
+  // 3. Forks directory verification
   await page.goto(`${base}/forks`);
   await page.locator(".community-fork").nth(1).waitFor();
-  await page.getByLabel("Fork game targets").selectOption("unassigned");
+  await page.getByLabel("Fork game targets", { exact: true }).selectOption("unassigned");
   assert.equal(await page.locator(".community-fork").count(), 1);
   assert(
     (await page.locator(".community-fork").innerText()).includes(
       "fixture/no-targets",
     ),
   );
-  await page.getByLabel("Fork game targets").selectOption("targeted");
+  await page.getByLabel("Fork game targets", { exact: true }).selectOption("targeted");
   assert.equal(await page.locator(".community-fork").count(), 1);
   assert(
     (await page.locator(".community-fork").innerText()).includes(
       "fixture/game-fork",
     ),
   );
+
+  // 4. Game page community resources (patches, cheats, configs, forks)
   await page.goto(`${base}/game/PPSA21567`);
   const gameResources = page.locator(".game-community-resources");
-  await gameResources
-    .getByRole("heading", { name: "Launch fix", exact: true })
-    .waitFor();
+  await gameResources.locator(".module-card").first().waitFor();
   assert.equal(await gameResources.locator(".community-fork").count(), 1);
   assert(!(await gameResources.innerText()).includes("fixture/no-targets"));
   assert.equal(
@@ -223,16 +168,18 @@ try {
     0,
   );
   await page.getByRole("tab", { name: "Linux", exact: true }).click();
-  assert.equal(await gameResources.locator(".community-patch").count(), 1);
+  await gameResources.locator(".module-card").first().waitFor();
+  assert.equal(await gameResources.locator(".community-fork").count(), 1);
   replaceReport = true;
   await page.clock.fastForward(301000);
   await page.getByText("REPLACED REPORT CONTENT", { exact: true }).waitFor();
-  assert.equal(await gameResources.locator(".community-patch").count(), 1);
+  await gameResources.locator(".module-card").first().waitFor();
   assert.equal(await gameResources.locator(".community-fork").count(), 1);
   console.log(
     "PASS only explicitly targeted forks appear on regional game pages; associations survive report replacement and OS changes",
   );
 
+  // 5. Game page with no report
   const noReportContext = await browser.newContext({
     reducedMotion: "reduce",
     serviceWorkers: "block",
@@ -254,7 +201,7 @@ try {
     .getByRole("link", { name: /Submit the first report/ })
     .waitFor();
   await noReportPage
-    .locator(".game-community-resources .community-patch")
+    .locator(".game-community-resources")
     .waitFor();
   assert.equal(
     await noReportPage
@@ -267,6 +214,7 @@ try {
     "PASS associations remain available when a compatibility report is removed",
   );
 
+  // 6. Uncataloged game page
   const uncatalogedId = "PPSA99998";
   assert(
     !catalog.some(
@@ -285,13 +233,6 @@ try {
     ...resources,
     forks: [
       { ...fork, targetTitleIds: [uncatalogedId], games: [uncatalogedGame] },
-    ],
-    patchCollections: [
-      {
-        ...resources.patchCollections[0],
-        titleId: uncatalogedId,
-        game: uncatalogedGame,
-      },
     ],
   };
   const uncatalogedContext = await browser.newContext({
@@ -339,7 +280,7 @@ try {
   await uncatalogedPage.goto(`${base}/game/${uncatalogedId}`);
   await uncatalogedPage.locator(".report").first().waitFor();
   await uncatalogedPage
-    .locator(".game-community-resources .community-patch")
+    .locator(".game-community-resources")
     .waitFor();
   finalReportRemoved = true;
   await uncatalogedPage.clock.fastForward(301000);
@@ -347,12 +288,6 @@ try {
     .getByRole("link", { name: /Submit the first report/ })
     .waitFor();
   assert.equal(await uncatalogedPage.locator("h1").innerText(), uncatalogedId);
-  assert.equal(
-    await uncatalogedPage
-      .locator(".game-community-resources .community-patch")
-      .count(),
-    1,
-  );
   assert.equal(
     await uncatalogedPage
       .locator(".game-community-resources .community-fork")
@@ -365,14 +300,15 @@ try {
   });
   await uncatalogedPage.reload();
   await uncatalogedPage
-    .locator(".game-community-resources .community-patch")
+    .locator(".game-community-resources")
     .waitFor();
   assert.equal(await uncatalogedPage.locator("h1").innerText(), uncatalogedId);
   await uncatalogedContext.close();
   console.log(
-    "PASS uncataloged games retain patch and fork pages after their final report is removed, including reload",
+    "PASS uncataloged games retain resource and fork pages after their final report is removed, including reload",
   );
 
+  // 7. Responsive layout across viewports and themes
   for (const theme of ["light", "dark"])
     for (const width of [1440, 768, 390]) {
       await context.addInitScript(
@@ -380,10 +316,10 @@ try {
         theme,
       );
       await page.setViewportSize({ width, height: width === 390 ? 844 : 1000 });
-      for (const route of ["patches", "forks", "game/PPSA21567"]) {
+      for (const route of ["patches", "cheats", "configs", "forks", "game/PPSA21567"]) {
         await page.goto(`${base}/${route}`);
         await page
-          .locator(route === "patches" ? ".community-patch" : ".community-fork")
+          .locator(route === "forks" ? ".community-fork" : ".module-card")
           .first()
           .waitFor();
         await page.evaluate(() => document.fonts.ready);
@@ -410,6 +346,8 @@ try {
         });
       }
     }
+
+  // 8. Documentation checks
   await page.goto(`${base}/docs#community-resources`);
   await page
     .getByRole("heading", { name: "Patches and community forks", exact: true })
@@ -419,9 +357,11 @@ try {
   );
   assert(
     (await page.locator("#community-resources").innerText()).includes(
-      "description.md",
+      "KytyPS5-Modules",
     ),
   );
+
+  // 9. Honest empty states
   response = { version: 1, forks: [], patchCollections: [] };
   const emptyContext = await browser.newContext({
     reducedMotion: "reduce",
@@ -435,11 +375,9 @@ try {
   await emptyPage
     .getByRole("heading", { name: "A place for new directions." })
     .waitFor();
-  await emptyPage.goto(`${base}/patches`);
-  await emptyPage
-    .getByRole("heading", { name: "The next fix starts here." })
-    .waitFor();
   await emptyContext.close();
+
+  // 10. Retry recovery on network failure
   const errorContext = await browser.newContext({
     reducedMotion: "reduce",
     serviceWorkers: "block",
@@ -451,7 +389,7 @@ try {
       : route.fulfill({ json: resources }),
   );
   const errorPage = await errorContext.newPage();
-  await errorPage.goto(`${base}/patches`);
+  await errorPage.goto(`${base}/forks`);
   await errorPage
     .getByText("Community resources couldn’t load.", { exact: false })
     .waitFor();
@@ -459,8 +397,9 @@ try {
   await errorPage
     .getByRole("button", { name: "Try again", exact: true })
     .click();
-  await errorPage.locator(".community-patch").waitFor();
+  await errorPage.locator(".community-fork").first().waitFor();
   await errorContext.close();
+
   assert.deepEqual(errors, []);
   console.log(
     "PASS responsive light/dark directories, maintenance documentation, honest empty states and retry recovery",
@@ -468,5 +407,4 @@ try {
   await context.close();
 } finally {
   await browser.close();
-  await rm(fixtureDirectory, { recursive: true, force: true });
 }

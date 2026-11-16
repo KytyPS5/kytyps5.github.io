@@ -304,14 +304,9 @@ describe("collaborator fork commands", () => {
   });
 });
 
-describe("independent patch and fork exports", () => {
-  it("resolves regional targets and exports every ZIP with a revision and integrity hash", async () => {
-    const root = await fixture(),
-      source = await patch(root);
-    await writeFile(
-      path.join(source, "second.zip"),
-      Buffer.from("504b0506000000000000000000000000000000000000", "hex"),
-    );
+describe("independent fork exports", () => {
+  it("resolves regional targets and exports community forks data", async () => {
+    const root = await fixture();
     const registry = applyForkCommand(
       empty(),
       parseForkCommand(comment.body),
@@ -325,23 +320,15 @@ describe("independent patch and fork exports", () => {
     );
     const data = await exportCommunityData(root);
     expect(data.forks[0].games[0].key).toBe("PPSA00001");
-    expect(data.patchCollections[0].game.key).toBe("PPSA00001");
-    const files = data.patchCollections[0].patches[0].files;
-    expect(files).toHaveLength(2);
-    expect(files[0].url).toContain("Performance%20patch/patch%20one.zip?v=");
-    expect(files[0].sha256).toMatch(/^[a-f0-9]{64}$/);
+    expect(data.patchCollections).toEqual([]);
     expect(
-      await readFile(
-        path.join(
-          root,
-          "public/patch-files/PPSA00002/Performance patch/patch one.zip",
-        ),
+      JSON.parse(
+        await readFile(path.join(root, "public/data/community.json"), "utf8"),
       ),
-    ).toEqual(await readFile(path.join(source, "patch one.zip")));
+    ).toEqual(data);
   });
   it("has no implicit target and needs no compatibility reports to retain associations", async () => {
     const root = await fixture();
-    await patch(root);
     const registry = applyForkCommand(
       empty(),
       parseForkCommand("/fork https://github.com/Tester/KytyPS5"),
@@ -351,45 +338,14 @@ describe("independent patch and fork exports", () => {
     );
     const { data } = await buildCommunityData({ root, catalog, registry });
     expect(data.forks[0].games).toEqual([]);
-    expect(data.patchCollections[0].patches).toHaveLength(1);
-    expect(data.patchCollections[0].game.title).toBe("Regional Game");
+    expect(data.patchCollections).toEqual([]);
   });
-  it("registers a game directory while clearly exposing zero downloadable packages", async () => {
+  it("cleans legacy generated patch-files directory if present", async () => {
     const root = await fixture();
-    await mkdir(path.join(root, "patches/PPSA00001"), { recursive: true });
-    const { data } = await buildCommunityData({
-      root,
-      catalog,
-      registry: empty(),
-    });
-    expect(data.patchCollections).toHaveLength(1);
-    expect(data.patchCollections[0].patches).toEqual([]);
-  });
-  it("cleans removed generated archives while preserving source patches", async () => {
-    const root = await fixture(),
-      source = await patch(root);
+    const legacyDir = path.join(root, "public/patch-files");
+    await mkdir(legacyDir, { recursive: true });
+    await writeFile(path.join(legacyDir, "old.zip"), "dummy");
     await exportCommunityData(root);
-    await rm(path.join(root, "patches/PPSA00002"), { recursive: true });
-    await exportCommunityData(root);
-    expect(await readdir(path.join(root, "public/patch-files"))).toEqual([]);
-    expect(source.startsWith(root + path.sep)).toBe(true);
+    expect(await readdir(path.join(root, "public"))).not.toContain("patch-files");
   });
-  it.each(["missing-description", "missing-zip", "bad-zip", "bad-id"])(
-    "rejects incomplete or invalid content: %s",
-    async (kind) => {
-      const root = await fixture(),
-        source = await patch(
-          root,
-          kind === "bad-id" ? "not-a-game" : "PPSA00001",
-        );
-      if (kind === "missing-description")
-        await rm(path.join(source, "description.md"));
-      if (kind === "missing-zip") await rm(path.join(source, "patch one.zip"));
-      if (kind === "bad-zip")
-        await writeFile(path.join(source, "patch one.zip"), "not an archive");
-      await expect(
-        buildCommunityData({ root, catalog, registry: empty() }),
-      ).rejects.toThrow();
-    },
-  );
 });

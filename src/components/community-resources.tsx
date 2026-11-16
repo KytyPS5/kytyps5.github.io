@@ -1,8 +1,6 @@
 import { useMemo } from "react";
 import { Link } from "react-router-dom";
-import { ArrowRight, ArrowUpRight, Download } from "lucide-react";
-import ReactMarkdown from "react-markdown";
-import remarkGfm from "remark-gfm";
+import { ArrowRight, ArrowUpRight } from "lucide-react";
 import { date, External, GameImage } from "./shared";
 import { Reveal } from "./primitives";
 import { LoadingState } from "./loading-state";
@@ -11,232 +9,97 @@ import { useGameModules } from "../hooks/use-modules";
 import { ModuleCard } from "./module-card";
 import { modulesRepo, normalizeTitleId } from "../data/modules-types";
 import {
-  websiteRepo,
   type CommunityFork,
   type CommunityGame,
-  type PatchCollection,
 } from "../data/community-types";
 
-function bytes(size: number) {
-  return size < 1024
-    ? `${size} B`
-    : size < 1048576
-      ? `${(size / 1024).toFixed(1)} KB`
-      : `${(size / 1048576).toFixed(1)} MB`;
-}
-function markdownUrl(value: string | undefined, base: string) {
-  try {
-    return new URL(value || "", base).href;
-  } catch {
-    return base;
-  }
-}
-function adjacentFilename(href: string | undefined) {
-  if (!href || /^[a-z][a-z\d+.-]*:/i.test(href) || /[?#]/.test(href))
-    return null;
-  try {
-    const filename = decodeURIComponent(href.replace(/^\.\//, ""));
-    return filename &&
-      filename !== "." &&
-      filename !== ".." &&
-      !/[\/\\\x00-\x1f]/.test(filename)
-      ? filename
-      : null;
-  } catch {
-    return null;
-  }
-}
 export function ResourceFeedback({
   data,
+  loading,
   error,
   refresh,
+  label = "Community resources",
 }: {
   data: unknown;
+  loading: boolean;
   error: boolean;
-  refresh: (force?: boolean) => Promise<void>;
+  refresh: () => void;
+  label?: string;
 }) {
-  if (error)
+  if (error && !data)
     return (
-      <p className="community-feedback" role="status">
-        {data
-          ? "The latest update couldn’t load. Showing saved community resources."
-          : "Community resources couldn’t load."}{" "}
-        <button className="text-link" onClick={() => void refresh(true)}>
+      <div className="community-feedback">
+        {label} couldn’t load.
+        <button className="text-link" onClick={refresh}>
           Try again
         </button>
-      </p>
+      </div>
     );
-  return !data ? <LoadingState label="Loading community resources…" /> : null;
+  if (loading && !data) return <LoadingState label={`Loading ${label}…`} />;
+  return null;
 }
-export function TargetGames({ games }: { games: CommunityGame[] }) {
-  return games.length ? (
-    <ul className="community-targets" aria-label="Targeted games">
-      {games.map((game) => (
-        <li key={game.key}>
-          <Link to={`/game/${encodeURIComponent(game.key)}`}>
-            {game.title}
-            <span>{game.titleId}</span>
-            <ArrowUpRight size={14} />
-          </Link>
-        </li>
-      ))}
-    </ul>
-  ) : (
-    <p className="community-no-targets">No game targets listed.</p>
-  );
-}
+
 export function ForkList({
   forks,
-  showTargets = true,
+  scope,
 }: {
   forks: CommunityFork[];
-  showTargets?: boolean;
+  scope?: "all" | "targeted" | "unassigned";
 }) {
   return (
-    <div className="community-forks-list">
+    <div className="community-fork-list">
       {forks.map((fork) => (
         <Reveal
           as="article"
           className="community-fork"
+          distance={18}
+          id={`fork-${fork.repository.replace("/", "-")}`}
           key={fork.repositoryId}
-          distance={14}
         >
           <div className="community-fork-title">
             <h3>
               <External href={fork.url}>
                 {fork.repository}
-                <ArrowUpRight size={20} />
+                <ArrowUpRight size={18} />
               </External>
             </h3>
             {fork.archived && (
               <span className="community-archived">Archived</span>
             )}
           </div>
-          {fork.description && <p>{fork.description}</p>}
-          {showTargets && <TargetGames games={fork.games} />}
+          <p>{fork.description}</p>
+          {fork.targetTitleIds.length > 0 ? (
+            <ul
+              className="community-targets"
+              aria-label={`${fork.repository} game targets`}
+            >
+              {fork.games.map((game: CommunityGame) => (
+                <li key={game.titleId}>
+                  <Link to={`/game/${encodeURIComponent(game.key)}`}>
+                    {game.title}
+                    <span>{game.titleId}</span>
+                  </Link>
+                </li>
+              ))}
+            </ul>
+          ) : (
+            <p className="community-no-targets">
+              {scope === "all"
+                ? "No game targets listed; works on general KytyPS5 development."
+                : "No specific game targets listed."}
+            </p>
+          )}
           <p className="community-record-date">
-            Listing updated{" "}
-            <time dateTime={fork.updatedAt}>{date(fork.updatedAt)}</time>
+            Listed {date(fork.addedAt)}
+            {fork.updatedAt !== fork.addedAt &&
+              ` · updated ${date(fork.updatedAt)}`}
           </p>
         </Reveal>
       ))}
     </div>
   );
 }
-export function PatchList({ collection }: { collection: PatchCollection }) {
-  return (
-    <div className="community-patch-list">
-      {collection.patches.length ? (
-        collection.patches.map((patch) => {
-          const source = `${websiteRepo}/blob/main/patches/${encodeURIComponent(collection.titleId)}/${encodeURIComponent(patch.name)}/`;
-          return (
-            <article
-              className="community-patch"
-              id={`patch-${encodeURIComponent(patch.id)}`}
-              key={patch.id}
-            >
-              <h3>{patch.name}</h3>
-              <div className="markdown community-description">
-                <ReactMarkdown
-                  skipHtml
-                  remarkPlugins={[remarkGfm]}
-                  components={{
-                    h1: ({ children }) => <h4>{children}</h4>,
-                    h2: ({ children }) => <h4>{children}</h4>,
-                    h3: ({ children }) => <h4>{children}</h4>,
-                    h4: ({ children }) => <h5>{children}</h5>,
-                    h5: ({ children }) => <h6>{children}</h6>,
-                    a: ({ children, href }) => {
-                      const file = patch.files.find(
-                        (file) => file.name === adjacentFilename(href),
-                      );
-                      return file ? (
-                        <a href={file.url} download={file.name}>
-                          {children}
-                        </a>
-                      ) : (
-                        <External href={markdownUrl(href, source)}>
-                          {children}
-                        </External>
-                      );
-                    },
-                    img: ({ src, alt }) => (
-                      <GameImage
-                        src={markdownUrl(
-                          src,
-                          source
-                            .replace("github.com", "raw.githubusercontent.com")
-                            .replace("/blob/", "/"),
-                        )}
-                        title={alt || patch.name}
-                      />
-                    ),
-                  }}
-                >
-                  {patch.description}
-                </ReactMarkdown>
-              </div>
-              <ul
-                className="community-downloads"
-                aria-label={`${patch.name} files`}
-              >
-                {patch.files.map((file) => (
-                  <li key={file.url}>
-                    <a href={file.url} download={file.name}>
-                      <Download size={18} />
-                      <span>{file.name}</span>
-                      <span className="community-file-size">
-                        {bytes(file.size)}
-                      </span>
-                    </a>
-                  </li>
-                ))}
-              </ul>
-            </article>
-          );
-        })
-      ) : (
-        <p className="community-feedback">
-          A patch collection is registered for this game. No ZIP packages have
-          been published yet.
-        </p>
-      )}
-    </div>
-  );
-}
-export function PatchCollectionBlock({
-  collection,
-  showGame = true,
-}: {
-  collection: PatchCollection;
-  showGame?: boolean;
-}) {
-  return (
-    <Reveal as="section" className="community-collection" distance={18}>
-      {showGame && (
-        <div className="community-game-heading">
-          <GameImage
-            src={collection.game.cover}
-            title={`${collection.game.title} cover`}
-          />
-          <div>
-            <h2>
-              <Link to={`/game/${encodeURIComponent(collection.game.key)}`}>
-                {collection.game.title}
-                <ArrowUpRight size={20} />
-              </Link>
-            </h2>
-            <p>
-              {collection.titleId} · {collection.patches.length}{" "}
-              {collection.patches.length === 1 ? "patch" : "patches"}
-            </p>
-          </div>
-        </div>
-      )}
-      <PatchList collection={collection} />
-    </Reveal>
-  );
-}
+
 export function GameCommunityResources({
   gameKey,
   gameTitle,
@@ -264,18 +127,6 @@ export function GameCommunityResources({
     error: modulesError,
     refresh: refreshModules,
   } = useGameModules(effectiveIds);
-
-  const legacyCollections = useMemo(() => {
-    return (
-      resource.data?.patchCollections.filter(
-        (collection) =>
-          normalizeTitleId(collection.game.key) === normalizeTitleId(gameKey) ||
-          effectiveIds.some(
-            (id) => id === normalizeTitleId(collection.titleId),
-          ),
-      ) ?? []
-    );
-  }, [resource.data, gameKey, effectiveIds]);
 
   const forks = useMemo(() => {
     return (
@@ -331,60 +182,51 @@ export function GameCommunityResources({
               <ArrowRight size={16} />
             </Link>
           </div>
-          {legacyCollections.map((collection) => (
-            <PatchCollectionBlock
-              key={collection.titleId}
-              collection={collection}
-            />
-          ))}
-          {modularPatches.length > 0 && (
+          {modularPatches.length > 0 ? (
             <div className="module-list">
               {modularPatches.map((entry) => (
                 <ModuleCard key={entry.path} entry={entry} headingLevel="h4" />
               ))}
             </div>
-          )}
-          {!legacyCollections.length && !modularPatches.length && (
-            modulesLoading ? (
-              <LoadingState label="Loading patches…" />
-            ) : modulesError ? (
-              <div className="community-empty-module">
-                <p>Unable to load patches right now.</p>
-              </div>
-            ) : (
-              <div className="community-empty-module">
-                <p>No community patches are listed for this game yet.</p>
-                <a
-                  href={`${modulesRepo}/issues/new?template=01_patch_submission.yml&title_id=${encodeURIComponent(primaryTitleId)}&game_name=${encodeURIComponent(displayGameTitle)}`}
-                  target="_blank"
-                  rel="noopener noreferrer"
-                  className="text-link"
-                >
-                  Submit a patch
-                  <ArrowUpRight size={15} />
-                </a>
-              </div>
-            )
+          ) : modulesLoading ? (
+            <LoadingState label="Loading patches…" />
+          ) : modulesError ? (
+            <div className="community-empty-module">
+              <p>Unable to load patches right now.</p>
+            </div>
+          ) : (
+            <div className="community-empty-module">
+              <p>No community patches are listed for this game yet.</p>
+              <a
+                href={`${modulesRepo}/issues/new?template=01_patch_submission.yml&title_id=${encodeURIComponent(primaryTitleId)}&game_name=${encodeURIComponent(displayGameTitle)}`}
+                target="_blank"
+                rel="noopener noreferrer"
+                className="text-link"
+              >
+                Submit a patch
+                <ArrowUpRight size={15} />
+              </a>
+            </div>
           )}
         </section>
 
         {/* Cheats Section */}
         <section aria-labelledby="game-cheats-title">
           <div className="community-subheading">
-            <h3 id="game-cheats-title">Cheats</h3>
+            <h3 id="game-cheats-title">Community cheats</h3>
             <Link to="/cheats">
               All cheats
               <ArrowRight size={16} />
             </Link>
           </div>
-          {modulesLoading && !modularCheats.length ? (
-            <LoadingState label="Loading cheats…" />
-          ) : modularCheats.length > 0 ? (
+          {modularCheats.length > 0 ? (
             <div className="module-list">
               {modularCheats.map((entry) => (
                 <ModuleCard key={entry.path} entry={entry} headingLevel="h4" />
               ))}
             </div>
+          ) : modulesLoading ? (
+            <LoadingState label="Loading cheats…" />
           ) : modulesError ? (
             <div className="community-empty-module">
               <p>Unable to load cheats right now.</p>
@@ -414,47 +256,49 @@ export function GameCommunityResources({
               <ArrowRight size={16} />
             </Link>
           </div>
-          {modulesLoading && !modularConfigs.length ? (
-            <LoadingState label="Loading configuration presets…" />
-          ) : modularConfigs.length > 0 ? (
+          {modularConfigs.length > 0 ? (
             <div className="module-list">
               {modularConfigs.map((entry) => (
                 <ModuleCard key={entry.path} entry={entry} headingLevel="h4" />
               ))}
             </div>
+          ) : modulesLoading ? (
+            <LoadingState label="Loading configs…" />
           ) : modulesError ? (
             <div className="community-empty-module">
-              <p>Unable to load configuration presets right now.</p>
+              <p>Unable to load configurations right now.</p>
             </div>
           ) : (
             <div className="community-empty-module">
-              <p>No configuration presets are listed for this game yet.</p>
+              <p>No configuration presets listed for this game yet.</p>
               <a
                 href={`${modulesRepo}/issues/new?template=03_config_submission.yml&title_id=${encodeURIComponent(primaryTitleId)}&game_name=${encodeURIComponent(displayGameTitle)}`}
                 target="_blank"
                 rel="noopener noreferrer"
                 className="text-link"
               >
-                Submit a config
+                Submit a configuration
                 <ArrowUpRight size={15} />
               </a>
             </div>
           )}
         </section>
 
-        {/* Targeted Forks Section */}
+        {/* Forks Section */}
         <section aria-labelledby="game-forks-title">
           <div className="community-subheading">
-            <h3 id="game-forks-title">Targeted forks</h3>
+            <h3 id="game-forks-title">Targeted community forks</h3>
             <Link to="/forks">
               All forks
               <ArrowRight size={16} />
             </Link>
           </div>
           {forks.length ? (
-            <ForkList forks={forks} showTargets={false} />
+            <ForkList forks={forks} />
           ) : (
-            <p>No listed forks specifically target this game yet.</p>
+            <p className="community-no-targets">
+              No community forks are currently targeting this game.
+            </p>
           )}
         </section>
       </div>
