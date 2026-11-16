@@ -265,6 +265,18 @@ export function GameCommunityResources({
     refresh: refreshModules,
   } = useGameModules(effectiveIds);
 
+  const legacyCollections = useMemo(() => {
+    return (
+      resource.data?.patchCollections.filter(
+        (collection) =>
+          normalizeTitleId(collection.game.key) === normalizeTitleId(gameKey) ||
+          effectiveIds.some(
+            (id) => id === normalizeTitleId(collection.titleId),
+          ),
+      ) ?? []
+    );
+  }, [resource.data, gameKey, effectiveIds]);
+
   const forks = useMemo(() => {
     return (
       resource.data?.forks.filter(
@@ -319,31 +331,40 @@ export function GameCommunityResources({
               <ArrowRight size={16} />
             </Link>
           </div>
-          {modulesLoading && !modularPatches.length ? (
-            <LoadingState label="Loading patches…" />
-          ) : modularPatches.length > 0 ? (
+          {legacyCollections.map((collection) => (
+            <PatchCollectionBlock
+              key={collection.titleId}
+              collection={collection}
+            />
+          ))}
+          {modularPatches.length > 0 && (
             <div className="module-list">
               {modularPatches.map((entry) => (
                 <ModuleCard key={entry.path} entry={entry} headingLevel="h4" />
               ))}
             </div>
-          ) : modulesError ? (
-            <div className="community-empty-module">
-              <p>Unable to load patches right now.</p>
-            </div>
-          ) : (
-            <div className="community-empty-module">
-              <p>No community patches are listed for this game yet.</p>
-              <a
-                href={`${modulesRepo}/issues/new?template=01_patch_submission.yml&title_id=${encodeURIComponent(primaryTitleId)}&game_name=${encodeURIComponent(displayGameTitle)}`}
-                target="_blank"
-                rel="noopener noreferrer"
-                className="text-link"
-              >
-                Submit a patch
-                <ArrowUpRight size={15} />
-              </a>
-            </div>
+          )}
+          {!legacyCollections.length && !modularPatches.length && (
+            modulesLoading ? (
+              <LoadingState label="Loading patches…" />
+            ) : modulesError ? (
+              <div className="community-empty-module">
+                <p>Unable to load patches right now.</p>
+              </div>
+            ) : (
+              <div className="community-empty-module">
+                <p>No community patches are listed for this game yet.</p>
+                <a
+                  href={`${modulesRepo}/issues/new?template=01_patch_submission.yml&title_id=${encodeURIComponent(primaryTitleId)}&game_name=${encodeURIComponent(displayGameTitle)}`}
+                  target="_blank"
+                  rel="noopener noreferrer"
+                  className="text-link"
+                >
+                  Submit a patch
+                  <ArrowUpRight size={15} />
+                </a>
+              </div>
+            )
           )}
         </section>
 

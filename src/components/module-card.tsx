@@ -78,7 +78,7 @@ export function ModuleCard({
   const HeadingTag = headingLevel;
 
   return (
-    <article className="community-patch module-card" id={cardDomId}>
+    <article className="module-card" id={cardDomId}>
       <div className="module-card-header">
         <div className="module-badges">
           <span className="module-badge module-badge-ppsa" title="PS5 Title ID">
