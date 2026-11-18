@@ -1,23 +1,31 @@
 ---
 title: "Assetto Corsa Competizione"
 titleId: "PPSA03847"
-status: "doesnt-boot"
-testedVersion: "KytyPS5-2026-08-28-c52bf45"
-testedDate: "2026-08-29"
+status: "in-game"
+testedVersion: "0.3.0 1e87171"
+testedDate: "2026-11-17"
 os: "windows"
-hardware: "AMD Ryzen 7 7840hs / Nvidia RTX 4050 / 16GB DDR5 RAM/ 6GB GDDR6 VRAM"
-screenshots: ["https://github.com/user-attachments/assets/b951a94b-2786-46dc-ba7e-868dabda04a6","https://github.com/user-attachments/assets/89775d37-f8e4-4279-b074-6e9a081608c2"]
+hardware: "AMD Ryzen 7 7700X / AMD Radeon RX 9070XT / 32 GB RAM / 16GB VRAM"
+screenshots: ["https://github.com/user-attachments/assets/03bc86d7-0788-4701-b68b-1939692f51b8","https://github.com/user-attachments/assets/6228962c-fdb9-464e-8b46-e70fe42993cb","https://github.com/user-attachments/assets/9e8b5fdf-ecc5-4221-9c48-46c1fff3ffa0","https://github.com/user-attachments/assets/76311595-ac21-45e6-86fb-110f8f8dbc76","https://github.com/user-attachments/assets/304c0826-de55-457e-aee1-83c5aa6ffc5c"]
 ---
 
-Tested on KytyPS5-2026-08-28-c52bf45 and KytyPS5-2026-08-27-ade32e7. in both, Doesn't boot
+Game boots to the main menu. Can start a new game and goes in game, car can be controlled.
+60fps
+Perfect Audio
+No graphical issues.
 
 ## Steps to reproduce
 
-1. open kytyps5
-2. click on game
+1. Open Translator
+2. Boot Game
+3. Start a new game.
 
 ## Expected behavior
 
-Tested on KytyPS5-2026-08-28-c52bf45 and KytyPS5-2026-08-27-ade32e7. in both, Doesn't boot
+Game goes in game and can be played normally, as expected.
 
-> Source: [KytyPS5 issue #381](https://github.com/KytyPS5/KytyPS5/issues/381)
+## Extra notes
+
+Default settings.
+
+> Source: [KytyPS5 issue #2323](https://github.com/KytyPS5/KytyPS5/issues/2323)
