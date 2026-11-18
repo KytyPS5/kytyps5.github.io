@@ -1,22 +1,30 @@
 ---
 title: "Blackwind"
-titleId: "PPSA-03469"
+titleId: "PPSA03468"
 status: "in-game"
-testedVersion: "KytyPS5-2026-08-15-566a450"
-testedDate: "2026-08-15"
+testedVersion: "0.3.0 1e87171"
+testedDate: "2026-11-17"
 os: "windows"
-hardware: "Intel Core i5-12400F / NVIDIA GeForce RTX 4070 ,drivers 610.88 WHQL / 32 GB DDR4 RAM,12 GB VRAM"
-screenshots: ["https://github.com/user-attachments/assets/c60ce0ac-1a6c-4005-a43e-f97e72d1405c","https://github.com/user-attachments/assets/e9dd73cb-6479-42b4-ab0a-a904d0eab09a","https://github.com/user-attachments/assets/6a9da939-8b74-48ef-b427-4b62e5498f2c","https://github.com/user-attachments/assets/b46c0c64-02ab-42f5-964e-80843af3e761","https://github.com/user-attachments/assets/a9a8ff13-6f4e-4f2a-8750-47473db8d742"]
+hardware: "AMD Ryzen 7 7700X / AMD Radeon RX 9070XT, Driver 26.10.1 / 32 GB RAM / 16GB VRAM"
+screenshots: ["https://github.com/user-attachments/assets/42586ccd-fee6-4c97-92fc-e95fdaae0330","https://github.com/user-attachments/assets/c5b2851d-e831-41ae-8a25-ca561f7f2c87","https://github.com/user-attachments/assets/0e186ac2-8c6c-403d-a4b4-f52150a34133","https://github.com/user-attachments/assets/ab441396-69aa-44e2-abed-d602989ad329"]
 ---
 
-The game runs fine. All sounds are present. It runs at 60 fps.
+Game boots to main menu.
+Start a new game, cutscene plays, then able to take control and play the game.
+60fps, perfect audio and no graphical issues.
 
 ## Steps to reproduce
 
-Launch the emulator, enter the game, and start playing.
+1. Open Translator
+2. Boot Game
+3. Start New Game,
 
 ## Expected behavior
 
-No known issue
+Goes in game and is playable, as expected.
 
-> Source: [KytyPS5 issue #263](https://github.com/KytyPS5/KytyPS5/issues/263)
+## Extra notes
+
+Default settings.
+
+> Source: [KytyPS5 issue #2342](https://github.com/KytyPS5/KytyPS5/issues/2342)
