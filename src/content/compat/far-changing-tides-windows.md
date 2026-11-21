@@ -1,32 +1,23 @@
 ---
 title: "FAR: Changing Tides"
 titleId: "PPSA03766"
-status: "doesnt-boot"
-testedVersion: "KytyPS5-2026-11-07-589bd14"
-testedDate: "2026-11-07"
+status: "in-game"
+testedVersion: "5ad27cd"
+testedDate: "2026-11-19"
 os: "windows"
 hardware: "13th Gen Intel(R) Core(TM) i7-13700K (3.40 GHz) / NVIDIA GeForce RTX 4070 Ti / 32 GB DDR5 / 12 GB VRAM"
+screenshots: ["https://github.com/user-attachments/assets/0b113a55-350a-428b-92b7-563ae7098cdc","https://github.com/user-attachments/assets/4569d2ee-a994-4ca5-98f2-ce0c3e2083e0"]
 ---
 
-the game doesn't load the menu.
-
-**Log error:**
-```
-[Vulkan][E][2]: vkCmdDispatchIndirect(): the sampled image descriptor [Set 0, Binding 24, Index 1] has VkImageView 0xd650000000d65 with format of VK_FORMAT_R8G8B8A8_SRGB which doesn't support VK_FORMAT_FEATURE_2_SAMPLED_IMAGE_DEPTH_COMPARISON_BIT.
-(supported features: VK_FORMAT_FEATURE_2_SAMPLED_IMAGE_BIT|VK_FORMAT_FEATURE_2_COLOR_ATTACHMENT_BIT|VK_FORMAT_FEATURE_2_COLOR_ATTACHMENT_BLEND_BIT|VK_FORMAT_FEATURE_2_BLIT_SRC_BIT|VK_FORMAT_FEATURE_2_BLIT_DST_BIT|VK_FORMAT_FEATURE_2_SAMPLED_IMAGE_FILTER_LINEAR_BIT|VK_FORMAT_FEATURE_2_TRANSFER_SRC_BIT|VK_FORMAT_FEATURE_2_TRANSFER_DST_BIT|VK_FORMAT_FEATURE_2_SAMPLED_IMAGE_FILTER_MINMAX_BIT|VK_FORMAT_FEATURE_2_HOST_IMAGE_TRANSFER_BIT|VK_FORMAT_FEATURE_2_COPY_IMAGE_INDIRECT_DST_BIT_KHR).
-The Vulkan spec states: If a VkImageView is sampled with depth comparison, the image view's format features must contain VK_FORMAT_FEATURE_2_SAMPLED_IMAGE_DEPTH_COMPARISON_BIT (https://docs.vulkan.org/spec/latest/chapters/dispatch.html#VUID-vkCmdDispatchIndirect-None-06479)
- in D:/Progetti/KytyPS5/src/graphics/presentation/window/vulkanWindow.cpp:767
-```
-
-This error is similar whit this #2158
+The game starts, but the textures don't load. And they're completely white.
 
 ## Steps to reproduce
 
-open kytyps5
-boot game
+1: Start the game
+2: The game loads but doesn't display the textures
 
 ## Expected behavior
 
-The game won't start.
+Make sure the textures load correctly.
 
-> Source: [KytyPS5 issue #2159](https://github.com/KytyPS5/KytyPS5/issues/2159)
+> Source: [KytyPS5 issue #2423](https://github.com/KytyPS5/KytyPS5/issues/2423)
