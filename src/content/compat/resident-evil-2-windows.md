@@ -1,43 +1,32 @@
 ---
-title: "Resident Evil 2"
+title: "Resident evil 2"
 titleId: "PPSA04288"
-status: "logo"
-testedVersion: "Custom local build based on commit 7e1c2d1, with additional compatibility fixes."
-testedDate: "2026-09-25"
+status: "in-game"
+testedVersion: "KytyPS5-2026-11-20-a1fc5ae"
+testedDate: "2026-11-20"
 os: "windows"
-hardware: "Intel Core i5-12450H / NVIDIA GeForce RTX 3050 6GB Laptop GPU Windows driver version: 32.0.16.1714 / RAM: [ 16GB ] VRAM: 6 GB"
+hardware: "Intel i5 10400f / AMD RX7600 / 16 GB DDR4 RAM / 8GB VRAM"
+screenshots: ["https://github.com/user-attachments/assets/235c86b2-ea85-4bb2-b2cd-8a1ec58b2e43","https://github.com/user-attachments/assets/483b336e-7ddd-41c8-8936-8b82f48e0dec"]
 ---
 
-I managed to boot Resident Evil 2 (PPSA04288) and reach the opening cinematic using a modified KytyPS5 build.
+I managed to boot the game to in game status with just a little stutering here and
 
-The cinematic renders and subtitles are readable, but the 3D graphics are severely corrupted, with stretched geometry and large distorted triangles. Performance during the observed cinematic was approximately 11–17 FPS.
+<img width="1282" height="739" alt="Screenshot 2026-11-20 125951" src="https://github.com/user-attachments/assets/235c86b2-ea85-4bb2-b2cd-8a1ec58b2e43" />
 
-An earlier crash associated with skipping the cinematic reported an equal-address texture-cache overlap. A depth-image layout fix allowed the game to progress beyond that error. A later run stopped with a different pixel-shader resource-tracking error:
-
-Shader hash: 0x4dca9395f0d319e7
-Stage: pixel
-PC: 0x00000174
-GetImageResource dword 0 is not a valid runtime value
-
-Stable gameplay has not been achieved.
+ there on windows.
 
 ## Steps to reproduce
 
-1. Launch the modified build based on commit 7e1c2d1.
-2. Boot Resident Evil 2, PPSA04288, version 01.000.002.
-3. Complete the initial settings if prompted.
-4. Wait for the opening cinematic.
-5. Observe the stretched geometry and graphical corruption.
-6. Continue or attempt to skip the cinematic and check the resulting log.
-
-The attached results apply to the modified build. Vulkan validation and shader validation were enabled during the diagnostic run.
+1.Open kyty.
+2.Boot the game.
+3.Game worked.
 
 ## Expected behavior
 
-The opening cinematic should render correctly, without stretched geometry. Skipping it should transition to the next scene without crashing.
+No known issue
 
-## Last working build / first broken build
+## Extra notes
 
-Unknown. These results were obtained using a modified local build, not the unmodified release.
+Only thing was the rights were purple and buggy at some point but after i got to the playable part everything seemses to be fine for now
 
-> Source: [KytyPS5 issue #832](https://github.com/KytyPS5/KytyPS5/issues/832)
+> Source: [KytyPS5 issue #2450](https://github.com/KytyPS5/KytyPS5/issues/2450)
