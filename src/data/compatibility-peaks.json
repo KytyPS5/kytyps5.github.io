@@ -1,6 +1,6 @@
 {
   "version": 1,
-  "throughCommit": "8ee37d49cafe5e232bcae52ec249a8cddccb3ad2",
+  "throughCommit": "09dd15c46ba74c8c3928e2e5141ef94dff8966f9",
   "games": {
     "PPSA01284": {
       "windows": {
@@ -1594,9 +1594,9 @@
         "titleId": "PPSA04159",
         "os": "windows",
         "status": "in-game",
-        "testedDate": "2026-09-11",
-        "testedVersion": "v0.3.0",
-        "recordUrl": "https://github.com/KytyPS5/kytyps5.github.io/blob/7ebf76022ca6a6f167a996cb5bb39dd997c9e814/src/content/compat/goat-simulator-3-windows.md"
+        "testedDate": "2026-11-21",
+        "testedVersion": "0.3.0",
+        "recordUrl": "https://github.com/KytyPS5/kytyps5.github.io/blob/09dd15c46ba74c8c3928e2e5141ef94dff8966f9/src/content/compat/goat-simulator-3-windows.md"
       }
     },
     "PPSA04181": {
@@ -2273,6 +2273,17 @@
         "testedDate": "2026-09-09",
         "testedVersion": "d285efe",
         "recordUrl": "https://github.com/KytyPS5/kytyps5.github.io/blob/db4592954b48fd356ddd340171873288ec1f2e0b/src/content/compat/the-invincible-windows.md"
+      }
+    },
+    "PPSA06435": {
+      "windows": {
+        "slug": "yakuza-like-a-dragon-infinite-wealth-windows",
+        "titleId": "PPSA06435",
+        "os": "windows",
+        "status": "doesnt-boot",
+        "testedDate": "2026-11-21",
+        "testedVersion": "KytyPS5-2026-11-21-6133172",
+        "recordUrl": "https://github.com/KytyPS5/kytyps5.github.io/blob/1f8c400b577eb16cb14ab214f52d58a54dbf95a1/src/content/compat/yakuza-like-a-dragon-infinite-wealth-windows.md"
       }
     },
     "PPSA06437": {
