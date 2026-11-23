@@ -2,23 +2,23 @@
 title: "Goat Simulator 3"
 titleId: "PPSA04159"
 status: "in-game"
-testedVersion: "v0.3.0"
-testedDate: "2026-09-11"
+testedVersion: "0.3.0"
+testedDate: "2026-11-21"
 os: "windows"
-hardware: "AMD Ryzen 5 5600X / NVIDIA GeForce 4060Ti, Driver 616.64 / 16GB RAM DDR4, 8GB VRAM"
+hardware: "AMD Ryzen 9 5900x / RTX 3080 / 32GB DDR4-3200 RAM / 10GB VRAM"
 ---
 
-The game reaches gameplay, but only after an extended black screen and loading time. It suffers from severe graphical glitches and runs at an unplayable 5 FPS
+The game reaches the Main Menu with around 37FPS. The game itself reaches up to 10 and crashes on movement input after leaving the carriage ingame.
 
 ## Steps to reproduce
 
-1. Open KytyPS5
-2. Boot Game
-3. Wait on Black screen, and long loading screens
-4. Reaches Gameplay
+1. Boot the game
+2. Start new game
+3. Wait for or skip the intro
+4. Try to move around
 
 ## Expected behavior
 
-Upon entering gameplay, severe graphical glitches and significant performance degradation become immediately apparent
+The Game should not lag and maybe reach more than frames per sometimes
 
-> Source: [KytyPS5 issue #569](https://github.com/KytyPS5/KytyPS5/issues/569)
+> Source: [KytyPS5 issue #2485](https://github.com/KytyPS5/KytyPS5/issues/2485)
